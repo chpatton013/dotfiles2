@@ -1,0 +1,4 @@
+---
+
+zshrc_config_dir: "{{dotfiles_config_dir}}/zshrc"
+zshrc_data_dir: "{{dotfiles_data_dir}}/zshrc"

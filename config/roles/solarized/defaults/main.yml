@@ -1,0 +1,6 @@
+---
+
+solarized_themes_repo: https://github.com/altercation/solarized
+solarized_themes_data_dir: "{{github_repos_data_dir}}/altercation/solarized"
+dircolors_solarized_repo: https://github.com/seebi/dircolors-solarized
+dircolors_solarized_data_dir: "{{github_repos_data_dir}}/seebi/dircolors-solarized"

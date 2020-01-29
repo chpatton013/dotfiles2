@@ -1,0 +1,5 @@
+---
+
+rust_data_dir: "{{dotfiles_data_dir}}/rust"
+rust_cargo_home: "{{rust_data_dir}}/cargo"
+rust_rustup_home: "{{rust_data_dir}}/rustup"

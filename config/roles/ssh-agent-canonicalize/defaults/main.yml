@@ -1,0 +1,4 @@
+---
+
+ssh_agent_canonicalize_repo: https://github.com/chpatton013/ssh-agent-canonicalize
+ssh_agent_canonicalize_data_dir: "{{github_repos_data_dir}}/chpatton013/ssh-agent-canonicalize"

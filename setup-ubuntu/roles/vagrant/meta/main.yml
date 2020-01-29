@@ -1,0 +1,7 @@
+---
+
+dependencies:
+- docker
+- libvirt
+- lxc
+- virtualbox

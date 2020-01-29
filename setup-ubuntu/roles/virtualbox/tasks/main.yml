@@ -1,0 +1,18 @@
+---
+
+- name: Accept Virtualbox Extension Pack license agreement
+  debconf:
+    name: virtualbox-ext-pack
+    question: virtualbox-ext-pack/license
+    value: "true"
+    vtype: select
+  become: yes
+
+- name: Install Virtualbox apt packages
+  apt:
+    pkg:
+    - virtualbox
+    - virtualbox-dkms
+    - virtualbox-ext-pack
+    - virtualbox-guest-additions-iso
+  become: yes

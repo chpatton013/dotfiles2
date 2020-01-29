@@ -1,0 +1,22 @@
+---
+
+- name: Download ssh-agent-canonicalize repository
+  git:
+    repo: "{{ssh_agent_canonicalize_repo}}"
+    dest: "{{ssh_agent_canonicalize_data_dir}}"
+    depth: 1
+
+- name: Render ssh-agent-canonicalize Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-ssh-agent-canonicalize.sh"
+    mode: 0400
+
+- name: Link ssh-agent-canonicalize Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/ssh-agent-canonicalize/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 3-ssh-agent-canonicalize.sh

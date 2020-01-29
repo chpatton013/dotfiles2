@@ -1,0 +1,10 @@
+---
+
+- name: Install LXC apt packages
+  apt:
+    pkg:
+    - liblxc-common
+    - liblxc1
+    - lxc-templates
+    - lxctl
+  become: yes

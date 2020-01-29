@@ -1,0 +1,13 @@
+---
+
+- name: Install Alacritty dependency apt packages
+  apt:
+    pkg:
+    - cmake
+    - libfontconfig1-dev
+    - libfreetype6
+    - libfreetype6-dev
+    - libxcb-xfixes0-dev
+    - pkg-config
+    - python3
+  become: yes

@@ -1,0 +1,9 @@
+---
+
+- name: Create Dotfiles directories
+  file:
+    path: "{{item}}"
+    state: directory
+  with_items:
+  - "{{dotfiles_config_dir}}"
+  - "{{dotfiles_data_dir}}"

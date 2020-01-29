@@ -1,0 +1,21 @@
+---
+
+- hosts: 127.0.0.1
+  connection: local
+  roles:
+  - alacritty
+  - bashrc
+  - cargo
+  - dircolors
+  - fzf
+  - gem
+  - git
+  - go
+  - npm
+  - pip
+  - ssh-agent-canonicalize
+  - tmux
+  - vagrant
+  - vim
+  - worktree
+  - zshrc

@@ -1,0 +1,7 @@
+---
+
+- name: Install Vagrant apt packages
+  apt:
+    pkg:
+    - vagrant
+  become: yes

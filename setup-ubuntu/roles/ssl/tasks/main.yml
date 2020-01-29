@@ -1,0 +1,10 @@
+---
+
+- name: Install SSL packages
+  apt:
+    pkg:
+    - ca-certificates
+    - gpg
+    - openssh-client
+    - openssl
+  become: yes

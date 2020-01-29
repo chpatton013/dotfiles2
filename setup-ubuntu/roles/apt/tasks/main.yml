@@ -1,0 +1,9 @@
+---
+
+- name: Install apt usability packages
+  apt:
+    pkg:
+    - apt-transport-https
+    - apt-utils
+    - software-properties-common
+  become: yes

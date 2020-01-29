@@ -1,0 +1,3 @@
+---
+
+go_data_dir: "{{dotfiles_data_dir}}/go"

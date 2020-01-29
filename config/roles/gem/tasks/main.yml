@@ -1,0 +1,33 @@
+---
+
+- name: Create Gem directory
+  file:
+    dest: "{{gem_data_dir}}"
+    state: directory
+    mode: 0700
+
+- name: Render Gem Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-gem.sh"
+    mode: 0400
+
+- name: Install Gem dev-tools packages
+  gem:
+    user_install: yes
+    name: "{{item}}"
+  environment:
+    GEM_HOME: "{{gem_data_dir}}"
+  with_items:
+  - neovim
+  - rubocop
+  - sass
+
+- name: Link Gem Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/gem/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 3-gem.sh

@@ -1,0 +1,15 @@
+function _basename_sort() {
+  xargs --replace={} bash -c 'echo $(basename {}){}' |
+    sort --numeric-sort |
+    sed --expression='s#[^/]*\(/.*\)#\1#'
+}
+
+function source_dir() {
+  ifs_restore="$IFS"
+  IFS=$'\n'
+  for f in $(find -L "$@" -type f | _basename_sort); do
+    source "$f"
+  done
+  IFS="$ifs_restore"
+  unset ifs_restore
+}

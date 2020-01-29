@@ -1,0 +1,20 @@
+---
+
+- name: Install Libvirt apt packages
+  apt:
+    pkg:
+    - libvirt-clients
+    - libvirt-daemon-system
+    - libvirt-dev
+    - libvirt0
+    - virt-viewer
+    - virtinst
+  become: yes
+
+- name: Add user to Libvirt group
+  user:
+    name: "{{ansible_user}}"
+    groups:
+    - libvirt
+    append: yes
+  become: yes

@@ -1,0 +1,9 @@
+# If not running interactively, don't do anything.
+case $- in
+  *i*) ;;
+  *) return ;;
+esac
+
+# Source additional config files.
+source ~/.shellrc
+source_dir {{shellrc_config_dir}} {{bashrc_config_dir}}

@@ -1,0 +1,6 @@
+---
+
+- name: Create Github Repos directory
+  file:
+    path: "{{github_repos_data_dir}}"
+    state: directory

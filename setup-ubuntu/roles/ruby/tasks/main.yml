@@ -1,0 +1,8 @@
+---
+
+- name: Install Ruby apt packages
+  apt:
+    pkg:
+    - ruby
+    - ruby-dev
+  become: yes

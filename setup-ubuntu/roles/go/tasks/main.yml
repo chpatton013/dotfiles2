@@ -1,0 +1,20 @@
+---
+
+- name: Install Go apt repository
+  apt_repository:
+    repo: ppa:longsleep/golang-backports
+  become: yes
+
+- name: Install Go apt packages
+  apt:
+    pkg:
+    - golang-1.14-go
+  become: yes
+
+- name: Add Go binary to /usr/local/bin
+  file:
+    src: /usr/lib/go-1.14/bin/go
+    dest: /usr/bin/go
+    state: link
+    force: yes
+  become: yes

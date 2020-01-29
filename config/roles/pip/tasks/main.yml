@@ -1,0 +1,12 @@
+---
+
+- name: Install dev-tools pip packages
+  pip:
+    executable: pip3
+    extra_args: --user
+    name:
+    - gdbgui
+    - grip
+    - neovim
+    - vim-vint
+    - yapf

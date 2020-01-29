@@ -1,0 +1,40 @@
+---
+
+- name: Create NPM directory
+  file:
+    dest: "{{npm_data_dir}}"
+    state: directory
+    mode: 0700
+
+- name: Render NPM Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-npm.sh"
+    mode: 0400
+
+- name: Render NPM RC template file
+  template:
+    src: npmrc
+    dest: ~/.npmrc
+    mode: 0400
+
+- name: Install NPM dev-tools packages
+  npm:
+    global: yes
+    name: "{{item}}"
+  environment:
+    NPM_PREFIX: "{{npm_data_dir}}"
+  with_items:
+  - eslint
+  - eslint-plugin-vue
+  - js-beautify
+  - remark-cli
+
+- name: Link NPM Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/npm/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 3-npm.sh

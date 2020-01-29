@@ -1,0 +1,14 @@
+---
+
+- name: Install user tool apt packages
+  apt:
+    pkg:
+    - gnome-tweak-tool
+    - i3
+    - fonts-powerline
+    - stow
+    - tmux
+    - tree
+    - xclip
+    - zsh
+  become: yes

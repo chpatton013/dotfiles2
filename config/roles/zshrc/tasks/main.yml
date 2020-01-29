@@ -1,0 +1,36 @@
+---
+
+- name: Create Zsh directories
+  file:
+    dest: "{{item}}"
+    state: directory
+    mode: 0700
+  with_items:
+  - "{{zshrc_config_dir}}"
+  - "{{zshrc_data_dir}}"
+
+- name: Render Zsh Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-zshrc.sh"
+    mode: 0400
+
+- name: Render Zsh RC template file
+  template:
+    src: zshrc
+    dest: ~/.zshrc
+    mode: 0400
+
+- name: Link Zsh RC files
+  file:
+    src: "{{dotfiles_src_dir}}/zshrc/{{item}}"
+    dest: "{{zshrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 0-misc.zsh
+  - 1-modules.zsh
+  - 2-bindings.zsh
+  - 2-completion.zsh
+  - 2-history.zsh
+  - 2-prompt.zsh

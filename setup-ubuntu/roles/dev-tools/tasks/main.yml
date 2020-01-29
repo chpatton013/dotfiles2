@@ -1,0 +1,13 @@
+---
+
+- name: Install dev tool apt packages
+  apt:
+    pkg:
+    - build-essential
+    - git
+    - inotify-tools
+    - neovim
+    - vim-nox
+    - zlib1g
+    - zlib1g-dev
+  become: yes

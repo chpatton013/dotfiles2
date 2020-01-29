@@ -1,0 +1,14 @@
+---
+
+- name: Install system tool apt packages
+  apt:
+    pkg:
+    - etckeeper
+    - htop
+    - ifstat
+    - iftop
+    - iotop
+    - ncdu
+    - nmap
+    - sysstat
+  become: yes

@@ -1,0 +1,4 @@
+---
+
+bashrc_config_dir: "{{dotfiles_config_dir}}/bashrc"
+bashrc_data_dir: "{{dotfiles_data_dir}}/bashrc"

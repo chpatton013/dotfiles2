@@ -1,0 +1,10 @@
+---
+
+- name: Install web tool apt packages
+  apt:
+    pkg:
+    - curl
+    - firefox
+    - w3m
+    - wget
+  become: yes

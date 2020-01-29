@@ -1,0 +1,79 @@
+---
+
+- name: Create Tmux directories
+  file:
+    dest: "{{item}}"
+    state: directory
+    mode: 0700
+  with_items:
+  - "{{tmux_config_dir}}"
+  - "{{tmux_powerline_config_dir}}"
+  - "{{tmux_data_dir}}"
+  - "{{tmux_plugins_data_dir}}"
+
+- name: Render Tmux Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-tmux.sh"
+    mode: 0400
+
+- name: Render Tmux template files
+  template:
+    src: "{{item}}"
+    dest: "{{tmux_config_dir}}/{{item}}"
+    mode: 0400
+  with_items:
+  - tmux.conf
+
+- name: Link Tmux data directory
+  file:
+    src: "{{tmux_data_dir}}"
+    dest: ~/.tmux
+    state: link
+    force: yes
+
+- name: Link Tmux config file
+  file:
+    src: "{{tmux_config_dir}}/tmux.conf"
+    dest: ~/.tmux.conf
+    state: link
+    force: yes
+
+- name: Download Tmux Powerline repository
+  git:
+    repo: "{{tmux_powerline_repo}}"
+    dest: "{{tmux_powerline_data_dir}}"
+    depth: 1
+
+- name: Render Tmux Powerline template files
+  template:
+    src: "{{item}}"
+    dest: "{{tmux_powerline_config_dir}}/{{item}}"
+    mode: 0400
+  with_items:
+  - powerline-rc
+  - powerline-theme.sh
+
+- name: Link Tmux Powerline config file
+  file:
+    src: "{{tmux_powerline_config_dir}}/powerline-rc"
+    dest: ~/.tmux-powerlinerc
+    state: link
+    force: yes
+
+- name: Download Tmux TPM repository
+  git:
+    repo: "{{tmux_tpm_repo}}"
+    dest: "{{tmux_tpm_data_dir}}"
+    depth: 1
+
+- name: Install Tmux plugins
+  command:
+    cmd: "{{tmux_tpm_data_dir}}/bin/install_plugins"
+
+- name: Link Tmux executable files
+  file:
+    src: "{{tmux_plugins_data_dir}}/tmux-mem-cpu-load/tmux-mem-cpu-load"
+    dest: "{{xdg_bin_home}}/tmux-mem-cpu-load"
+    state: link
+    force: yes

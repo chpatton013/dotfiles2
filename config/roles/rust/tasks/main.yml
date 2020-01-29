@@ -1,0 +1,62 @@
+---
+
+- name: Install Rustup
+  shell:
+    executable: /bin/bash
+    cmd: |
+      set -euo pipefail
+      rustup_sh="$(mktemp)"
+      function rm_rustup_sh() {
+        rm --force "$rustup_sh"
+      }
+      trap rm_rustup_sh EXIT
+      curl --fail --show-error --silent https://sh.rustup.rs > "$rustup_sh"
+      sh "$rustup_sh" -y --no-modify-path
+    creates: "{{rust_cargo_home}}/bin/rustup"
+  environment:
+    CARGO_HOME: "{{rust_cargo_home}}"
+    RUSTUP_HOME: "{{rust_rustup_home}}"
+
+- block:
+  - name: Check if Rust nightly toolchain is installed
+    shell:
+      cmd: >
+        {{rust_cargo_home}}/bin/rustup toolchain list |
+          grep --quiet 'nightly-.*'
+  rescue:
+  - name: Install Rust nightly toolchain
+    command:
+      cmd: >
+        {{rust_cargo_home}}/bin/rustup toolchain install nightly
+  environment:
+    CARGO_HOME: "{{rust_cargo_home}}"
+    RUSTUP_HOME: "{{rust_rustup_home}}"
+
+- block:
+  - name: Check if Rust nightly toolchain is default
+    shell:
+      cmd: >
+        {{rust_cargo_home}}/bin/rustup toolchain list |
+          grep --quiet 'nightly-.*(default)'
+  rescue:
+  - name: Default Rust nightly toolchain
+    command:
+      cmd: >
+        {{rust_cargo_home}}/bin/rustup default nightly
+  environment:
+    CARGO_HOME: "{{rust_cargo_home}}"
+    RUSTUP_HOME: "{{rust_rustup_home}}"
+
+- name: Render Rust Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-rust.sh"
+
+- name: Link Rust Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/rust/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 3-rust.sh

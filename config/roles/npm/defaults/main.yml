@@ -1,0 +1,3 @@
+---
+
+npm_data_dir: "{{dotfiles_data_dir}}/npm"

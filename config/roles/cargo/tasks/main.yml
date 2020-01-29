@@ -1,0 +1,13 @@
+---
+
+- name: Install dev-tools cargo packages
+  command:
+    cmd: >
+      {{rust_cargo_home}}/bin/cargo install {{item.package}}
+    creates: "{{rust_cargo_home}}/bin/{{item.executable}}"
+  environment:
+    CARGO_HOME: "{{rust_cargo_home}}"
+    RUSTUP_HOME: "{{rust_rustup_home}}"
+  with_items:
+  - {package: ripgrep, executable: rg}
+  - {package: fd-find, executable: fd}

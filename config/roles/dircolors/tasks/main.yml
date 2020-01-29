@@ -1,0 +1,16 @@
+---
+
+- name: Render dircolors Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-dircolors.sh"
+    mode: 0400
+
+- name: Link dircolors Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/dircolors/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 3-dircolors.sh

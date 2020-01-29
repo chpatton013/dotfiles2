@@ -1,0 +1,4 @@
+---
+
+worktree_repo: https://github.com/chpatton013/worktree
+worktree_data_dir: "{{github_repos_data_dir}}/chpatton013/worktree"

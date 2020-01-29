@@ -1,0 +1,8 @@
+# Vim swap files
+*.sw?
+# Emacs swap files
+~*
+# Ansible playbook retry files
+*.retry
+# Vagrant cache directory
+.vagrant

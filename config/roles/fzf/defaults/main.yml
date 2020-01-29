@@ -1,0 +1,4 @@
+---
+
+fzf_repo: https://github.com/junegunn/fzf
+fzf_data_dir: "{{github_repos_data_dir}}/junegunn/fzf"

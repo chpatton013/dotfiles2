@@ -1,0 +1,34 @@
+---
+
+- name: Create Bash directories
+  file:
+    dest: "{{item}}"
+    state: directory
+    mode: 0700
+  with_items:
+  - "{{bashrc_config_dir}}"
+  - "{{bashrc_data_dir}}"
+
+- name: Render Bash Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-bashrc.sh"
+    mode: 0400
+
+- name: Render Bash RC template file
+  template:
+    src: bashrc
+    dest: ~/.bashrc
+    mode: 0400
+
+- name: Link Bash RC files
+  file:
+    src: "{{dotfiles_src_dir}}/bashrc/{{item}}"
+    dest: "{{bashrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 2-completion.bash
+  - 2-history.bash
+  - 2-misc.bash
+  - 2-prompt.bash

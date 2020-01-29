@@ -1,0 +1,10 @@
+---
+
+- name: Install Vagrant plugins
+  command:
+    cmd: vagrant plugin install {{item}}
+  with_items:
+  - vagrant-libvirt
+  - vagrant-cachier
+  - vagrant-lxc
+  - vagrant-sshfs

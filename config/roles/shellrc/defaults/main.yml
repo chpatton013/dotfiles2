@@ -1,0 +1,4 @@
+---
+
+shellrc_config_dir: "{{dotfiles_config_dir}}/shellrc"
+shellrc_data_dir: "{{dotfiles_data_dir}}/shellrc"

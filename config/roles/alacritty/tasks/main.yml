@@ -1,0 +1,11 @@
+---
+
+- name: Install Alacritty cargo package
+  command:
+    cmd: >
+      {{rust_cargo_home}}/bin/cargo install
+        --git https://github.com/alacritty/alacritty
+    creates: "{{rust_cargo_home}}/bin/alacritty"
+  environment:
+    CARGO_HOME: "{{rust_cargo_home}}"
+    RUSTUP_HOME: "{{rust_rustup_home}}"

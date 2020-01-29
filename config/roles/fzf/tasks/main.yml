@@ -1,0 +1,38 @@
+---
+
+- name: Download FZF repository
+  git:
+    repo: "{{fzf_repo}}"
+    dest: "{{fzf_data_dir}}"
+    depth: 1
+
+- name: Install FZF binary
+  command:
+    cmd: >
+      {{fzf_data_dir}}/install --bin
+    creates: "{{fzf_data_dir}}/bin/fzf"
+
+- name: Render FZF Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-fzf.sh"
+    mode: 0400
+
+- name: Link FZF Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/rust/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 3-fzf.sh
+
+- name: Link FZF executable files
+  file:
+    src: "{{fzf_data_dir}}/bin/{{item}}"
+    dest: "{{xdg_bin_home}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - fzf
+  - fzf-tmux

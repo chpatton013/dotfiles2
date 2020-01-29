@@ -1,0 +1,34 @@
+---
+
+- name: Create shell config directories
+  file:
+    dest: "{{shellrc_config_dir}}"
+    state: directory
+    mode: 0700
+
+- name: Render Shell Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-shellrc.sh"
+    mode: 0400
+
+- name: Copy Shell RC template file
+  template:
+    src: shellrc
+    dest: ~/.shellrc
+    mode: 0400
+
+- name: Link Shell RC files
+  file:
+    src: "{{dotfiles_src_dir}}/shellrc/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 1-pathlist.sh
+  - 2-history.sh
+  - 2-locale.sh
+  - 3-cli-shortcuts.sh
+  - 3-default-programs.sh
+  - 3-inotify.sh
+  - 3-vagrant.sh
