@@ -44,10 +44,30 @@ function tm() {
   readonly name
 
   if [ -z "$name" ]; then
-    tmux
+    tmux new
   elif tmux has-session -t "$name" 2>/dev/null; then
     tmux attach -t "$name"
   else
     tmux new -s "$name"
   fi
+}
+
+function catr() {
+  find "$@" -type f | xargs --no-run-if-empty cat
+}
+
+function skyquery() {
+  bazel query --universe_scope=//... --order_output=no "$@"
+}
+
+function wt() {
+  worktree "$@"
+}
+
+function wt_create() {
+  worktree_create "$@"
+}
+
+function wt_resume() {
+  worktree_resume "$@"
 }

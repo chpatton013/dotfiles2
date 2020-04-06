@@ -1,0 +1,21 @@
+# Keep the bazel server alive for 24 hours.
+startup --max_idle_secs=86400
+
+# Always show color output, even without a TTY.
+common --color=yes
+
+# Print task completion updates and timestamps.
+common --show_task_finish --show_timestamps
+
+# Purge external resources when cleaning.
+# Clean asynchronously with a daemon process.
+clean --expunge_async
+
+# Cache external repositories in a location that can be shared by multiple
+# workspaces.
+fetch --repository_cache=~/.cache/bazel/repository_cache
+
+# Show stdout and stderr output only from failing test targets.
+test --test_output=errors
+
+try-import work.bazelrc

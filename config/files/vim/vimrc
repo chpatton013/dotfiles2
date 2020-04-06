@@ -73,6 +73,11 @@ let g:ale_completion_enabled=1
 nmap <C-p> <Plug>(ale_previous_wrap)
 nmap <C-n> <Plug>(ale_next_wrap)
 
+augroup AleSettings
+  autocmd!
+  autocmd FileType python let b:ale_linters=['flake8', 'mypy', 'yapf']
+augroup END
+
 " Argumentative
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -150,7 +155,7 @@ let g:formatdef_shfmt='"shfmt -s -i ".&shiftwidth'
 augroup AutoFormatSettings
   autocmd!
   autocmd BufWritePre * call AutoFormatIfEnabled()
-  autocmd FileType bzl,c,cpp,css,html,javascript,json,markdown,protobuf,python,ruby,rust,scss,sh,xhtml,xml let b:auto_format_enabled=1
+  autocmd FileType bzl,c,cpp,css,html,javascript,json,markdown,protobuf,ruby,rust,scss,sh,xhtml,xml let b:auto_format_enabled=1
 augroup END
 
 " Manual formatting.

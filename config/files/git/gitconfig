@@ -6,6 +6,8 @@
   cp = cherry-pick
   df = diff --patience --find-renames --find-copies-harder
   dc = diff --patience --find-renames --find-copies-harder --cached
+  ft = fetch
+  fto = fetch origin
   fx = commit --amend --no-edit
   gr = grep --line-number
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
@@ -18,12 +20,14 @@
   rbc = rebase --continue
   rbi = rebase --interactive
   rs = reset
+  rsh = reset --hard
   sl = stash list
   st = status --short --branch --ignore-submodules=dirty
 [color]
   ui = true
 [core]
   excludesfile = ~/.gitignore
+  fileMode = true
   preloadIndex = true
 [fetch]
   prune = true
