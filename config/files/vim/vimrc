@@ -15,6 +15,7 @@ Plug 'cespare/vim-toml' " Toml syntax highlighting
 Plug 'editorconfig/editorconfig-vim' " Editorconfig integration
 Plug 'junegunn/fzf' " Fuzzy file finder
 Plug 'junegunn/fzf.vim' " Custom selector implementation for FZF
+Plug 'leafgarland/typescript-vim' " TypeScript syntax rules
 Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<Plug>(GrepperOperator)'] } " Integrate grep into quick-fix
 Plug 'posva/vim-vue' " Syntax highlighting and linting for Vue components
 Plug 'powerline/fonts' " Pre-patched and adjusted fonts for status line
