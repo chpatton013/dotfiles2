@@ -23,15 +23,22 @@ function v() {
 }
 
 function vo() {
-  "$EDITOR" -o "$@"
+  v -o "$@"
 }
 
 function vO() {
-  "$EDITOR" -O "$@"
+  v -O "$@"
 }
 
 function vp() {
-  "$EDITOR" -p "$@"
+  v -p "$@"
+}
+
+function vprof() {
+  local output_file="$(mktemp)"
+  v "+profile start $output_file" "+profile func *" "+profile file *" "$@"
+  echo reading profile from $output_file
+  less "$output_file"
 }
 
 function tl() {
