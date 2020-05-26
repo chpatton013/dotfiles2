@@ -6,3 +6,6 @@
 *.retry
 # Vagrant cache directory
 .vagrant
+.vagrant-*
+# Vagrant log files
+*-console.log
