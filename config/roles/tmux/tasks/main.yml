@@ -68,8 +68,13 @@
     depth: 1
 
 - name: Install Tmux plugins
-  command:
-    cmd: "{{tmux_tpm_data_dir}}/bin/install_plugins"
+  shell:
+    executable: /bin/bash
+    cmd: |
+      if tmux info &>/dev/null; then
+        tmux source ~/.tmux.conf
+      fi
+      {{tmux_tpm_data_dir}}/bin/install_plugins
 
 - name: Link Tmux executable files
   file:
