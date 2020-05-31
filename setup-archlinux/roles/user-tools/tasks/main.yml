@@ -1,0 +1,24 @@
+---
+
+- name: Install user tool pacman packages
+  pacman:
+    name:
+    - docker
+    - firefox
+    - i3-wm
+    - lxc
+    - powerline-fonts
+    - stow
+    - tree
+    - virtualbox
+    - w3m
+  become: yes
+
+- name: Install user tool AUR package
+  aur:
+    name:
+    - brave-bin # Install binary because the source version takes over 17GB
+    - google-chrome
+    - spotify
+  become: yes
+  become_user: aur_builder

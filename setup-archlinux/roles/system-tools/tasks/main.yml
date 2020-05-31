@@ -1,0 +1,16 @@
+---
+
+- name: Install system tool pacman packages
+  pacman:
+    name:
+    - dstat
+    - htop
+    - iftop
+    - inotify-tools
+    - iotop
+    - linux-headers
+    - man
+    - ncdu
+    - nmap
+    - sysstat
+  become: yes

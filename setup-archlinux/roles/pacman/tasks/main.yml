@@ -1,0 +1,19 @@
+---
+
+- name: Update Pacman mirrorlist
+  shell:
+    cmd: >
+      curl 'https://www.archlinux.org/mirrorlist/?country=US&protocol=https&use_mirror_status=on' |
+        sed --expression 's/^#Server/Server/' >/etc/pacman.d/mirrorlist
+    warn: false
+  become: yes
+
+- name: Update Pacman cache
+  pacman:
+    update_cache: yes
+  become: yes
+
+- name: Upgrade system packages
+  pacman:
+    upgrade: yes
+  become: yes

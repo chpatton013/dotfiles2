@@ -1,0 +1,29 @@
+---
+
+- name: Install dev tool pacman packages
+  pacman:
+    name:
+    - curl
+    - git
+    - go
+    - libvirt
+    - lua
+    - neovim
+    - nodejs
+    - python
+    - python-pip
+    - ruby
+    - tmux
+    - vagrant
+    - vim
+    - wget
+    - which
+    - zsh
+  become: yes
+
+- name: Install user tool AUR package
+  aur:
+    name:
+    - clang-format-static-bin
+  become: yes
+  become_user: aur_builder

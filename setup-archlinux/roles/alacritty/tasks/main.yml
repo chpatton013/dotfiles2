@@ -1,0 +1,12 @@
+---
+
+- name: Install Alacritty dependency pacman packages
+  pacman:
+    name:
+      - cmake
+      - freetype2
+      - fontconfig
+      - pkg-config
+      - make
+      - libxcb
+  become: yes
