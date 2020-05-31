@@ -5,10 +5,10 @@
     pkg:
     - gnome-tweak-tool
     - i3
+    - firefox
     - fonts-powerline
     - stow
-    - tmux
     - tree
+    - w3m
     - xclip
-    - zsh
   become: yes

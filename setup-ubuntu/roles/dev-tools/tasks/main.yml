@@ -5,10 +5,13 @@
     pkg:
     - build-essential
     - clang-format
+    - curl
     - git
-    - inotify-tools
     - neovim
+    - tmux
     - vim-nox
+    - wget
     - zlib1g
     - zlib1g-dev
+    - zsh
   become: yes

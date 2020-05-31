@@ -1,0 +1,11 @@
+---
+
+dependencies:
+- apt
+- alacritty
+- go
+- lua
+- node
+- python
+- ruby
+- vagrant

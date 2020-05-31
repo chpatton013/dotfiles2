@@ -1,0 +1,9 @@
+---
+
+dependencies:
+- apt
+- brave-browser
+- chrome-browser
+- docker
+- spotify-client
+- virtualbox

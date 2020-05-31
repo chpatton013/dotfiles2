@@ -3,22 +3,6 @@
 - hosts: 127.0.0.1
   connection: local
   roles:
-  - alacritty
-  - brave-browser
-  - chrome-browser
   - dev-tools
-  - docker
-  - go
-  - kernel
-  - libvirt
-  - lua
-  - lxc
-  - node
-  - python
-  - ruby
-  - spotify-client
   - system-tools
   - user-tools
-  - vagrant
-  - virtualbox
-  - web-tools
