@@ -30,6 +30,7 @@
   - 2-locale.sh
   - 3-cli-shortcuts.sh
   - 3-default-programs.sh
+  - 3-git.sh
   - 3-inotify.sh
   - 3-vagrant.sh
 
