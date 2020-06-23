@@ -1,2 +1,7 @@
 export GO111MODULE=on
-export PATH="$PATH:$HOME/go/bin"
+
+if [ -z "$PATH" ]; then
+  export PATH="$HOME/go/bin"
+else
+  export PATH="$HOME/go/bin:$PATH"
+fi

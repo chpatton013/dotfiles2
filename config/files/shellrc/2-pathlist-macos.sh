@@ -15,11 +15,19 @@ function find_gnu_packages() {
 }
 
 for dir in $(find_gnu_packages -name gnubin); do
-  PATH="$dir:$PATH"
+  if [ -z "$PATH" ]; then
+    PATH="$dir"
+  else
+    PATH="$dir:$PATH"
+  fi
 done
 export PATH
 
 for dir in $(find_gnu_packages -name gnuman); do
-  MANPATH="$dir:$MANPATH"
+  if [ -z "$MANPATH" ]; then
+    MANPATH="$dir"
+  else
+    MANPATH="$dir:$MANPATH"
+  fi
 done
 export MANPATH
