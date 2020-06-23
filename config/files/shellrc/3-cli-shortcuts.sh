@@ -10,10 +10,6 @@ function la() {
   l --almost-all "$@"
 }
 
-function b() {
-  bazel "$@"
-}
-
 function g() {
   git "$@"
 }
@@ -61,10 +57,6 @@ function tm() {
 
 function catr() {
   find "$@" -type f | xargs --no-run-if-empty cat
-}
-
-function skyquery() {
-  bazel query --universe_scope=//... --order_output=no "$@"
 }
 
 function wt() {

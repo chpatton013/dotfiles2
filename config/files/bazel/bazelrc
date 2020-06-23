@@ -18,4 +18,4 @@ fetch --repository_cache=~/.cache/bazel/repository_cache
 # Show stdout and stderr output only from failing test targets.
 test --test_output=errors
 
-try-import work.bazelrc
+try-import .work.bazelrc

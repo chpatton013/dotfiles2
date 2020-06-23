@@ -1,0 +1,8 @@
+---
+
+- name: Link Bazel RC file
+  file:
+    src: "{{dotfiles_src_dir}}/bazel/bazelrc"
+    dest: "~/.bazelrc"
+    state: link
+    force: yes
