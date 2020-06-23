@@ -10,10 +10,6 @@ function la() {
   l --almost-all "$@"
 }
 
-function g() {
-  git "$@"
-}
-
 function v() {
   "$EDITOR" "$@"
 }
