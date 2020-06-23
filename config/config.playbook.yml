@@ -1,9 +1,5 @@
 ---
 
-# TODO
-# * add work role with dep on shellrc and bazel
-#     link work shellrc file to `3-work.sh`
-#     link work bazelrc file to `work.bazelrc`
 - hosts: 127.0.0.1
   connection: local
   roles:
@@ -23,3 +19,4 @@
   - vim
   - worktree
   - zshrc
+  - work
