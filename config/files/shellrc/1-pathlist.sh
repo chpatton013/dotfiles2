@@ -1,5 +1,5 @@
-PATH="$(xdg_bin_home):/usr/local/bin:/usr/bin:/bin"
-if [ "$(id --user)" = 0 ]; then
+PATH="/usr/local/bin:/usr/bin:/bin"
+if [ "$(id -u)" = 0 ]; then
   PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"
 fi
 PATH="$(xdg_bin_home):$PATH"

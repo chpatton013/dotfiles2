@@ -5,7 +5,7 @@ function _color_index() {
   hostname_value="$(( 16#${hostname_hash:(-12)} ))"
   readonly color_count hostname_hash hostname_value
 
-  echo $(( $hostname_value % $color_count))
+  echo $(( $hostname_value % $color_count ))
 }
 
 function select_color() {

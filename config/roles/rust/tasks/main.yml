@@ -7,10 +7,10 @@
       set -euo pipefail
       rustup_sh="$(mktemp)"
       function rm_rustup_sh() {
-        rm --force "$rustup_sh"
+        rm -f "$rustup_sh"
       }
       trap rm_rustup_sh EXIT
-      curl --fail --show-error --silent https://sh.rustup.rs > "$rustup_sh"
+      curl -fsSL https://sh.rustup.rs > "$rustup_sh"
       sh "$rustup_sh" -y --no-modify-path
     creates: "{{rust_cargo_home}}/bin/rustup"
   environment:

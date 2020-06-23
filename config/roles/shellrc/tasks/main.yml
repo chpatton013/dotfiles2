@@ -32,3 +32,13 @@
   - 3-default-programs.sh
   - 3-inotify.sh
   - 3-vagrant.sh
+
+- name: Link macOS Shell RC files
+  file:
+    src: "{{dotfiles_src_dir}}/shellrc/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    force: yes
+  with_items:
+  - 1-pathlist-macos.sh
+  when: ansible_os_family == "Darwin"
