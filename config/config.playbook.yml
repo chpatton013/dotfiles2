@@ -4,7 +4,6 @@
 # * add work role with dep on shellrc and bazel
 #     link work shellrc file to `3-work.sh`
 #     link work bazelrc file to `work.bazelrc`
-# * move tmux functions from 3-cli-shortcuts to 3-tmux
 # * add dep on shellrc to git role
 #     move m and om vars from 3-work.sh to 3-git.sh
 #     move g function from 3-cli-shortcuts to 3-git
