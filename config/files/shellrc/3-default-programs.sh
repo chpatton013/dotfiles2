@@ -1,7 +1,7 @@
 export BROWSER=w3m
 export EDITOR=nvim
 export PAGER=less
-export SHELL=zsh
+export SHELL="$(which zsh)"
 export TERMINAL=xterm
 export VISUAL="$EDITOR"
 
