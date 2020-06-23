@@ -19,4 +19,4 @@
   - vim
   - worktree
   - zshrc
-  - work
+  - { role: work, tags: [never, work] }
