@@ -34,6 +34,7 @@
   - 3-git.sh
   - 3-inotify.sh
   - 3-vagrant.sh
+  - 3-worktree.sh
 
 - name: Link macOS Shell RC files
   file:
