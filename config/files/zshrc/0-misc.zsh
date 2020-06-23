@@ -36,3 +36,6 @@ setopt RC_EXPAND_PARAM
 
 # Vim commands on the command line (instead of emacs).
 setopt VI
+
+# Report runtime of commands that take longer than 5 seconds of user time.
+export REPORTTIME=5
