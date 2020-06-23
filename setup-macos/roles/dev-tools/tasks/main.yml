@@ -1,0 +1,31 @@
+---
+
+- name: Install dev tool homebrew packages
+  homebrew:
+    name:
+    - clang-format
+    - cmake
+    - file-formula
+    - git
+    - golang
+    - ifstat
+    - less
+    - libvirt
+    - lua
+    - neovim
+    - node
+    - openssh
+    - python3
+    - reattach-to-user-namespace
+    - ruby
+    - screen
+    - tmux
+    - unzip
+    - vim
+    - zsh
+
+- name: Install dev tool homebrew cask packages
+  homebrew_cask:
+    name:
+    - vagrant
+    - virtualbox

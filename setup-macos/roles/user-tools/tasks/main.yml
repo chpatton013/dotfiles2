@@ -1,0 +1,27 @@
+---
+
+- name: Install user tool homebrew packages
+  homebrew:
+    name:
+    - docker
+    - docker-compose
+    - lxc
+    - stow
+    - tree
+    - w3m
+
+- name: Install user tool homebrew cask packages
+  homebrew_cask:
+    name:
+    - alfred
+    - brave-browser
+    - caffeine
+    - cyberduck
+    - discord
+    - firefox
+    - google-chrome
+    - iterm2
+    - karabiner-elements
+    - shiftit
+    - spotify
+    - vlc

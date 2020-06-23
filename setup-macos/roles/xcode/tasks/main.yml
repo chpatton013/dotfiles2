@@ -1,0 +1,11 @@
+---
+
+- name: Accept XCode License
+  shell:
+    cmd: xcodebuild -license accept
+  become: yes
+
+- name: Install CommandLine Developer Tools
+  command:
+    cmd: xcode-select --install
+  become: yes

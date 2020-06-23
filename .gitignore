@@ -9,3 +9,5 @@
 .vagrant-*
 # Vagrant log files
 *-console.log
+# Mac Finder files
+.DS_Store
