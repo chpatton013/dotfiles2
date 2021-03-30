@@ -7,7 +7,6 @@
     mode: 0700
   with_items:
   - "{{tmux_config_dir}}"
-  - "{{tmux_powerline_config_dir}}"
   - "{{tmux_data_dir}}"
   - "{{tmux_plugins_data_dir}}"
 
@@ -17,13 +16,21 @@
     dest: "{{shellrc_config_dir}}/0-tmux.sh"
     mode: 0400
 
-- name: Render Tmux template files
+- name: Render Tmux config template files
   template:
     src: "{{item}}"
     dest: "{{tmux_config_dir}}/{{item}}"
     mode: 0400
   with_items:
   - tmux.conf
+
+- name: Render Tmux executable template files
+  template:
+    src: "{{item}}"
+    dest: "{{xdg_bin_home}}/{{item}}"
+    mode: 0500
+  with_items:
+  - tmux-theme
 
 - name: Link Tmux data directory
   file:
@@ -36,28 +43,6 @@
   file:
     src: "{{tmux_config_dir}}/tmux.conf"
     dest: ~/.tmux.conf
-    state: link
-    force: yes
-
-- name: Download Tmux Powerline repository
-  git:
-    repo: "{{tmux_powerline_repo}}"
-    dest: "{{tmux_powerline_data_dir}}"
-    depth: 1
-
-- name: Render Tmux Powerline template files
-  template:
-    src: "{{item}}"
-    dest: "{{tmux_powerline_config_dir}}/{{item}}"
-    mode: 0400
-  with_items:
-  - powerline-rc
-  - powerline-theme.sh
-
-- name: Link Tmux Powerline config file
-  file:
-    src: "{{tmux_powerline_config_dir}}/powerline-rc"
-    dest: ~/.tmux-powerlinerc
     state: link
     force: yes
 
@@ -74,6 +59,7 @@
       if tmux info &>/dev/null; then
         tmux source ~/.tmux.conf
       fi
+      export TMUX_PLUGIN_MANAGER_PATH='{{tmux_plugins_data_dir}}'
       {{tmux_tpm_data_dir}}/bin/install_plugins
 
 - name: Link Tmux executable files

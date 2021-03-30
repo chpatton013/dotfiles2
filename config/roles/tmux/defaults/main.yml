@@ -1,13 +1,9 @@
 ---
 
 tmux_config_dir: "{{dotfiles_config_dir}}/tmux"
-tmux_powerline_config_dir: "{{tmux_config_dir}}/powerline"
 
 tmux_data_dir: "{{dotfiles_data_dir}}/tmux"
 tmux_plugins_data_dir: "{{tmux_data_dir}}/plugins"
-
-tmux_powerline_repo: https://github.com/erikw/tmux-powerline
-tmux_powerline_data_dir: "{{github_repos_data_dir}}/erikw/tmux-powerline"
 
 tmux_tpm_repo: https://github.com/tmux-plugins/tpm
 tmux_tpm_data_dir: "{{github_repos_data_dir}}/tmux-plugins/tpm"

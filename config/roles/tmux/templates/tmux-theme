@@ -1,0 +1,95 @@
+#!/bin/bash --norc
+set -euo pipefail
+
+COLOR_LIGHT="colour$COLOR_SELECTOR_LIGHT"
+COLOR_DARK="colour$COLOR_SELECTOR_DARK"
+COLOR_ACTIVE="colour$COLOR_SELECTOR_ACTIVE"
+COLOR_INACTIVE="colour$COLOR_SELECTOR_INACTIVE"
+
+function main() {
+  for arg in "$@"; do
+    if [[ $arg == -h || $arg == -help || $arg == --help ]]; then
+      usage
+      exit 0
+    fi
+  done
+
+  if [[ $# == 0 ]]; then
+    usage
+    exit 1
+  fi
+
+  for arg in "$@"; do
+    case "$arg" in
+      status-left)
+        status-left
+        ;;
+      status-right)
+        status-right
+        ;;
+      window-status-format)
+        window-status-format
+        ;;
+      window-status-current-format)
+        window-status-current-format
+        ;;
+      *)
+        usage
+        exit 1
+        ;;
+    esac
+  done
+}
+
+function usage() {
+  cat <<EOF
+Usage: $(basename "${BASH_SOURCE[0]}") <segment>
+Segments:
+  status-left: Information about the Tmux session.
+  status-right: Information about the system.
+  window-status-format: The format for the non-active window.
+  window-status-current-format: The format for the active window.
+EOF
+}
+
+function status-left() {
+  echo -n "#[fg=$COLOR_DARK,bg=$COLOR_LIGHT]"
+  echo "$(_tmux_session_info) | $(hostname) "
+}
+
+function status-right() {
+  echo -n "#[fg=$COLOR_DARK,bg=$COLOR_LIGHT]"
+  echo " $(_load_average) | $(_uptime) | $(_date_time)"
+}
+
+function window-status-format() {
+  echo -n "#[fg=$COLOR_LIGHT,bg=$COLOR_INACTIVE]"
+  echo " $(_tmux_window_info) "
+}
+
+function window-status-current-format() {
+  echo -n "#[fg=$COLOR_LIGHT,bg=$COLOR_ACTIVE]"
+  echo " $(_tmux_window_info) "
+}
+
+function _tmux_window_info() {
+  echo '#I:#W'
+}
+
+function _tmux_session_info() {
+  echo '#S:#I.#P'
+}
+
+function _load_average() {
+  uptime | cut -d "," -f 3- | cut -d ":" -f2 | sed -e "s/^[ \t]*//"
+}
+
+function _uptime() {
+  uptime | sed 's/.*up \([^,]*\), .*/\1/'
+}
+
+function _date_time() {
+  date +"%a %F %T"
+}
+
+main "$@"

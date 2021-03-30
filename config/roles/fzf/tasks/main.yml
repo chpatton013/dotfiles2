@@ -20,7 +20,7 @@
 
 - name: Link FZF Shell RC file
   file:
-    src: "{{dotfiles_src_dir}}/rust/{{item}}"
+    src: "{{dotfiles_src_dir}}/fzf/{{item}}"
     dest: "{{shellrc_config_dir}}/{{item}}"
     state: link
     force: yes

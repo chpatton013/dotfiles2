@@ -1,7 +1,7 @@
 last_bg=NONE
 () {
   local LC_ALL="" LC_CTYPE="en_US.UTF-8"
-  sep=$'\ue0b0'
+  sep=
 }
 
 function prompt_segment() {

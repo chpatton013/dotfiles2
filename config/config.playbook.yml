@@ -6,6 +6,7 @@
   - alacritty
   - bashrc
   - cargo
+  - clang-format
   - dircolors
   - fzf
   - gem

@@ -29,6 +29,8 @@
   excludesfile = ~/.gitignore
   fileMode = true
   preloadIndex = true
+[diff]
+  renamelimit = 0
 [fetch]
   prune = true
 [filter "lfs"]
@@ -41,6 +43,7 @@
 [merge]
   tool = vimdiff
   conflictstyle = diff3
+  renamelimit = 0
 [mergetool]
   keepBackup = false
   prompt = false
