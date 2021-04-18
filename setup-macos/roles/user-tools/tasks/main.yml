@@ -5,8 +5,6 @@
     name:
     - docker
     - docker-compose
-    - lxc
-    - stow
     - tree
     - w3m
 
@@ -14,14 +12,10 @@
   homebrew_cask:
     name:
     - alfred
-    - brave-browser
     - caffeine
-    - cyberduck
     - discord
     - firefox
-    - google-chrome
     - iterm2
-    - karabiner-elements
-    - shiftit
+    - rectangle
     - spotify
     - vlc
