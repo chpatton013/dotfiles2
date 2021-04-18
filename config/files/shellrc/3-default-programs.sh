@@ -16,4 +16,3 @@ LESS+=" --tabs=2"
 export LESS
 
 export CLICOLOR=1
-export TERM=xterm-256color
