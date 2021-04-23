@@ -54,11 +54,12 @@ EOF
 
 function status-left() {
   echo -n "#[fg=$COLOR_DARK,bg=$COLOR_LIGHT]"
-  echo "$(_tmux_session_info) | $(hostname) "
+  echo -n "$(_tmux_session_info) | $(hostname) "
+  echo "#[fg=$COLOR_LIGHT,bg=$COLOR_DARK] "
 }
 
 function status-right() {
-  echo -n "#[fg=$COLOR_DARK,bg=$COLOR_LIGHT]"
+  echo -n " #[fg=$COLOR_DARK,bg=$COLOR_LIGHT]"
   echo " $(_load_average) | $(_uptime) | $(_date_time)"
 }
 

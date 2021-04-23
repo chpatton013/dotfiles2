@@ -44,3 +44,7 @@ function ifind() {
 function wfind() {
   find . -wholename "*$@"
 }
+
+function gg() {
+  rg --hidden --no-heading --smart-case "$@"
+}
