@@ -9,6 +9,9 @@
   ft = fetch
   fto = fetch origin
   fx = commit --amend --no-edit
+  ffs = push-retry
+  ffsf = push-retry --force-with-lease
+  ffsu = push-retry --set-upstream
   gr = grep --line-number
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
   pl = pull
@@ -23,6 +26,7 @@
   rsh = reset --hard
   sl = stash list
   st = status --short --branch --ignore-submodules=dirty
+  sw = switch
 [color]
   ui = true
 [core]

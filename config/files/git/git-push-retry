@@ -1,0 +1,36 @@
+#!/bin/bash --norc
+set -euo pipefail
+
+max_attempts="${GIT_PUSH_RETRY_MAX_ATTEMPTS:-10}"
+delay_coef="${GIT_PUSH_RETRY_DELAY_COEF:-2}"
+count=0
+
+function attempt() {
+  count=$((count + 1))
+  git push "$@"
+}
+
+function delay() {
+  echo $(($count * $delay_coef))
+}
+
+function error() {
+  echo -e "\033[1m$@\033[0m" >&2
+}
+
+if attempt "$@"; then
+  exit
+fi
+
+while [[ $count -lt $max_attempts ]]; do
+  delay=$(delay)
+  error "Attempt $count failed! Retrying after $delay seconds..."
+  sleep $delay
+
+  if attempt "$@"; then
+    exit
+  fi
+done
+
+error "Failed $count times! Not retrying any more  :\("
+exit 1
