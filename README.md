@@ -80,3 +80,7 @@ export DOTFILES_PLATFORM=archlinux
 ./vagrant.sh halt
 ./vagrant.sh destroy
 ```
+
+## TODO
+
+* [ibazel](https://github.com/bazelbuild/bazel-watcher/releases)
