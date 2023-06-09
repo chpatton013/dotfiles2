@@ -5,8 +5,8 @@
     executable: pip3
     extra_args: --user
     name:
+    - black
     - gdbgui
     - grip
     - neovim
     - vim-vint
-    - yapf

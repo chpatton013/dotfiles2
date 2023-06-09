@@ -76,7 +76,7 @@ nmap <C-n> <Plug>(ale_next_wrap)
 
 augroup AleSettings
   autocmd!
-  autocmd FileType python let b:ale_linters=['flake8', 'mypy', 'yapf']
+  autocmd FileType python let b:ale_linters=['flake8', 'mypy', 'black']
 augroup END
 
 " Argumentative
@@ -141,7 +141,7 @@ let g:formatters_javascript=['jsbeautify_javascript']
 let g:formatters_json=['jsbeautify_json']
 let g:formatters_markdown=['remark']
 let g:formatters_protobuf=['clangformat']
-let g:formatters_python=['yapf']
+let g:formatters_python=['black']
 let g:formatters_ruby=['rubocop']
 let g:formatters_rust=['rustfmt']
 let g:formatters_scss=['cssbeautify']
