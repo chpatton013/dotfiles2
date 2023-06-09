@@ -3,4 +3,5 @@ function g() {
 }
 
 export m=master
+export o=origin
 export om=origin/master
