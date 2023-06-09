@@ -1,14 +1,15 @@
 ---
 
-- name: Install Google signing key
-  apt_key:
+- name: Download Google signing key
+  get_url:
     url: https://dl-ssl.google.com/linux/linux_signing_key.pub
-    id: EB4C1BFD4F042F6DDDCCEC917721F63BD38B4796
+    dest: "{{google_signing_key}}"
+    mode: "0644"
   become: yes
 
 - name: Install Chrome apt repository
   apt_repository:
-    repo: deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+    repo: "deb [arch=amd64 signed-by={{google_signing_key}}] http://dl.google.com/linux/chrome/deb/ stable main"
   become: yes
 
 - name: Install Chrome apt package

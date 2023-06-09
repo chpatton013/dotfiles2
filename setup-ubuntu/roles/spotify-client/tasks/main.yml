@@ -1,18 +1,6 @@
 ---
 
-- name: Install Spotify signing key
-  apt_key:
-    url: https://download.spotify.com/debian/pubkey.gpg
-    id: 4773BD5E130D1D45
-  become: yes
-
-- name: Install Spotify apt repository
-  apt_repository:
-    repo: deb http://repository.spotify.com stable non-free
-  become: yes
-
-- name: Install Spotify apt package
-  apt:
-    pkg:
-    - spotify-client
+- name: Install Spotify snap package
+  community.general.snap:
+    name: spotify
   become: yes

@@ -1,0 +1,3 @@
+---
+
+hashicorp_signing_key: /etc/apt/trusted.gpg.d/hashicorp.asc

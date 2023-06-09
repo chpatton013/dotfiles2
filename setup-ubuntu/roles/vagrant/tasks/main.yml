@@ -1,17 +1,19 @@
 ---
 
-- name: Install Vagrant signing key
-  apt_key:
+- name: Download Vagrant signing key
+  get_url:
     url: https://apt.releases.hashicorp.com/gpg
-    id: 798AEC654E5C15428C8E42EEAA16FCBCA621E701
+    dest: "{{hashicorp_signing_key}}"
+    mode: "0644"
   become: yes
 
 - name: Install Vagrant apt repository
   apt_repository:
-    repo: deb [arch=amd64] https://apt.releases.hashicorp.com {{ansible_distribution_release}} main
+    repo: "deb [arch=amd64 signed-by={{hashicorp_signing_key}}] https://apt.releases.hashicorp.com {{ansible_distribution_release}} main"
   become: yes
 
 - name: Install Vagrant apt package
   apt:
-    name: vagrant
+    pkg:
+    - vagrant
   become: yes

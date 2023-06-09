@@ -1,0 +1,3 @@
+---
+
+google_signing_key: /etc/apt/trusted.gpg.d/google.asc
