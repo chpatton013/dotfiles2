@@ -25,3 +25,11 @@ function wfind() {
 function gg() {
   rg --hidden --no-heading --smart-case "$@"
 }
+
+function uriencode() {
+  docker run --interactive stedolan/jq --raw-input --raw-output --slurp '@uri'
+}
+
+function k() {
+  kubectl "$@"
+}
