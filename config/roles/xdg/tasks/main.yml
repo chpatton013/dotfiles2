@@ -5,8 +5,10 @@
     path: "{{item}}"
     state: directory
   with_items:
+  - "{{xdg_prefix_home}}"
   - "{{xdg_bin_home}}"
   - "{{xdg_cache_home}}"
   - "{{xdg_config_home}}"
   - "{{xdg_data_home}}"
   - "{{xdg_lib_home}}"
+  - "{{xdg_lib64_home}}"

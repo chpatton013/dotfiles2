@@ -1,7 +1,9 @@
 ---
 
+xdg_prefix_home: "{{'~/.local' | expanduser}}"
 xdg_bin_home: "{{ansible_env.XDG_BIN_HOME | default('~/.local/bin') | expanduser}}"
 xdg_cache_home: "{{ansible_env.XDG_CACHE_HOME | default('~/.cache') | expanduser}}"
 xdg_config_home: "{{ansible_env.XDG_CONFIG_HOME | default('~/.config') | expanduser}}"
 xdg_data_home: "{{ansible_env.XDG_DATA_HOME | default('~/.local/share') | expanduser}}"
 xdg_lib_home: "{{ansible_env.XDG_LIB_HOME | default('~/.local/lib') | expanduser}}"
+xdg_lib64_home: "{{xdg_lib_home}}64"
