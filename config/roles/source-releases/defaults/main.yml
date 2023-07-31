@@ -1,0 +1,3 @@
+---
+
+source_releases_data_dir: "{{xdg_data_home}}/source-releases"

@@ -1,0 +1,6 @@
+---
+
+- name: Create Source Releases directory
+  file:
+    path: "{{source_releases_data_dir}}"
+    state: directory
