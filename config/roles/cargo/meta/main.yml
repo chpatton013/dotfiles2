@@ -1,5 +1,8 @@
 ---
 
 dependencies:
+- xdg       # bat-extras installer needs an output prefix
+- dotfiles  # bat RC and config file need an output destination
 - shellrc
+- solarized # bat theme needs solarized
 - rust

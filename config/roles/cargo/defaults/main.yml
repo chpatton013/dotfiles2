@@ -1,0 +1,4 @@
+---
+
+bat_extras_repo: https://github.com/eth-p/bat-extras
+bat_extras_data_dir: "{{github_repos_data_dir}}/eth-p/bat-extras"
