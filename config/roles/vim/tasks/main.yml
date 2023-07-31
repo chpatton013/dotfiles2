@@ -40,8 +40,7 @@
 
 - name: Unlink Vim RC directory
   file:
-    src: "{{vim_config_dir}}"
-    dest: "{{item}}"
+    path: "{{item}}"
     state: absent
   with_items:
   - ~/.vim
