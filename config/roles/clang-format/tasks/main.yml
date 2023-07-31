@@ -1,8 +1,0 @@
----
-
-- name: Link clang-format file
-  file:
-    src: "{{dotfiles_src_dir}}/clang-format/clang-format"
-    dest: "{{xdg_bin_home}}/clang-format"
-    state: link
-    force: yes
