@@ -9,7 +9,6 @@ LESS=
 LESS+=" --SEARCH-SKIP-SCREEN"
 LESS+=" --ignore-case"
 LESS+=" --status-column"
-LESS+=" --LINE-NUMBERS"
 LESS+=" --RAW-CONTROL-CHARS"
 LESS+=" --hilite-unread"
 LESS+=" --tabs=2"
