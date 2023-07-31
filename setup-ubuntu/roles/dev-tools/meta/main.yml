@@ -1,11 +1,14 @@
 ---
 
 dependencies:
-- apt
 - alacritty
+- apt
+- git
 - go
 - lua
 - node
 - python
 - ruby
+- tmux
 - vagrant
+- vim

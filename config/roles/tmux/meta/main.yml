@@ -1,7 +1,9 @@
 ---
 
 dependencies:
+- color-selector
 - github-repos
 - shellrc
 - solarized
-- color-selector
+- source-releases
+- xdg

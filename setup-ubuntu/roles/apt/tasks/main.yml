@@ -6,5 +6,7 @@
     - apt-transport-https
     - apt-utils
     - aptitude
+    - ca-certificates
+    - openssl
     - software-properties-common
   become: yes

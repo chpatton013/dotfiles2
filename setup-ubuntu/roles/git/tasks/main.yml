@@ -1,0 +1,22 @@
+---
+
+- name: Install git apt packages
+  apt:
+    pkg:
+    - git
+  become: yes
+
+- name: Install git build dependencies apt packages
+  apt:
+    pkg:
+    - asciidoc
+    - dh-autoreconf
+    - docbook2x
+    - gettext
+    - install-info
+    - libcurl4-gnutls-dev
+    - libexpat1-dev
+    - libssl-dev
+    - libz-dev
+    - xmlto
+  become: yes

@@ -1,6 +1,9 @@
 ---
 
 dependencies:
+- dotfiles
+- fzf
 - shellrc
 - solarized
-- fzf
+- source-releases
+- xdg
