@@ -80,6 +80,13 @@
   command:
     cmd: vim +PlugUpdate +:qa
 
+- name: Link Shell RC files
+  file:
+    src: "{{dotfiles_src_dir}}/vim/3-vim.sh"
+    dest: "{{shellrc_config_dir}}/3-vim.sh"
+    state: link
+    force: yes
+
 - name: Build Powerline Fonts
   command:
     cmd: "{{vim_data_dir}}/plugged/fonts/install.sh"
