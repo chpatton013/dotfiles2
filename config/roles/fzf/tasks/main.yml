@@ -20,12 +20,10 @@
 
 - name: Link FZF Shell RC file
   file:
-    src: "{{dotfiles_src_dir}}/fzf/{{item}}"
-    dest: "{{shellrc_config_dir}}/{{item}}"
+    src: "{{dotfiles_src_dir}}/fzf/3-fzf.sh"
+    dest: "{{shellrc_config_dir}}/3-fzf.sh"
     state: link
     force: yes
-  with_items:
-  - 3-fzf.sh
 
 - name: Link FZF executable files
   file:
