@@ -85,17 +85,3 @@
     dest: "{{shellrc_config_dir}}/3-vim.sh"
     state: link
     force: yes
-
-- name: Build Powerline Fonts
-  command:
-    cmd: "{{vim_data_dir}}/plugged/fonts/install.sh"
-    creates: "{{xdg_data_home}}/fonts"
-
-- name: Build YouCompleteMe
-  command:
-    cmd: >
-      {{vim_data_dir}}/plugged/YouCompleteMe/install.py
-        --clang-completer
-        --rust-completer
-        --ts-completer
-    creates: "{{vim_data_dir}}/plugged/YouCompleteMe/third_party/ycmd/ycm_core.so"

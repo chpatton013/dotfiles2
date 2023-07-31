@@ -1,499 +1,315 @@
+" Buffer initialization
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Initialization
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Initialize VimPlug and setup plugins.
-call plug#begin('~/.vim/plugged')
-Plug 'Chiel92/vim-autoformat' " Syntax-aware code formatting
-Plug 'PeterRincker/vim-argumentative' " Rearrange function arguments
-Plug 'SirVer/ultisnips' " Code snippet completion
-Plug 'Valloric/YouCompleteMe' " Autocompletion and code fixes
-Plug 'Xuyuanp/nerdtree-git-plugin' " Git integration with nerdtree
-Plug 'airblade/vim-gitgutter' " Show git diff in the gutter
-Plug 'altercation/vim-colors-solarized' " Solarized color theme for vim
-Plug 'cespare/vim-toml' " Toml syntax highlighting
-Plug 'editorconfig/editorconfig-vim' " Editorconfig integration
-Plug 'junegunn/fzf' " Fuzzy file finder
-Plug 'junegunn/fzf.vim' " Custom selector implementation for FZF
-Plug 'leafgarland/typescript-vim' " TypeScript syntax rules
-Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<Plug>(GrepperOperator)'] } " Integrate grep into quick-fix
-Plug 'posva/vim-vue' " Syntax highlighting and linting for Vue components
-Plug 'powerline/fonts' " Pre-patched and adjusted fonts for status line
-Plug 'roxma/vim-tmux-clipboard' " Sync Vim and Tmux copy buffers
-Plug 'rust-lang/rust.vim' " Rust syntax highlighting
-Plug 'scrooloose/nerdtree' " File navigation
-Plug 'tmux-plugins/vim-tmux' " Conveniences when editing Tmux configs
-Plug 'tpope/vim-abolish' " Assorted word-munging utilities
-Plug 'tpope/vim-commentary' " Easy (un)commenting of code blocks
-Plug 'tpope/vim-fugitive' " Integrated git commands
-Plug 'tpope/vim-obsession' " Intelligent and automatic session management
-Plug 'tpope/vim-repeat' " Better command classification for `.`
-Plug 'tpope/vim-rhubarb' " GitHub integration for fugitive
-Plug 'tpope/vim-surround' " Easily manipulate surrounding symbols
-Plug 'vim-airline/vim-airline' " Better status line
-Plug 'vim-airline/vim-airline-themes' " Color theme support for airline
-Plug 'vim-utils/vim-man' " Open man pages in vim
-Plug 'vim-utils/vim-troll-stopper' " Convert elusive unicode characters to ASCII
-Plug 'w0rp/ale' " Asynchronous Lint Engine
-call plug#end()
 
 " Behavior of several plugins depends on filetype being set. Setting it early
 " helps get consistent behavior from them.
 augroup FileTypeAssociation
   autocmd!
   autocmd BufNewFile,BufRead *.impl,*.inl setlocal filetype=cpp
+  autocmd BufNewFile,BufRead *.jsx setlocal filetype=javascript.jsx
   autocmd BufNewFile,BufRead *.launch setlocal filetype=xml
   autocmd BufNewFile,BufRead *.make setlocal filetype=make
   autocmd BufNewFile,BufRead *.snippets setlocal filetype=snippets
-  autocmd BufNewFile,BufRead Vagrantfile setlocal filetype=ruby
+  autocmd BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
+  autocmd BufNewFile,BufRead *.txt,README,INSTALL,NEWS,TODO setlocal filetype=text
   autocmd BufNewFile,BufRead *.vue setlocal filetype=vue.html.javascript.css
+  autocmd BufNewFile,BufRead Vagrantfile setlocal filetype=ruby
 augroup END
 
-" Use , instead of \ for the map leader.
-" Several mappings calculate the value of <Leader> when they are defined.
-" Setting it early prevents them from using the default value.
+" Variable initialization
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Disable auto-formatting by default
+let b:auto_format_enabled=0
+
+" Definitions of auto formatters
+let g:formatdef_buildifier='"buildifier -mode=fix -path=".expand("%:p")'
+let g:formatdef_shfmt='"shfmt -s -i ".(&expandtab ? shiftwidth() : "0")'
+
+" Use `,` instead of `\` for the map leader
 let g:mapleader=','
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Plugins
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Airline
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let g:airline#extensions#ale#enabled=1
-let g:airline#extensions#tabline#enabled=1
-let g:airline_theme='solarized'
-let g:airline_powerline_fonts=1
-
-" ALE
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let g:ale_completion_enabled=1
-
-nmap <C-p> <Plug>(ale_previous_wrap)
-nmap <C-n> <Plug>(ale_next_wrap)
-
-augroup AleSettings
-  autocmd!
-  autocmd FileType python let b:ale_linters=['flake8', 'mypy', 'black']
-augroup END
-
-" Argumentative
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-nmap [; <Plug>Argumentative_Prev
-nmap ]; <Plug>Argumentative_Next
-xmap [; <Plug>Argumentative_XPrev
-xmap ]; <Plug>Argumentative_XNext
-nmap <; <Plug>Argumentative_MoveLeft
-nmap >; <Plug>Argumentative_MoveRight
-xmap i; <Plug>Argumentative_InnerTextObject
-xmap a; <Plug>Argumentative_OuterTextObject
-omap i; <Plug>Argumentative_OpPendingInnerTextObject
-omap a; <Plug>Argumentative_OpPendingOuterTextObject
-
-" Autoformat
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! AutoFormatInitialize() abort
-  if !exists('b:auto_format_enabled')
-    let b:auto_format_enabled=0
-  endif
-endfunction
-
-function! AutoFormatEnable() abort
-  :echo 'Enabling auto-formatting'
-  let b:auto_format_enabled=1
-endfunction
-
-function! AutoFormatDisable() abort
-  :echo 'Disabling auto-formatting'
-  let b:auto_format_enabled=0
-endfunction
-
-function! AutoFormatToggle() abort
-  :call AutoFormatInitialize()
-
-  if b:auto_format_enabled
-    :call AutoFormatDisable()
-  else
-    :call AutoFormatEnable()
-  endif
-endfunction
-
-function! AutoFormatIfEnabled() abort
-  :call AutoFormatInitialize()
-
-  if b:auto_format_enabled
-    :echo 'Auto-formatting buffer'
-    :Autoformat
-  endif
-endfunction
-
-" Filetype formatters.
-let g:formatters_bzl=['buildifier']
-let g:formatters_c=['clangformat']
-let g:formatters_cpp=['clangformat']
-let g:formatters_css=['cssbeautify']
-let g:formatters_html=['htmlbeautify']
-let g:formatters_javascript=['jsbeautify_javascript']
-let g:formatters_json=['jsbeautify_json']
-let g:formatters_markdown=['remark']
-let g:formatters_protobuf=['clangformat']
-let g:formatters_python=['black']
-let g:formatters_ruby=['rubocop']
-let g:formatters_rust=['rustfmt']
-let g:formatters_scss=['cssbeautify']
-let g:formatters_sh=['shfmt']
-let g:formatters_xhtml=['htmlbeautify']
-let g:formatters_xml=['htmlbeautify']
-
-let g:formatdef_buildifier='"buildifier -mode=fix -path=".expand("%:p")'
-let g:formatdef_shfmt='"shfmt -s -i ".&shiftwidth'
-
-" Automatic formatting.
-augroup AutoFormatSettings
-  autocmd!
-  autocmd BufWritePre * call AutoFormatIfEnabled()
-  autocmd FileType bzl,c,cpp,css,html,javascript,json,markdown,protobuf,ruby,rust,scss,sh,xhtml,xml let b:auto_format_enabled=1
-augroup END
-
-" Manual formatting.
-nnoremap <Leader>f :Autoformat<CR>
-xnoremap <Leader>f :Autoformat<CR>
-nnoremap <Leader>F :call AutoFormatToggle()<CR>
-
-" Commentary
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-augroup CommentStringSettings
-  autocmd!
-  autocmd FileType c,cpp,java setlocal commentstring=//\ %s
-augroup END
-
-" EditorConfig
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let g:EditorConfig_exclude_patterns=['fugitive://.*']
-
-" FZF
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-nnoremap <C-f> :FZF<CR>
-
-let g:fzf_colors =
-      \{
-      \  'fg':      ['fg', 'Normal'],
-      \  'bg':      ['bg', 'Normal'],
-      \  'hl':      ['fg', 'Comment'],
-      \  'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \  'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \  'hl+':     ['fg', 'Statement'],
-      \  'info':    ['fg', 'PreProc'],
-      \  'border':  ['fg', 'Ignore'],
-      \  'prompt':  ['fg', 'Conditional'],
-      \  'pointer': ['fg', 'Exception'],
-      \  'marker':  ['fg', 'Keyword'],
-      \  'spinner': ['fg', 'Label'],
-      \  'header':  ['fg', 'Comment'],
-      \}
-
-" GitGutter
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let g:gitgutter_diff_args='--patience' " Add flags to git diff.
-let g:gitgutter_eager=0 " Only redraw gutter on buffer save / open.
-
-" Grepper
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let g:grepper={ 'tools': ['rg', 'git'], 'next_tool': '<C-g>' }
-
-" Run grepper on motion and selection.
-nmap gs <Plug>(GrepperOperator)
-xmap gs <Plug>(GrepperOperator)
-
-" Open the grepper prompt.
-nnoremap <Leader>G :Grepper<CR>
-
-" Search for the word under the cursor.
-nnoremap <Leader>* :Grepper -cword -noprompt<CR>
-
-" NERDTree
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Toggle NERDTree buffer.
-nnoremap <Leader>t :NERDTreeToggle<CR>
-
-" Rust.Vim
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let g:rust_recommended_style=0
-
-" TrollStopper
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-augroup AutoTrollStopper
-  autocmd!
-  autocmd BufWritePre * silent! :TrollStop<CR>
-augroup END
-
 " UltiSnips
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 let g:UltiSnipsExpandTrigger='<C-Space>'
 let g:UltiSnipsListSnippets='<C-Tab>'
 let g:UltiSnipsJumpForwardTrigger='<C-j>'
 let g:UltiSnipsJumpBackwardTrigger='<C-k>'
 
-" Vim-Vue
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-augroup VueComponentSyntax
+augroup FileTypeVariables
   autocmd!
-  autocmd FileType vue syntax sync fromstart
+
+  " Enable auto-formatting for certain filetypes
+  " autocmd FileType bzl,c,cpp,protobuf let b:auto_format_enabled=1
+  autocmd FileType bzl let b:auto_format_enabled=1
+
+  " Disable auto-indenting for filetypes without good indent files
+  autocmd FileType vim,tex let b:autoformat_autoindent=0
 augroup END
 
-" YouCompleteMe
+" Plugin configuration
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" YCM doesn't have completers for some filetypes.
-if !exists('g:ycm_filetype_blacklist')
-  let g:ycm_filetype_blacklist={}
+" Initialize VimPlug and setup plugins
+call plug#begin('~/.vim/plugged')
+
+" Visual miscellanea
+Plug 'altercation/vim-colors-solarized' " Solarized color theme for vim
+Plug 'airblade/vim-gitgutter' " Git diff markings in the buffer gutter
+Plug 'wesQ3/vim-windowswap' " Window swapping keybindings
+
+" Editing miscellanea
+Plug 'PeterRincker/vim-argumentative' " Rearrange function arguments
+" Plug 'SirVer/ultisnips' " Code snippet completion
+Plug 'tpope/vim-abolish' " Assorted word-munging utilities (Abolish, Subvert, Coerce)
+Plug 'tpope/vim-apathy' " Filetype-aware values for path, suffixesadd, include, includeexpr, and define
+Plug 'tpope/vim-characterize' " Additional character information visible with `ga`
+Plug 'tpope/vim-commentary' " Easy (un)commenting of code blocks
+Plug 'tpope/vim-fugitive' " Integrated git commands
+Plug 'tpope/vim-repeat' " Better command classification for `.`
+Plug 'tpope/vim-sensible' " Good defaults for everyone
+Plug 'tpope/vim-speeddating' " {In,De}crement (<C-A>, <C-X>) works with datetimes
+Plug 'vim-autoformat/vim-autoformat' " Syntax-aware code formatting
+
+" Fuzzy file-finder and associated commands/mappings
+Plug 'junegunn/fzf' |
+  \ Plug 'junegunn/fzf.vim'
+
+" Filesystem navigation interface
+Plug 'preservim/nerdtree' |
+  \ Plug 'Xuyuanp/nerdtree-git-plugin'
+
+" Syntax highlighting for toml
+Plug 'cespare/vim-toml', {'for': ['toml']}
+
+" Syntax highlighting for JS, TS, React.js and Vue.js
+Plug 'yuezk/vim-js', {'for': ['javascript']} |
+  \ Plug 'HerringtonDarkholme/yats.vim', {'for': ['typescript']} |
+  \ Plug 'maxmellon/vim-jsx-pretty', {'for': ['javascript.jsx', 'typescript.tsx']} |
+  \ Plug 'posva/vim-vue', {'for': ['vue']}
+
+call plug#end()
+
+" Spell check settings (disabled by default)
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set dictionary+=spell
+if filereadable('/usr/share/dict/words')
+  set dictionary+=/usr/share/dict/words
 endif
-let g:ycm_filetype_blacklist.help=1
-let g:ycm_filetype_blacklist.vim=1
+set spelllang=en_us
 
-" Load extra conf without prompting.
-let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
-let g:ycm_confirm_extra_conf=0
-
-" Automatically open and close the preview window during completion.
-let g:ycm_add_preview_to_completeopt=1
-let g:ycm_autoclose_preview_window_after_completion=1
-let g:ycm_autoclose_preview_window_after_insertion=1
-
-" Perform completion while writing comments and strings.
-let g:ycm_complete_in_comments=1
-let g:ycm_complete_in_strings=1
-
-" Do not try to complete using text from comments or strings.
-let g:ycm_collect_identifiers_from_comments_and_strings=0
-
-" Get completion text from language-specific syntax files.
-let g:ycm_seed_identifiers_with_syntax=1
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Settings
+" Platform compatibility
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Behavior
+behave xterm              " Always use Linux keybindings (even on Windows)
+set shell=bash            " Run subcommands in bash shell
+set shellpipe=2>&1\|tee   " Redirect shell pipe stderr to stdout
+set shellslash            " Use forward slashes regardless of OS
+
+" File management
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Always use Linux keybindings (even on Windows).
-behave xterm
-" Enable syntax highlighting.
-if !exists('g:syntax_on')
-  syntax enable
-endif
-" Load filetype files for default file types, custom file types, and file
-" indentation rules.
-filetype plugin indent on
-
-" Treat all files like UTF-8.
+set autowrite         " Automatically save before commands like :next and :make
+set noswapfile        " Do not use swap files
+set noautoread        " Overwrite setting in vim-sensible
+scriptencoding utf-8  " Treat all files like UTF-8
 set encoding=utf-8
 set fileencoding=utf-8
-scriptencoding utf-8
 
-" Resize splits on window resize.
-augroup AutoResizeSplits
-  autocmd!
-  autocmd VimResized * wincmd =
-augroup END
-
-" Reload open files that have changed outside of Vim.
-augroup AutoReloadFiles
-  autocmd FocusGained,BufEnter,CursorHold,CursorHoldI *
-        \ if mode() != 'c' | checktime | endif
-  autocmd FileChangedShellPost *
-        \ echohl WarningMsg |
-        \ echo "File changed on disk. Buffer reloaded." |
-        \ echohl None
-augroup END
-
-" Options
+" Buffer management
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-set autowrite                   " Write before executing the 'make' command.
-set backspace=indent,eol,start  " Allow <BS> to go over indents, eol, and start of insert.
-set colorcolumn=80              " Highlight the 80th column.
-set cpoptions+=$                " Show dollar sign at end of text to be changed.
-set dictionary+=~/.vim/dictionary/english-freq
-set expandtab                   " Expand tabs into spaces.
-set foldcolumn=1                " Add N columns to show fold levels and boundaries.
-set foldmethod=syntax           " Set fold method (manual,indent,expr,syntax,diff,marker).
-set hidden                      " Use hidden buffers so unsaved buffers can go to the background.
-set history=500                 " Set number of lines for vim to remember.
-set hlsearch                    " Highlight all search matches.
-set ignorecase                  " Ignore case in regular expressions.
-set incsearch                   " Immediately highlight search matches.
-set indentkeys-=:,<:>           " Do not trigger indent when : is pressed.
-set laststatus=2                " Show status line even where there is only one window.
-set lazyredraw                  " Redraw faster.
-set linespace=0                 " Adjust relative line height.
-set list                        " Enable listchars for undesireable whitespace and non-visible wrapped text.
-set listchars=tab:➤-,trail:·,extends:»,precedes:«
-set modeline                    " Check files for a modeline to apply config settings.
-set nobomb                      " Remove Byte Order Mark from files.
-set nocursorline                " Do not highlight current line.
-set noerrorbells                " No beeps on errors.
-set nofoldenable                " Do not open file folded.
-set nojoinspaces                " Do not use multiple spaces when joining after punctuation.
-set nopaste                     " Do not default to paste mode.
-set noswapfile                  " Don't use swap files.
-set number                      " Display line numbers.
-set path=,,.,**,/usr/include,/usr/local/include
-set scrolloff=5                 " Keep min of N lines above/below cursor.
-set shellslash                  " Use forward slashes regardless of OS.
-set showcmd                     " Show partial commands in the status line.
-set showmatch                   " Show matching () {} etc..
-set showmode                    " Show current editor mode (insert, visual, replace, etc).
-set sidescrolloff=10            " Keep min of N columns right/left cursor.
-set smartcase                   " Searches are case-sensitive only if caps used.
-set smarttab                    " Tabs and backspaces at the start of a line indent the line one level.
-set splitright splitbelow       " Open splits below and to the right.
-set synmaxcol=2000              " Only matches syntax on first N columns of each line.
-set textwidth=80                " Hard wrap at N characters.
-set ttyfast                     " Smoother redrawing.
-set viminfo='20,\"500,%         " Adjust viminfo contents.
-set virtualedit=block           " Allow the cursor to move to columns without text.
-set wildignore=*.sw?,*.pyc      " Ignore generated files in the source tree.
-set wildignorecase              " Tab completion is case-insensitive.
-set wildmenu                    " Tab completion navigable menu is enabled.
-set wildmode=list:longest,full  " Tab completion lists matches, then opens wildmenu on next <Tab>.
-set wrap                        " Soft wrap lines.
-set wrapscan                    " Searching wraps to start of file when end is reached.
+set hidden  " Use hidden buffers so unsaved buffers can go to the background
 
-augroup LanguageSpecificOverrides
-  autocmd!
-  autocmd FileType python setlocal foldmethod=indent | let b:indent_size=4
-  autocmd FileType make setlocal noexpandtab
-augroup END
-
-function! IndentSizeInitialize() abort
-  if !exists('b:indent_size')
-    let b:indent_size=2
-  endif
-endfunction
-
-function! SetIndentSize() abort
-  :call IndentSizeInitialize()
-
-  let &shiftwidth=b:indent_size
-  let &tabstop=b:indent_size
-  let &softtabstop=b:indent_size
-endfunction
-
-:call SetIndentSize()
-augroup IndentSize
-  autocmd!
-  autocmd FileType * :call SetIndentSize()
-augroup END
-
-" Toggles for invertible settings.
-nnoremap <Leader>c :set invcursorline<CR>
-nnoremap <Leader>h :set invhlsearch<CR>
-nnoremap <Leader>n :set invnumber<CR>
-nnoremap <Leader>p :set invpaste<CR>
-nnoremap <Leader>w :set invwrap<CR>
-
-" Completion settings
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Options:
-"   .        scan the current buffer ('wrapscan' is ignored)
-"   w        scan buffers from other windows
-"   b        scan other loaded buffers that are in the buffer list
-"   u        scan the unloaded buffers that are in the buffer list
-"   U        scan the buffers that are not in the buffer list
-"   k        scan the files given with the 'dictionary' option
-"   kspell   use the currently active spell checking |spell|
-"   k{dict}  scan the file {dict}
-"   s        scan the files given with the 'thesaurus' option
-"   s{tsr}   scan the file {tsr}
-"   i        scan current and included files
-"   d        scan current and included files for defined name or macro |i_CTRL-X_CTRL-D|
-"   t        tag completion
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-set complete=.,w,b,u,t,i
-augroup ProseCompletion
-  autocmd!
-  autocmd FileType markdown,gitcommit,text setlocal complete+=k spell
-augroup END
-
-" Text formatting settings
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Options:
-"   t  Auto-wrap text using textwidth. (default)
-"   c  Auto-wrap comments; insert comment leader. (default)
-"   q  Allow formatting of comments with "gq". (default)
-"   r  Insert comment leader after hitting <Enter>.
-"   o  Insert comment leader after hitting 'o' or 'O' in command mode.
-"   n  Auto-format lists, wrapping to text after the list bullet char.
-"   l  Don't auto-wrap if a line is already longer than textwidth.
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-set formatoptions=tcqronl
-
-" Enable mouse scrolling in selected modes
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Options:
-"   a  All
-"   c  Command
-"   i  Insert
-"   n  Normal
-"   v  Visual
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-set mouse=
-
-" Color theme
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-set t_Co=256                  " Use as many colors as your terminal supports.
-silent! colorscheme solarized " Must be silent so Plug does not fail when installing for the first time.
-set term=screen-256color      " Use 256-color screen emulation
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Mappings
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Basics
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Make y behave like all other capitals (yank to end of line).
-nnoremap Y y$
-
-" No one ever intends to enter ex-mode. Make it harder by rebinding to QQ.
-nnoremap Q <nop>
-nnoremap QQ Q
-
-" Smash to exit insert mode because <Esc> is too far away from home row.
-inoremap kj <Esc>
-
-" Navigation
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Use C-hjkl to change splits.
+" Use C-hjkl to change splits
 nnoremap <C-h> <C-w><Left>
 nnoremap <C-j> <C-w><Down>
 nnoremap <C-k> <C-w><Up>
 nnoremap <C-l> <C-w><Right>
 
-" Use C-t to change tabs.
+" Use C-t to change tabs
 nnoremap <C-t>e :tabnew<CR>
 nnoremap <C-t>% :tabnew<Space>%<CR>
 nnoremap <C-t>n :tabnext<CR>
 nnoremap <C-t>p :tabprevious<CR>
 nnoremap <C-t>d :tabclose<CR>
+
+" Window behavior
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set laststatus=2          " Last window will always have a status line
+set lazyredraw            " Defer screen redraw when running commands
+set showcmd               " Show (partial) command in the command line
+set showmode              " Show the current editor mode in the command line
+set splitright splitbelow " Open window splits below and to the right
+
+" Toggle NERDTree sidepanel open/close
+nnoremap <Leader>t :NERDTreeToggle<CR>
+
+" Toggle GitGutter on/off
+nnoremap <Leader>G :GitGutterToggle<CR>
+nnoremap <Leader>g :GitGutterBufferToggle<CR>
+
+" Text rendering
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set cpoptions+=$  " Show dollar sign at end of text to be changed
+set display+=uhex " Show unprintable characters hexadecimal as <xx> instead of using ^C and ~C
+set nowrap        " Do not soft-wrap lines by default
+set showmatch     " Show matching () {} etc
+set list listchars=tab:⇥·,trail:·,extends:⇉,precedes:⇇,conceal:░,nbsp:␣
+set fillchars=vert:▚,fold:░
+
+" Toggle various invertible settings on/off
+nnoremap <Leader>c :set cursorline!<CR>
+nnoremap <Leader>h :set hlsearch!<CR>
+nnoremap <Leader>n :set number!<CR>
+nnoremap <Leader>r :set relativenumber!<CR>
+nnoremap <Leader>w :set wrap!<CR>
+
+" Folding
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set foldmethod=syntax   " Set fold method (manual,indent,expr,syntax,diff,marker)
+set nofoldenable        " Do not open file folded
+
+" Toogle foldenable and foldcolumn on/off in tandem
+function! ToggleFoldEnable() abort
+  if &foldenable
+    set nofoldenable
+    set foldcolumn=0
+  else
+    set foldenable
+    set foldcolumn=2
+  endif
+endfunction
+nnoremap <Leader>x :call ToggleFoldEnable()<CR>
+
+" Input behavior
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set modeline          " Check files for a modeline to apply config settings
+set mouse=            " Disable mouse input
+set nojoinspaces      " Do not insert two spaces after a '.', '?', and '!'
+set textwidth=80      " Automatically break lines at whitespace to get this width
+set virtualedit=block " Allow the cursor to move to columns without text
+
+" Make y behave like all other capitals (yank to end of line)
+nnoremap Y y$
+
+" Smash to exit insert mode because <Esc> is too far away from home row
+inoremap kj <Esc>
+
+" No one ever intends to enter ex-mode. Make it harder by rebinding to QQ
+nnoremap Q <nop>
+nnoremap QQ Q
+
+" Toogle paste mode on/off
+nnoremap <Leader>p :set paste!<CR>
+
+" Tab handling
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set expandtab     " Use the appropriate number of spaces to insert a <Tab>
+set shiftwidth=2  " Number of spaces to use for each step of (auto)indent.
+set tabstop=2     " Number of spaces that a <Tab> in the file counts for
+set softtabstop=2 " Number of spaces that a <Tab> counts for while performing editing operations
+
+" Comment formatting
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set commentstring=#\ %s         " Most languages use `#` as their line-comment character
+set formatoptions+=r            " Insert comment leader after hitting <Enter>
+set formatoptions+=o            " Insert comment leader after hitting 'o' or 'O' in command mode
+set autoindent formatoptions+=n " Auto-format lists, wrapping to text after the list bullet char (requires autoindent)
+set formatoptions+=l            " Don't auto-wrap if a line is already longer than textwidth
+
+" Text search
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set incsearch             " Highlight matches for the current search
+set hlsearch              " Highlight matches for previous search
+set ignorecase smartcase  " Searches are case-insensitive unless upper case characters are used
+set wrapscan              " Searches wrap around the end of the file
+
+" Filesystem search
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set wildignore=*.sw?,*.pyc      " Ignore generated files in the source tree
+set wildignorecase              " Tab completion is case-insensitive
+set wildmode=list:longest,full  " Tab completion lists matches, then opens wildmenu on next <Tab>
+
+" Autoformat plugin
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Toggle enamed status of auto-format for this buffer
+function! AutoFormatToggle() abort
+  if exists("b:auto_format_enabled") && b:auto_format_enabled
+    :echo 'Disabling auto-formatting'
+    let b:auto_format_enabled=0
+  elseif b:auto_format_enabled
+    :echo 'Enabling auto-formatting'
+    let b:auto_format_enabled=1
+  endif
+endfunction
+
+" Only auto-format if enabled for this buffer
+function! AutoFormatIfEnabled() abort
+  if exists("b:auto_format_enabled") && b:auto_format_enabled
+    :echo 'Auto-formatting buffer'
+    :Autoformat
+  endif
+endfunction
+
+" Automatic formatting
+augroup AutoFormatOnWrite
+  autocmd!
+  autocmd BufWritePre * call AutoFormatIfEnabled()
+augroup END
+
+" Manual formatting
+nnoremap <Leader>f :Autoformat<CR>
+xnoremap <Leader>f :Autoformat<CR>
+nnoremap <Leader>F :call AutoFormatToggle()<CR>
+
+" Color theme
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set background=light
+set t_Co=256                  " Use as many colors as your terminal supports
+set term=screen-256color      " Use 256-color screen emulation
+silent! colorscheme solarized " Must be silent so Plug does not fail when installing for the first time
+
+" Local overrides for specific filetypes
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+augroup FileTypeSettings
+  autocmd!
+
+  " Comment strings differ from `#` in these languages
+  autocmd FileType c,cpp,proto setlocal commentstring=//\ %s
+  autocmd FileType vim setlocal commentstring=\"\ %s
+
+  " Enable spell-check in prose
+  autocmd FileType gitcommit,mail,text setlocal spell
+
+  " Use indent-folding in syntax-sparse filetypes
+  autocmd FileType bzl,python,vim setlocal foldmethod=indent
+
+  " Do not trigger indent when `:` is pressed
+  autocmd FileType bzl,python,yaml
+    \ setlocal indentkeys-=<:>
+
+  " 4-space indentation in Python-like languages
+  autocmd FileType bzl,python
+    \ setlocal shiftwidth=4 |
+    \ setlocal tabstop=4 |
+    \ setlocal softtabstop=4
+
+  " Tabs are different than spaces in make syntax
+  autocmd FileType make setlocal noexpandtab
+
+  " Vue files intermix multiple syntaxes, so we have to recalculate style from
+  " the start of the file to prevent parsing errors
+  autocmd FileType vue syntax sync fromstart
+augroup END
