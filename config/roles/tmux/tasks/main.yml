@@ -61,10 +61,3 @@
       fi
       export TMUX_PLUGIN_MANAGER_PATH='{{tmux_plugins_data_dir}}'
       {{tmux_tpm_data_dir}}/bin/install_plugins
-
-- name: Link Tmux executable files
-  file:
-    src: "{{tmux_plugins_data_dir}}/tmux-mem-cpu-load/tmux-mem-cpu-load"
-    dest: "{{xdg_bin_home}}/tmux-mem-cpu-load"
-    state: link
-    force: yes
