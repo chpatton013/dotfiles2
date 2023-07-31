@@ -3,21 +3,20 @@
 - hosts: 127.0.0.1
   connection: local
   roles:
-  - alacritty
-  - bashrc
-  - cargo
-  - clang-format
-  - dircolors
-  - fzf
-  - gem
-  - git
-  - go
-  - npm
-  - pip
-  - ssh-agent-canonicalize
-  - tmux
-  - vagrant
-  - vim
-  - worktree
-  - zshrc
-  - { role: work, tags: [never, work] }
+    - {role: alacritty, tags: [alacritty]}
+    - {role: bashrc, tags: [bashrc]}
+    - {role: cargo, tags: [cargo]}
+    - {role: dircolors, tags: [dircolors]}
+    - {role: fzf, tags: [fzf]}
+    - {role: gem, tags: [gem]}
+    - {role: git, tags: [git]}
+    - {role: go, tags: [go]}
+    - {role: npm, tags: [npm]}
+    - {role: pip, tags: [pip]}
+    - {role: ssh-agent-canonicalize, tags: [ssh-agent-canonicalize]}
+    - {role: tmux, tags: [tmux]}
+    - {role: vagrant, tags" [vagrant]}
+    - {role: vim, tags: [vim]}
+    - {role: worktree, tags: [worktree]}
+    - {role: zshrc, tags: [zshrc]}
+    - { role: work, tags: [never, work] }
