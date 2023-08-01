@@ -1,5 +1,10 @@
 ---
 
+tmux_release_version: 3.3a
+tmux_release_url: "https://github.com/tmux/tmux/releases/download/{{tmux_release_version}}/tmux-{{tmux_release_version}}.tar.gz"
+tmux_release_dir: "{{source_releases_data_dir}}/tmux-{{tmux_release_version}}"
+tmux_release_cflags: "-O2"
+
 tmux_config_dir: "{{dotfiles_config_dir}}/tmux"
 
 tmux_data_dir: "{{dotfiles_data_dir}}/tmux"

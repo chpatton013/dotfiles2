@@ -4,18 +4,16 @@ startup --max_idle_secs=86400
 # Always show color output, even without a TTY.
 common --color=yes
 
-# Print task completion updates and timestamps.
-common --show_task_finish --show_timestamps
+# Include timestamps for all status messages.
+common --show_timestamps
 
-# Purge external resources when cleaning.
 # Clean asynchronously with a daemon process.
-clean --expunge_async
+clean --async
 
-# Cache external repositories in a location that can be shared by multiple
-# workspaces.
-fetch --repository_cache=~/.cache/bazel/repository_cache
+# Disable runfiles links by default
+build --nobuild_runfile_links
 
 # Show stdout and stderr output only from failing test targets.
 test --test_output=errors --test_summary=terse
 
-try-import .work.bazelrc
+try-import ~/.work.bazelrc

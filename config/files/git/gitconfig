@@ -2,6 +2,7 @@
   ap = add --patch
   clone = clone --recursive
   cm = commit
+  cmp = compare --url
   co = checkout
   cp = cherry-pick
   df = diff --patience --find-renames --find-copies-harder
@@ -27,13 +28,20 @@
   sl = stash list
   st = status --short --branch --ignore-submodules=dirty
   sw = switch
+  wip = commit -m wip
 [color]
   ui = true
 [core]
-  excludesfile = ~/.gitignore
   fileMode = true
+  pager = delta
   preloadIndex = true
+[delta]
+  light = true  # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+  line-numbers = true
+  navigate = true # use n and N to move between diff sections
+  side-by-side = false
 [diff]
+  colorMoved = default
   renamelimit = 0
 [fetch]
   prune = true
@@ -44,6 +52,10 @@
   required = true
 [github]
   user = chpatton013
+[hub]
+  host = github.com
+[interactive]
+  diffFilter = delta --color-only
 [merge]
   tool = vimdiff
   conflictstyle = diff3
@@ -62,3 +74,5 @@
 [user]
   name = Christopher Patton
   email = chpatton013@gmail.com
+[includeIf "hasconfig:remote.*.url:https://git.example.com/**"]
+  path = ~/.work.gitconfig

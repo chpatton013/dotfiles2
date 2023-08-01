@@ -2,3 +2,6 @@
 
 vim_config_dir: "{{dotfiles_config_dir}}/vim"
 vim_data_dir: "{{dotfiles_data_dir}}/vim"
+vim_release_version: 9.0.1640
+vim_release_url: "https://github.com/vim/vim/archive/refs/tags/v{{vim_release_version}}.tar.gz"
+vim_release_dir: "{{source_releases_data_dir}}/vim-{{vim_release_version}}"

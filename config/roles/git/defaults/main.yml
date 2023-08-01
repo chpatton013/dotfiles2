@@ -1,0 +1,6 @@
+---
+
+git_release_version: 2.41.0
+git_release_url: "https://github.com/git/git/archive/refs/tags/v{{git_release_version}}.tar.gz"
+git_release_dir: "{{source_releases_data_dir}}/git-{{git_release_version}}"
+git_release_cflags: "-std=gnu99 -O2"

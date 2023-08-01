@@ -1,5 +1,22 @@
 ---
 
+- name: Download and unpack Git release tarball
+  unarchive:
+    src: "{{git_release_url}}"
+    dest: "{{source_releases_data_dir}}"
+    remote_src: yes
+
+- name: Configure, make, and install Git release (this will take a while)
+  shell:
+    chdir: "{{git_release_dir}}"
+    cmd: |
+      set -ex
+      make configure
+      CFLAGS="{{git_release_cflags}}" ./configure --prefix={{xdg_prefix_home}}
+      make all doc info
+      make install install-doc install-html install-info
+    creates: "{{xdg_bin_home}}/git"
+
 - name: Link Git Config file
   file:
     src: "{{dotfiles_src_dir}}/git/gitconfig"
