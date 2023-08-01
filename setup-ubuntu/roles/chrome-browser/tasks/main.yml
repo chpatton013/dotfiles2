@@ -1,19 +1,25 @@
 ---
 
-- name: Download Google signing key
-  get_url:
-    url: https://dl-ssl.google.com/linux/linux_signing_key.pub
-    dest: "{{google_signing_key}}"
-    mode: "0644"
-  become: yes
+- block:
+  - name: Check if Google Chrome is installed
+    command:
+      cmd: which google-chrome-stable
 
-- name: Install Chrome apt repository
-  apt_repository:
-    repo: "deb [arch=amd64 signed-by={{google_signing_key}}] http://dl.google.com/linux/chrome/deb/ stable main"
-  become: yes
+  rescue:
+  - name: Download Google signing key
+    get_url:
+      url: https://dl-ssl.google.com/linux/linux_signing_key.pub
+      dest: "{{google_signing_key}}"
+      mode: "0644"
+    become: yes
 
-- name: Install Chrome apt package
-  apt:
-    pkg:
-    - google-chrome-stable
-  become: yes
+  - name: Install Chrome apt repository
+    apt_repository:
+      repo: "deb [arch=amd64 signed-by={{google_signing_key}}] http://dl.google.com/linux/chrome/deb/ stable main"
+    become: yes
+
+  - name: Install Chrome apt package
+    apt:
+      pkg:
+      - google-chrome-stable
+    become: yes
