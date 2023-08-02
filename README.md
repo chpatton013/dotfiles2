@@ -87,3 +87,5 @@ export DOTFILES_PLATFORM=archlinux
 * build zsh from source
 * workbin: executable that checks the current driving repo, else checks the rest
   of the PATH
+* bootstrap script: curl|bash will download the current version of the dotfiles
+  repo. potentially create ssh keys as well?
