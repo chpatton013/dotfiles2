@@ -5,6 +5,7 @@
   roles:
     - {role: alacritty, tags: [alacritty]}
     - {role: bashrc, tags: [bashrc]}
+    - {role: bazel, tags: [bazel]}
     - {role: cargo, tags: [cargo]}
     - {role: dircolors, tags: [dircolors]}
     - {role: fzf, tags: [fzf]}
