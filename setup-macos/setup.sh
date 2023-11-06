@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir="$(builtin cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [ ! -f /usr/local/bin/brew ]; then
+if [ ! -f /opt/homebrew/bin/brew ]; then
   bash -c "$(curl -fsSL \
     https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
