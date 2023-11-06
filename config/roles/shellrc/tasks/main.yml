@@ -45,5 +45,5 @@
     follow: no
     force: yes
   with_items:
-  - 1-pathlist-macos.sh
+  - 2-pathlist-macos.sh
   when: ansible_os_family == "Darwin"
