@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash --norc
 set -euo pipefail
 
 script_dir="$(builtin cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

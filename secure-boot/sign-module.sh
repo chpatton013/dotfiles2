@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash --norc
 set -euo pipefail
 
 if [ "$(id --user)" != 0 ]; then
