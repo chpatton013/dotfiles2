@@ -10,7 +10,7 @@ function find_gnu_packages() {
     grep
   )
   for dir in ${gnu_packages[@]}; do
-    find "/usr/local/Cellar/$dir" "$@"
+    find "/opt/homebrew/Cellar/$dir" "$@"
   done
 }
 

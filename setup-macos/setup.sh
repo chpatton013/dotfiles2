@@ -8,7 +8,7 @@ if [ ! -f /opt/homebrew/bin/brew ]; then
     https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
 
-if [ ! -f /usr/local/bin/ansible-playbook ]; then
+if [ ! -f /opt/homebrew/bin/ansible-playbook ]; then
   brew install ansible
 fi
 
