@@ -16,5 +16,6 @@
     src: /usr/lib/go-1.14/bin/go
     dest: /usr/bin/go
     state: link
+    follow: no
     force: yes
   become: yes

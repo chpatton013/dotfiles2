@@ -53,6 +53,7 @@
     src: "{{tmux_data_dir}}"
     dest: ~/.tmux
     state: link
+    follow: no
     force: yes
 
 - name: Link Tmux config file
@@ -60,6 +61,7 @@
     src: "{{tmux_config_dir}}/tmux.conf"
     dest: ~/.tmux.conf
     state: link
+    follow: no
     force: yes
 
 - name: Download Tmux TPM repository

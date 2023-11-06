@@ -5,6 +5,7 @@
     src: "{{dotfiles_src_dir}}/bazel/bazelrc"
     dest: "~/.bazelrc"
     state: link
+    follow: no
     force: yes
 
 - name: Download iBazel executable

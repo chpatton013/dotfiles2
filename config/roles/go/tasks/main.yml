@@ -17,6 +17,7 @@
     src: "{{go_data_dir}}"
     dest: "~/go"
     state: link
+    follow: no
     force: yes
 
 - name: Install dev-tools go packages
@@ -35,6 +36,7 @@
     src: "{{dotfiles_src_dir}}/go/{{item}}"
     dest: "{{shellrc_config_dir}}/{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - 3-go.sh

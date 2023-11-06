@@ -28,6 +28,7 @@
     src: "{{dotfiles_src_dir}}/gem/{{item}}"
     dest: "{{shellrc_config_dir}}/{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - 3-gem.sh

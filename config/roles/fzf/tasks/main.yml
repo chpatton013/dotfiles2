@@ -23,6 +23,7 @@
     src: "{{dotfiles_src_dir}}/fzf/3-fzf.sh"
     dest: "{{shellrc_config_dir}}/3-fzf.sh"
     state: link
+    follow: no
     force: yes
 
 - name: Link FZF executable files
@@ -30,6 +31,7 @@
     src: "{{fzf_data_dir}}/bin/{{item}}"
     dest: "{{xdg_bin_home}}/{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - fzf

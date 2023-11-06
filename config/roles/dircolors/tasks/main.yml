@@ -11,6 +11,7 @@
     src: "{{dotfiles_src_dir}}/dircolors/{{item}}"
     dest: "{{shellrc_config_dir}}/{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - 3-dircolors.sh

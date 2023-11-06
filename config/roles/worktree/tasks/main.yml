@@ -17,6 +17,7 @@
     src: "{{dotfiles_src_dir}}/worktree/{{item}}"
     dest: "{{shellrc_config_dir}}/{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - 3-worktree.sh

@@ -22,6 +22,7 @@
     src: "{{dotfiles_src_dir}}/git/gitconfig"
     dest: "~/.gitconfig"
     state: link
+    follow: no
     force: yes
 
 - name: Link Git command files
@@ -29,6 +30,7 @@
     src: "{{dotfiles_src_dir}}/git/{{item}}"
     dest: "{{xdg_bin_home}}/{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - git-push-retry

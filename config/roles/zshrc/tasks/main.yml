@@ -26,6 +26,7 @@
     src: "{{dotfiles_src_dir}}/zshrc/{{item}}"
     dest: "{{zshrc_config_dir}}/{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - 0-misc.zsh

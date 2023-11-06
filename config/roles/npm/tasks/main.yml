@@ -35,6 +35,7 @@
     src: "{{dotfiles_src_dir}}/npm/{{item}}"
     dest: "{{shellrc_config_dir}}/{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - 3-npm.sh

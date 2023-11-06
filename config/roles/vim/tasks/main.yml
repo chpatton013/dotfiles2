@@ -49,6 +49,7 @@
     src: "{{dotfiles_src_dir}}/vim/{{item}}"
     dest: "{{vim_config_dir}}/{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - vimrc
@@ -60,6 +61,7 @@
     src: "{{vim_config_dir}}/vimrc"
     dest: "{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - ~/.vimrc
@@ -78,6 +80,7 @@
     src: "{{vim_config_dir}}"
     dest: "{{item}}"
     state: link
+    follow: no
     force: yes
   with_items:
   - ~/.vim
@@ -88,6 +91,7 @@
     src: "{{vim_data_dir}}"
     dest: "{{xdg_data_home}}/nvim"
     state: link
+    follow: no
     force: yes
 
 - name: Download Vim Plugin manager
@@ -100,6 +104,7 @@
     src: "{{vim_data_dir}}/plugged"
     dest: "{{vim_config_dir}}/plugged"
     state: link
+    follow: no
     force: yes
 
 - name: Install Vim Plugins
@@ -111,4 +116,5 @@
     src: "{{dotfiles_src_dir}}/vim/3-vim.sh"
     dest: "{{shellrc_config_dir}}/3-vim.sh"
     state: link
+    follow: no
     force: yes
