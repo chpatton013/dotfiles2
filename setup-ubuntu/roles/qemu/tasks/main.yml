@@ -1,0 +1,8 @@
+---
+
+- name: Install QEMU apt packages
+  apt:
+    pkg:
+    - aqemu
+    - qemu
+  become: yes

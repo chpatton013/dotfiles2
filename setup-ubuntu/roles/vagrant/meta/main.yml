@@ -4,4 +4,5 @@ dependencies:
 - docker
 - libvirt
 - lxc
+- qemu
 - virtualbox

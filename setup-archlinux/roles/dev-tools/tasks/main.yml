@@ -12,6 +12,7 @@
     - nodejs
     - python
     - python-pip
+    - qemu-full
     - ruby
     - tmux
     - vagrant

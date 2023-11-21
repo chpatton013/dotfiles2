@@ -16,6 +16,7 @@
     - node
     - openssh
     - python3
+    - qemu
     - reattach-to-user-namespace
     - ruby
     - screen
@@ -28,4 +29,3 @@
   homebrew_cask:
     name:
     - vagrant
-    - virtualbox
