@@ -1,11 +1,18 @@
 ---
 
-- name: Accept XCode License
-  shell:
-    cmd: xcodebuild -license accept
-  become: yes
+- name: Check if CommandLine Developer Tools already exist
+  stat:
+    path: /Library/Developer/CommandLineTools
+  register: command_line_tools_stat
 
-- name: Install CommandLine Developer Tools
-  command:
-    cmd: xcode-select --install
-  become: yes
+- block:
+  - name: Accept XCode License
+    shell:
+      cmd: xcodebuild -license accept
+    become: yes
+
+  - name: Install CommandLine Developer Tools
+    command:
+      cmd: xcode-select --install
+    become: yes
+  when: command_line_tools_stat.stat.isdir is defined and command_line_tools_stat.stat.isdir == False
