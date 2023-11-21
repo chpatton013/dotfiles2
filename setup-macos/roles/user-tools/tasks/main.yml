@@ -19,3 +19,4 @@
     - rectangle
     - spotify
     - vlc
+    accept_external_apps: yes

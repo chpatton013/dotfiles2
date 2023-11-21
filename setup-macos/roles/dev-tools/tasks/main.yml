@@ -29,3 +29,4 @@
   homebrew_cask:
     name:
     - vagrant
+    accept_external_apps: yes
