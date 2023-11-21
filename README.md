@@ -88,3 +88,6 @@ export DOTFILES_PLATFORM=archlinux
   of the PATH
 * bootstrap script: curl|bash will download the current version of the dotfiles
   repo. potentially create ssh keys as well?
+* Replace any architecture-specific values (eg: `deb [arch=amd64...`) with
+  calculated value; either ansible_architecture or the like, or capture the
+  output of uname
