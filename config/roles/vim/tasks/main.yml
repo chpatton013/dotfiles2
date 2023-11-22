@@ -1,31 +1,33 @@
 ---
 
-- name: Download and unpack Vim release tarball
-  unarchive:
-    src: "{{vim_release_url}}"
-    dest: "{{source_releases_data_dir}}"
-    remote_src: yes
+- block:
+  - name: Download and unpack Vim release tarball
+    unarchive:
+      src: "{{vim_release_url}}"
+      dest: "{{source_releases_data_dir}}"
+      remote_src: yes
 
-- name: Configure, make, and install Vim release (this will take a while)
-  shell:
-    chdir: "{{vim_release_dir}}/src"
-    cmd: |
-      set -ex
-      ./configure \
-          --with-features=huge \
-          --disable-gui \
-          --enable-cscope \
-          --enable-luainterp=yes \
-          --enable-multibyte \
-          --enable-perlinterp=yes \
-          --enable-pythoninterp=yes \
-          --enable-python3interp=yes \
-          --enable-rubyinterp=yes \
-          --enable-terminal \
-          --prefix={{xdg_prefix_home}}
-      make
-      make install
-    creates: "{{xdg_bin_home}}/vim"
+  - name: Configure, make, and install Vim release (this will take a while)
+    shell:
+      chdir: "{{vim_release_dir}}/src"
+      cmd: |
+        set -ex
+        ./configure \
+            --with-features=huge \
+            --disable-gui \
+            --enable-cscope \
+            --enable-luainterp=yes \
+            --enable-multibyte \
+            --enable-perlinterp=yes \
+            --enable-pythoninterp=yes \
+            --enable-python3interp=yes \
+            --enable-rubyinterp=yes \
+            --enable-terminal \
+            --prefix={{xdg_prefix_home}}
+        make
+        make install
+      creates: "{{xdg_bin_home}}/vim"
+  when: ansible_facts['os_family'] != "Darwin"
 
 - name: Create Vim directories
   file:

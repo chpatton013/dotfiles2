@@ -1,20 +1,22 @@
 ---
 
-- name: Download and unpack Tmux release tarball
-  unarchive:
-    src: "{{tmux_release_url}}"
-    dest: "{{source_releases_data_dir}}"
-    remote_src: yes
+- block:
+  - name: Download and unpack Tmux release tarball
+    unarchive:
+      src: "{{tmux_release_url}}"
+      dest: "{{source_releases_data_dir}}"
+      remote_src: yes
 
-- name: Configure, make, and install Tmux release (this will take a while)
-  shell:
-    chdir: "{{tmux_release_dir}}"
-    cmd: |
-      set -ex
-      CFLAGS="{{tmux_release_cflags}}" ./configure --prefix={{xdg_prefix_home}}
-      make
-      make install
-    creates: "{{xdg_bin_home}}/tmux"
+  - name: Configure, make, and install Tmux release (this will take a while)
+    shell:
+      chdir: "{{tmux_release_dir}}"
+      cmd: |
+        set -ex
+        CFLAGS="{{tmux_release_cflags}}" ./configure --prefix={{xdg_prefix_home}}
+        make
+        make install
+      creates: "{{xdg_bin_home}}/tmux"
+  when: ansible_facts['os_family'] != "Darwin"
 
 - name: Create Tmux directories
   file:
