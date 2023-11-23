@@ -91,3 +91,4 @@ export DOTFILES_PLATFORM=archlinux
 * Replace any architecture-specific values (eg: `deb [arch=amd64...`) with
   calculated value; either ansible_architecture or the like, or capture the
   output of uname
+* sshfs for macos
