@@ -23,7 +23,7 @@
     - zsh
   become: yes
 
-- name: Install user tool AUR package
+- name: Install dev tool AUR packages
   aur:
     name:
     - clang-format-static-bin

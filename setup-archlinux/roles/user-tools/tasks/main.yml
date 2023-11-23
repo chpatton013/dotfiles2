@@ -13,9 +13,10 @@
     - w3m
   become: yes
 
-- name: Install user tool AUR package
+- name: Install user tool AUR packages
   aur:
     name:
+    - albert
     - google-chrome
     - spotify
   become: yes

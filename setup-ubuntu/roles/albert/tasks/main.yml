@@ -1,0 +1,19 @@
+---
+
+- name: Download manuelschneid3r signing key
+  get_url:
+    url: "https://download.opensuse.org/repositories/home:manuelschneid3r/xUbuntu_{{ansible_distribution_version}}/Release.key"
+    dest: "{{manuelschneid3r_signing_key}}"
+    mode: "0644"
+  become: yes
+
+- name: Install Albert apt repository
+  apt_repository:
+    repo: "deb [arch=amd64 signed-by={{manuelschneid3r_signing_key}}] http://download.opensuse.org/repositories/home:/manuelschneid3r/xUbuntu_{{ansible_distribution_version}}/ /"
+  become: yes
+
+- name: Install Albert apt package
+  apt:
+    pkg:
+    - albert
+  become: yes

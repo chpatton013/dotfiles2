@@ -2,6 +2,7 @@
 
 dependencies:
 - apt
+- albert
 - chrome-browser
 - docker
 - spotify-client
