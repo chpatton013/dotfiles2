@@ -7,6 +7,9 @@ common --color=yes
 # Include timestamps for all status messages.
 common --show_timestamps
 
+# Show calculated RC options
+common --announce_rc
+
 # Clean asynchronously with a daemon process.
 clean --async
 
@@ -15,5 +18,6 @@ build --nobuild_runfile_links
 
 # Show stdout and stderr output only from failing test targets.
 test --test_output=errors --test_summary=terse
+test --experimental_ui_max_stdouterr_bytes=-1
 
 try-import ~/.work.bazelrc
