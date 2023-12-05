@@ -18,6 +18,7 @@
     - firefox-developer-edition
     - iterm2
     - rectangle
+    - shifty
     - spotify
     - vlc
     accept_external_apps: yes
