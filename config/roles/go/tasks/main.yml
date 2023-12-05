@@ -22,14 +22,14 @@
 
 - name: Install dev-tools go packages
   command:
-    cmd: go get {{item}}
+    cmd: go install {{item}}
     creates: "{{go_data_dir}}/bin/{{item|basename}}"
   environment:
     GO111MODULE: "on"
   with_items:
-  - github.com/mvdan/sh/cmd/shfmt
-  - github.com/bazelbuild/buildtools/buildifier
-  - github.com/bazelbuild/buildtools/buildozer
+  - github.com/mvdan/sh/cmd/shfmt@latest
+  - github.com/bazelbuild/buildtools/buildifier@latest
+  - github.com/bazelbuild/buildtools/buildozer@latest
 
 - name: Link Go Shell RC file
   file:
