@@ -5,7 +5,13 @@
     cmd: vagrant plugin install {{item}}
   with_items:
   - vagrant-cachier
-  - vagrant-libvirt
   - vagrant-lxc
   - vagrant-qemu
   - vagrant-sshfs
+
+- name: Install other Vagrant plugins
+  command:
+    cmd: vagrant plugin install {{item}}
+  with_items:
+  - vagrant-libvirt
+  when: ansible_facts["os_family"] != "Darwin"
