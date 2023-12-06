@@ -59,7 +59,7 @@ function status-left() {
 }
 
 function status-right() {
-  echo -n " #[fg=$COLOR_DARK,bg=$COLOR_LIGHT]"
+  echo -n "#[fg=$COLOR_DARK,bg=$COLOR_LIGHT] "
   echo "$(_load_average) | $(_uptime) | $(_date_time)"
 }
 
