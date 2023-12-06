@@ -1,3 +1,7 @@
+function tmux() {
+  tmux -2 "$@"
+}
+
 function tl() {
   tmux list-sessions
 }
