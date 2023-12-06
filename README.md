@@ -95,28 +95,3 @@ export DOTFILES_PLATFORM=archlinux
 * install hub
 * install kubectl + octant
 * install graphviz
-* install to-zweb:
-```
-#!/bin/bash --norc
-set -euo pipefail
-
-date=$(date "+%Y-%m-%d.%H-%M-%S")
-name=${1:-unknown}
-suffix=temp/$date-$name
-user=chris
-path=s3://work-web/$user/$suffix
-temp_file=$(mktemp --suffix "_$name")
-
-function cleanup {
-  rm -f "$temp_file"
-}
-trap cleanup EXIT
-
-# Copy to a temporary path so awscli can detect the MIME type.
-cat - > "$temp_file"
-
-aws s3 cp "$temp_file" "$path"
-
-echo Uploaded to $path
-echo View at http://$user.web.example.com/$suffix
-```
