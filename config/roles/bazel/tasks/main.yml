@@ -1,5 +1,13 @@
 ---
 
+- name: Link Bazel Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/bazel/3-bazel.sh"
+    dest: "{{shellrc_config_dir}}/3-bazel.sh"
+    state: link
+    follow: no
+    force: yes
+
 - name: Link Bazel RC file
   file:
     src: "{{dotfiles_src_dir}}/bazel/bazelrc"

@@ -58,6 +58,14 @@
     follow: no
     force: yes
 
+- name: Link Tmux Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/tmux/3-tmux.sh"
+    dest: "{{shellrc_config_dir}}/3-tmux.sh"
+    state: link
+    follow: no
+    force: yes
+
 - name: Link Tmux config file
   file:
     src: "{{tmux_config_dir}}/tmux.conf"

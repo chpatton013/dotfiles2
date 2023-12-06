@@ -19,6 +19,14 @@
       creates: "{{xdg_bin_home}}/git"
   when: ansible_facts['os_family'] != "Darwin"
 
+- name: Link Git Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/git/3-git.sh"
+    dest: "{{shellrc_config_dir}}/3-git.sh"
+    state: link
+    follow: no
+    force: yes
+
 - name: Link Git Config file
   file:
     src: "{{dotfiles_src_dir}}/git/gitconfig"

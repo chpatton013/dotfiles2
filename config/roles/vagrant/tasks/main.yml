@@ -1,5 +1,13 @@
 ---
 
+- name: Link Vagrant Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/vagrant/3-vagrant.sh"
+    dest: "{{shellrc_config_dir}}/3-vagrant.sh"
+    state: link
+    follow: no
+    force: yes
+
 - name: Install Vagrant plugins
   command:
     cmd: vagrant plugin install {{item}}

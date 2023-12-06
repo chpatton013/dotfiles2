@@ -12,7 +12,7 @@
     dest: "{{shellrc_config_dir}}/0-shellrc.sh"
     mode: 0400
 
-- name: Copy Shell RC template file
+- name: Render Shell RC template file
   template:
     src: shellrc
     dest: ~/.shellrc
@@ -29,13 +29,9 @@
   - 1-pathlist.sh
   - 2-history.sh
   - 2-locale.sh
-  - 3-bazel.sh
   - 3-cli-shortcuts.sh
   - 3-default-programs.sh
-  - 3-git.sh
   - 3-inotify.sh
-  - 3-tmux.sh
-  - 3-vagrant.sh
 
 - name: Link macOS Shell RC files
   file:

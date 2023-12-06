@@ -113,7 +113,7 @@
   command:
     cmd: vim +PlugUpdate +:qa
 
-- name: Link Shell RC files
+- name: Link Shell RC file
   file:
     src: "{{dotfiles_src_dir}}/vim/3-vim.sh"
     dest: "{{shellrc_config_dir}}/3-vim.sh"
