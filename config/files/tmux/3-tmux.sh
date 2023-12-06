@@ -1,5 +1,5 @@
 function tmux() {
-  tmux -2 "$@"
+  command tmux -2 "$@"
 }
 
 function tl() {
