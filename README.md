@@ -83,6 +83,8 @@ export DOTFILES_PLATFORM=archlinux
 
 ## TODO
 
+* Install tracked iTerm2 config
+* Install iTerm2 shell integration with `curl -L https://iterm2.com/shell_integration/install_shell_integration_and_utilities.sh | bash`
 * build zsh from source
 * workbin: executable that checks the current driving repo, else checks the rest
   of the PATH
