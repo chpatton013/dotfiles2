@@ -9,7 +9,9 @@
 
 - name: Install Docker apt repository
   apt_repository:
-    repo: "deb [arch=amd64 signed-by={{docker_signing_key}}] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable"
+    repo: "deb [arch={{arch}} signed-by={{docker_signing_key}}] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable"
+  vars:
+    arch: "{{'arm64' if ansible_facts['architecture'] == 'arm64' else 'amd64'}}"
   become: yes
 
 - name: Install Docker apt packages

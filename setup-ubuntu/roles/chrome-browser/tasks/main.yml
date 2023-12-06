@@ -15,7 +15,9 @@
 
   - name: Install Chrome apt repository
     apt_repository:
-      repo: "deb [arch=amd64 signed-by={{google_signing_key}}] http://dl.google.com/linux/chrome/deb/ stable main"
+      repo: "deb [arch={{arch}} signed-by={{google_signing_key}}] http://dl.google.com/linux/chrome/deb/ stable main"
+    vars:
+      arch: "{{'arm64' if ansible_facts['architecture'] == 'arm64' else 'amd64'}}"
     become: yes
 
   - name: Install Chrome apt package

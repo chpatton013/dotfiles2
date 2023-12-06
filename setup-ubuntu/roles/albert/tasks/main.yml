@@ -9,7 +9,9 @@
 
 - name: Install Albert apt repository
   apt_repository:
-    repo: "deb [arch=amd64 signed-by={{manuelschneid3r_signing_key}}] http://download.opensuse.org/repositories/home:/manuelschneid3r/xUbuntu_{{ansible_distribution_version}}/ /"
+    repo: "deb [arch={{arch}} signed-by={{manuelschneid3r_signing_key}}] http://download.opensuse.org/repositories/home:/manuelschneid3r/xUbuntu_{{ansible_distribution_version}}/ /"
+  vars:
+    arch: "{{'arm64' if ansible_facts['architecture'] == 'arm64' else 'amd64'}}"
   become: yes
 
 - name: Install Albert apt package

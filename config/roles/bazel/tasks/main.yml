@@ -10,9 +10,9 @@
 
 - name: Download iBazel executable
   get_url:
-    url: "{{ibazel_release_url_root}}_{{ibazel_os}}_{{ibazel_cpu}}"
+    url: "{{ibazel_release_url_root}}_{{os}}_{{arch}}"
     dest: "{{xdg_bin_home}}/ibazel"
     mode: "0755"
   vars:
-    ibazel_os: "{{'darwin' if ansible_facts['os_family'] == 'Darwin' else 'linux'}}"
-    ibazel_cpu: "{{'arm64' if ansible_facts['architecture'] == 'arm64' else 'amd64'}}"
+    os: "{{'darwin' if ansible_facts['os_family'] == 'Darwin' else 'linux'}}"
+    arch: "{{'arm64' if ansible_facts['architecture'] == 'arm64' else 'amd64'}}"
