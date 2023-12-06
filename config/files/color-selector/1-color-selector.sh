@@ -27,7 +27,7 @@ function shell_color_bg() {
   echo -e "48;5;$color"
 }
 
-export COLOR_SELECTOR_LIGHT=15
-export COLOR_SELECTOR_DARK=8
+export COLOR_SELECTOR_BG=15
+export COLOR_SELECTOR_FG=8
 export COLOR_SELECTOR_ACTIVE="$(select_color)"
 export COLOR_SELECTOR_INACTIVE=10

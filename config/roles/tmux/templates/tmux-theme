@@ -1,8 +1,8 @@
 #!/bin/bash --norc
 set -euo pipefail
 
-COLOR_LIGHT="colour$COLOR_SELECTOR_LIGHT"
-COLOR_DARK="colour$COLOR_SELECTOR_DARK"
+COLOR_BG="colour$COLOR_SELECTOR_BG"
+COLOR_FG="colour$COLOR_SELECTOR_FG"
 COLOR_ACTIVE="colour$COLOR_SELECTOR_ACTIVE"
 COLOR_INACTIVE="colour$COLOR_SELECTOR_INACTIVE"
 
@@ -53,23 +53,23 @@ EOF
 }
 
 function status-left() {
-  echo -n "#[fg=$COLOR_DARK,bg=$COLOR_LIGHT]"
+  echo -n "#[fg=$COLOR_FG,bg=$COLOR_BG]"
   echo -n "$(_tmux_session_info) | $(hostname) "
-  echo "#[fg=$COLOR_LIGHT,bg=$COLOR_DARK] "
+  echo "#[fg=$COLOR_BG,bg=$COLOR_FG] "
 }
 
 function status-right() {
-  echo -n "#[fg=$COLOR_DARK,bg=$COLOR_LIGHT] "
+  echo -n "#[fg=$COLOR_FG,bg=$COLOR_BG] "
   echo "$(_load_average) | $(_uptime) | $(_date_time)"
 }
 
 function window-status-format() {
-  echo -n "#[fg=$COLOR_LIGHT,bg=$COLOR_INACTIVE]"
+  echo -n "#[fg=$COLOR_BG,bg=$COLOR_INACTIVE]"
   echo " $(_tmux_window_info) "
 }
 
 function window-status-current-format() {
-  echo -n "#[fg=$COLOR_LIGHT,bg=$COLOR_ACTIVE]"
+  echo -n "#[fg=$COLOR_BG,bg=$COLOR_ACTIVE]"
   echo " $(_tmux_window_info) "
 }
 

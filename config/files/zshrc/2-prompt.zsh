@@ -30,21 +30,21 @@ function prompt_end() {
 
 function build_prompt() {
   last_bg='NONE'
-  prompt_segment "$COLOR_SELECTOR_DARK" "$COLOR_SELECTOR_LIGHT" "%?"
-  prompt_segment "$COLOR_SELECTOR_LIGHT" "$COLOR_SELECTOR_DARK" "%n"
-  prompt_segment "$COLOR_SELECTOR_DARK" "$COLOR_SELECTOR_LIGHT" "%M"
-  prompt_segment "$COLOR_SELECTOR_LIGHT" "$COLOR_SELECTOR_DARK" "%D{%Y/%m/%d}"
-  prompt_segment "$COLOR_SELECTOR_DARK" "$COLOR_SELECTOR_LIGHT" "%D{%H:%M:%S}"
+  prompt_segment "$COLOR_SELECTOR_FG" "$COLOR_SELECTOR_BG" "%?"
+  prompt_segment "$COLOR_SELECTOR_BG" "$COLOR_SELECTOR_FG" "%n"
+  prompt_segment "$COLOR_SELECTOR_FG" "$COLOR_SELECTOR_BG" "%M"
+  prompt_segment "$COLOR_SELECTOR_BG" "$COLOR_SELECTOR_FG" "%D{%Y/%m/%d}"
+  prompt_segment "$COLOR_SELECTOR_FG" "$COLOR_SELECTOR_BG" "%D{%H:%M:%S}"
   prompt_end
   echo
 
   last_bg='NONE'
-  prompt_segment "$COLOR_SELECTOR_ACTIVE" "$COLOR_SELECTOR_LIGHT" '%~'
+  prompt_segment "$COLOR_SELECTOR_ACTIVE" "$COLOR_SELECTOR_BG" '%~'
   prompt_end
   echo
 
   last_bg='NONE'
-  prompt_segment "$COLOR_SELECTOR_DARK" "$COLOR_SELECTOR_LIGHT" '%#'
+  prompt_segment "$COLOR_SELECTOR_FG" "$COLOR_SELECTOR_BG" '%#'
   prompt_end
 }
 
