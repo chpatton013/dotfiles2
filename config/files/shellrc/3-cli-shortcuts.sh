@@ -27,7 +27,7 @@ function gg() {
 }
 
 function uriencode() {
-  docker run --interactive stedolan/jq --raw-input --raw-output --slurp '@uri'
+  jq --raw-input --raw-output --slurp '@uri'
 }
 
 function k() {

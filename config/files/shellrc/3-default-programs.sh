@@ -14,4 +14,6 @@ LESS+=" --hilite-unread"
 LESS+=" --tabs=2"
 export LESS
 
+export JQ_COLORS="0;90:0;34:0;34:0;33:0;32:1;30:1;30:1;34"
+
 export CLICOLOR=1
