@@ -6,6 +6,7 @@ dependencies:
 - git
 - go
 - lua
+- neovim
 - node
 - python
 - ruby

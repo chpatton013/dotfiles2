@@ -1,0 +1,11 @@
+---
+
+- name: Install Neovim build dependencies apt packages
+  apt:
+    pkg:
+      - cmake
+      - curl
+      - gettext
+      - ninja-build
+      - unzip
+  become: yes

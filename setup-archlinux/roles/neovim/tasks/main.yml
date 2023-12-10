@@ -1,0 +1,11 @@
+---
+
+- name: Install Neovim dependency pacman packages
+  pacman:
+    name:
+      - base-devel
+      - cmake
+      - curl
+      - ninja
+      - unzip
+  become: yes
