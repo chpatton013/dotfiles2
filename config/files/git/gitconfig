@@ -54,6 +54,8 @@
   user = chpatton013
 [hub]
   host = github.com
+[init]
+  defaultBranch = main
 [interactive]
   diffFilter = delta --color-only
 [merge]
