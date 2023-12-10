@@ -1,5 +1,5 @@
 function l() {
-  ls --classify --escape --human-readable "$@"
+  ls --classify --color=always --escape --human-readable "$@"
 }
 
 function ll() {
