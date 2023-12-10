@@ -1,6 +1,6 @@
 ---
 
-- name: Install Alacritty dependency apt packages
+- name: Install Alacritty build dependencies apt packages
   apt:
     pkg:
     - cmake
