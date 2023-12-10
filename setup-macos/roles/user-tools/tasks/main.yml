@@ -3,7 +3,6 @@
 - name: Install user tool homebrew packages
   homebrew:
     name:
-    - docker
     - docker-compose
     - tree
     - w3m
@@ -14,6 +13,7 @@
     - alfred
     - caffeine
     - discord
+    - docker
     - firefox
     - firefox-developer-edition
     - iterm2
