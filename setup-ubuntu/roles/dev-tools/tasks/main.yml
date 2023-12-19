@@ -8,6 +8,7 @@
     - cmake
     - curl
     - jq
+    - openjdk-17-jdk-headless
     - sshfs
     - wget
     - zlib1g

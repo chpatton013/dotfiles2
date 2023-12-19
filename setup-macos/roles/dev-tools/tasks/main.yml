@@ -9,6 +9,7 @@
     - git
     - golang
     - ifstat
+    - java
     - jq
     - less
     - libvirt

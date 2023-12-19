@@ -7,6 +7,7 @@
     - git
     - go
     - jq
+    - jre-openjkd
     - libvirt
     - lua
     - neovim
