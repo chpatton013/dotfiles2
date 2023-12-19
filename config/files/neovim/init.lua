@@ -355,20 +355,16 @@ vim.defer_fn(
         "antlersls",      -- Antlr
         "arduino_language_server", -- Arduino
         "ast_grep",       -- ASTGrep
-        "autotools_ls",   -- autoconf/make
         "bashls",         -- Bash
         "clangd",         -- C/C++
         "cssls",          -- CSS
         "docker_compose_language_service", -- DockerCompose
         "dockerls",       -- Docker
         "dotls",          -- Dot
-        "gopls",          -- Go
         "graphql",        -- GraphQL
         "helm_ls",        -- Heml
         "html",           -- HTML
-        "jqls",           -- jq
         "jsonls",         -- JSON
-        "jsonnet_ls",     -- Jsonnet
         "lemminx",        -- XML
         "lua_ls",         -- Lua
         "marksman",       -- Markdown
@@ -378,7 +374,6 @@ vim.defer_fn(
         "pyright",        -- Python
         "rust_analyzer",  -- Rust
         "sorbet",         -- Ruby
-        "spectral",       -- OpenAPI
         "sqlls",          -- SQL
         "taplo",          -- TOML
         "terraformls",    -- Terraform

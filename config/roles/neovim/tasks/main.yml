@@ -9,12 +9,12 @@
 
   - name: Configure, make, and install Neovim release (this will take a while)
     shell:
-      chdir: "{{neovim_release_dir}}/src"
+      chdir: "{{neovim_release_dir}}"
       cmd: |
         set -ex
-        make CMAKE_BUILD_TYPE=Release
-        make MAKE_INSTALL_PREFIX={{xdg_prefix_home}} install
-      creates: "{{xdg_bin_home}}/neovim"
+        make CMAKE_BUILD_TYPE=Release CMAKE_EXTRA_FLAGS=-DCMAKE_INSTALL_PREFIX={{xdg_prefix_home}}
+        make install
+      creates: "{{xdg_bin_home}}/nvim"
   when: ansible_facts['os_family'] != "Darwin"
 
 - name: Create Neovim directories
@@ -65,6 +65,10 @@
     dest: "{{neovim_data_dir}}/lazy/lazy.nvim"
     version: stable
     depth: 1
+
+- name: Install Neovim Plugins
+  command:
+    cmd: nvim "+Lazy install" +MasonUpdate +:qa
 
 - name: Link Shell RC file
   file:

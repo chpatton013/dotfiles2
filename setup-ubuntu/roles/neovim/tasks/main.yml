@@ -1,5 +1,11 @@
 ---
 
+- name: Install neovim apt packages
+  apt:
+    pkg:
+    - neovim
+  become: yes
+
 - name: Install Neovim build dependencies apt packages
   apt:
     pkg:
