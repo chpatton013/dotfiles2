@@ -20,16 +20,36 @@
     follow: no
     force: yes
 
-- name: Install dev-tools go packages
-  command:
-    cmd: go install {{item}}
-    creates: "{{go_data_dir}}/bin/{{item|basename}}"
-  environment:
-    GO111MODULE: "on"
-  with_items:
-  - github.com/mvdan/sh/cmd/shfmt@latest
-  - github.com/bazelbuild/buildtools/buildifier@latest
-  - github.com/bazelbuild/buildtools/buildozer@latest
+- name: Get version of Go toolchain
+  command: go version
+  register: go_version_result
+
+- set_fact:
+    go_version: "{{go_version_result.stdout|regex_search('[0-9]+.[0-9]+.[0-9]+')}}"
+
+- block:
+
+  - name: Install dev-tools go packages (go <= 1.15)
+    when: "go_version is version('1.5', '<=')"
+    command:
+      cmd: go get {{item.name}}
+      creates: "{{go_data_dir}}/bin/{{item.name|basename}}"
+    environment:
+      GO111MODULE: "on"
+    with_items: "{{go_pkgs}}"
+
+  - name: Install dev-tools go packages (go > 1.15)
+    when: "go_version is version('1.5', '>')"
+    command:
+      cmd: go install {{item.name}}@{{item.version}}
+      creates: "{{go_data_dir}}/bin/{{item.name|basename}}"
+    with_items: "{{go_pkgs}}"
+
+  vars:
+    go_pkgs:
+    - {name: github.com/mvdan/sh/cmd/shfmt, version: latest}
+    - {name: github.com/bazelbuild/buildtools/buildifier, version: latest}
+    - {name: github.com/bazelbuild/buildtools/buildozer, version: latest}
 
 - name: Link Go Shell RC file
   file:
