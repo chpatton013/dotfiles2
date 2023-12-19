@@ -28,6 +28,7 @@ let g:formatdef_shfmt='"shfmt -s -i ".(&expandtab ? shiftwidth() : "0")'
 
 " Use `,` instead of `\` for the map leader
 let g:mapleader=','
+let g:maplocalleader=','
 
 " UltiSnips
 let g:UltiSnipsExpandTrigger='<C-Space>'
@@ -109,7 +110,6 @@ set shellslash            " Use forward slashes regardless of OS
 " File management
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-set autowrite         " Automatically save before commands like :next and :make
 set noswapfile        " Do not use swap files
 set noautoread        " Overwrite setting in vim-sensible
 scriptencoding utf-8  " Treat all files like UTF-8
@@ -153,12 +153,13 @@ nnoremap <Leader>g :GitGutterBufferToggle<CR>
 " Text rendering
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+set breakindent   " Indent wrapped lines
 set cpoptions+=$  " Show dollar sign at end of text to be changed
 set display+=uhex " Show unprintable characters hexadecimal as <xx> instead of using ^C and ~C
 set nowrap        " Do not soft-wrap lines by default
 set showmatch     " Show matching () {} etc
 set list listchars=tab:⇥·,trail:·,extends:⇉,precedes:⇇,conceal:░,nbsp:␣
-set fillchars=vert:▚,fold:░
+set fillchars=fold:░
 
 " Toggle various invertible settings on/off
 nnoremap <Leader>c :set cursorline!<CR>
@@ -291,7 +292,7 @@ augroup FileTypeSettings
   autocmd FileType vim setlocal commentstring=\"\ %s
 
   " Enable spell-check in prose
-  autocmd FileType gitcommit,mail,text setlocal spell
+  autocmd FileType gitcommit,mail,markdown,text setlocal spell
 
   " Use indent-folding in syntax-sparse filetypes
   autocmd FileType bzl,python,vim setlocal foldmethod=indent
