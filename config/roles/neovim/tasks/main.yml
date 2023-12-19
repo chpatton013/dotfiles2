@@ -1,0 +1,75 @@
+---
+
+- block:
+  - name: Download and unpack Neovim release tarball
+    unarchive:
+      src: "{{neovim_release_url}}"
+      dest: "{{source_releases_data_dir}}"
+      remote_src: yes
+
+  - name: Configure, make, and install Neovim release (this will take a while)
+    shell:
+      chdir: "{{neovim_release_dir}}/src"
+      cmd: |
+        set -ex
+        make CMAKE_BUILD_TYPE=Release
+        make MAKE_INSTALL_PREFIX={{xdg_prefix_home}} install
+      creates: "{{xdg_bin_home}}/neovim"
+  when: ansible_facts['os_family'] != "Darwin"
+
+- name: Create Neovim directories
+  file:
+    dest: "{{neovim_config_dir}}"
+    state: directory
+    mode: 0700
+  with_items:
+    - "{{neovim_config_dir}}"
+    - "{{neovim_data_dir}}"
+    - "{{neovim_data_dir}}/lazy"
+
+- name: Render Neovim Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-neovim.sh"
+    mode: 0400
+
+- name: Link Neovim config files
+  file:
+    src: "{{dotfiles_src_dir}}/neovim/{{item}}"
+    dest: "{{neovim_config_dir}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - init.lua
+
+- name: Link Neovim config directory
+  file:
+    src: "{{neovim_config_dir}}"
+    dest: "{{xdg_config_home}}/nvim"
+    state: link
+    follow: no
+    force: yes
+
+- name: Link Neovim data directory
+  file:
+    src: "{{neovim_data_dir}}"
+    dest: "{{xdg_data_home}}/nvim"
+    state: link
+    follow: no
+    force: yes
+
+- name: Download Neovim Plugin manager
+  git:
+    repo: https://github.com/folke/lazy.nvim
+    dest: "{{neovim_data_dir}}/lazy/lazy.nvim"
+    version: stable
+    depth: 1
+
+- name: Link Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/neovim/3-neovim.sh"
+    dest: "{{shellrc_config_dir}}/3-neovim.sh"
+    state: link
+    follow: no
+    force: yes

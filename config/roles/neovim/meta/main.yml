@@ -1,0 +1,9 @@
+---
+
+dependencies:
+- dotfiles
+- fzf
+- shellrc
+- solarized
+- source-releases
+- xdg

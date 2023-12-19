@@ -33,3 +33,19 @@ function uriencode() {
 function k() {
   kubectl "$@"
 }
+
+function e() {
+  "$EDITOR" "$@"
+}
+
+function eo() {
+  e -o "$@"
+}
+
+function eO() {
+  e -O "$@"
+}
+
+function ep() {
+  e -p "$@"
+}

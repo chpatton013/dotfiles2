@@ -1,5 +1,5 @@
 function v() {
-  "$EDITOR" "$@"
+  vim "$@"
 }
 
 function vo() {

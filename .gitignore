@@ -1,5 +1,7 @@
 # Vim swap files
 *.sw?
+# Vim plugin lockfile
+lazy-lock.json
 # Emacs swap files
 ~*
 # Ansible playbook retry files

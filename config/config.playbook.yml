@@ -12,6 +12,7 @@
     - {role: gem, tags: [gem]}
     - {role: git, tags: [git]}
     - {role: go, tags: [go]}
+    - {role: neovim, tags: [neovim]}
     - {role: npm, tags: [npm]}
     - {role: pip, tags: [pip]}
     - {role: ssh-agent-canonicalize, tags: [ssh-agent-canonicalize]}

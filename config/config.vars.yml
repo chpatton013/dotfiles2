@@ -7,3 +7,4 @@ xdg_config_home: "{{ansible_env.XDG_CONFIG_HOME | default('~/.config') | expandu
 xdg_data_home: "{{ansible_env.XDG_DATA_HOME | default('~/.local/share') | expanduser}}"
 xdg_lib_home: "{{ansible_env.XDG_LIB_HOME | default('~/.local/lib') | expanduser}}"
 xdg_lib64_home: "{{xdg_lib_home}}64"
+xdg_state_home: "{{ansible_env.XDG_STATE_HOME | default('~/.local/state') | expanduser}}"

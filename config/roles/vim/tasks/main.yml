@@ -61,37 +61,20 @@
 - name: Link Vim RC file
   file:
     src: "{{vim_config_dir}}/vimrc"
-    dest: "{{item}}"
+    dest: ~/.vimrc
     state: link
     follow: no
     force: yes
-  with_items:
-  - ~/.vimrc
-  - "{{vim_config_dir}}/init.vim"
 
 - name: Unlink Vim RC directory
   file:
-    path: "{{item}}"
+    path: ~/.vim
     state: absent
-  with_items:
-  - ~/.vim
-  - "{{xdg_config_home}}/nvim"
 
 - name: Link Vim RC directory
   file:
     src: "{{vim_config_dir}}"
-    dest: "{{item}}"
-    state: link
-    follow: no
-    force: yes
-  with_items:
-  - ~/.vim
-  - "{{xdg_config_home}}/nvim"
-
-- name: Link Neovim data directory
-  file:
-    src: "{{vim_data_dir}}"
-    dest: "{{xdg_data_home}}/nvim"
+    dest: ~/.vim
     state: link
     follow: no
     force: yes
