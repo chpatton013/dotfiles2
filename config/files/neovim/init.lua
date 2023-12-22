@@ -99,6 +99,7 @@ require("lazy").setup({
     "tpope/vim-fugitive",               -- Integrated git commands
     "tpope/vim-repeat",                 -- Better command classification for `.`
     "tpope/vim-sensible",               -- Good defaults for everyone
+    "tpope/vim-sleuth",                 -- Detect tabstop and shiftwidth automatically
     "tpope/vim-speeddating",            -- {In,De}crement (<C-A>, <C-X>) works with datetimes
     "tpope/vim-vinegar",                -- Improve usability of netrw directory browser
     "wesQ3/vim-windowswap",             -- Window swapping keybindings
