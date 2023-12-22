@@ -69,6 +69,11 @@ local gitsigns_on_attach = function(bufnr)
   )
 end
 
+local set_colorscheme = function()
+  vim.opt.background = "light"
+  vim.cmd.colorscheme "solarized"
+end
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
@@ -89,8 +94,9 @@ require("lazy").setup({
 
   {
     "maxmx03/solarized.nvim", -- Solarized color theme for nvim
+    lazy = false,
     priority=1000,
-    config=function() vim.cmd.colorscheme = "solarized" end,
+    config=set_colorscheme,
   },
 
   {
@@ -490,7 +496,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 --------------------------------------------------------------------------------
 
 vim.opt.termguicolors = true
-vim.opt.background = "light"
 
 local solarized = require("solarized")
 solarized.setup()
