@@ -55,7 +55,7 @@ local gitsigns_on_attach = function(bufnr)
         gitsigns.preview_hunk,
         { buffer = bufnr, desc = "Preview git hunk" }
     )
-    -- Don"t override the built-in and fugitive keymaps.
+    -- Don't override the built-in and fugitive keymaps.
     vim.keymap.set(
         { "n", "v" },
         "]c",
@@ -72,7 +72,7 @@ end
 
 local set_colorscheme = function()
     vim.opt.background = "light"
-    vim.cmd.colorscheme "solarized"
+    vim.cmd.colorscheme("solarized")
 end
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
