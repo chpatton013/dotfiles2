@@ -340,12 +340,77 @@ local lsp_on_attach = function(_, bufnr)
   )
 end
 
+local language_servers = {
+  -- Ansible
+  ansiblels = {},
+  -- Antlr
+  antlersls = {},
+  -- Arduino
+  arduino_language_server = {},
+  -- ASTGrep
+  ast_grep = {},
+  -- Bash
+  bashls = {},
+  -- C/C++
+  clangd = {},
+  -- CSS
+  cssls = {},
+  -- DockerCompose
+  docker_compose_language_service = {},
+  -- Docker
+  dockerls = {},
+  -- Dot
+  dotls = {},
+  -- GraphQL
+  graphql = {},
+  -- Heml
+  helm_ls = {},
+  -- HTML
+  html = {},
+  -- JSON
+  jsonls = {},
+  -- XML
+  lemminx = {},
+  -- Lua
+  lua_ls = {},
+  -- Markdown
+  marksman = {},
+  -- CMake
+  neocmake = {},
+  -- C#
+  omnisharp = {},
+  -- Perl
+  perlnavigator = {},
+  -- Python
+  pyright = {},
+  -- Rust
+  rust_analyzer = {},
+  -- Ruby
+  sorbet = {},
+  -- SQL
+  sqlls = {},
+  -- TOML
+  taplo = {},
+  -- Terraform
+  terraformls = {},
+  -- JS/TS
+  tsserver = {},
+  -- Vim
+  vimls = {},
+  -- Vue
+  vuels = {},
+  -- YAML
+  yamlls = {},
+}
+
 vim.defer_fn(
   function()
     -- mason-lspconfig requires that these setup functions are called in this order
     -- before setting up the servers.
     require("mason").setup()
     require("mason-lspconfig").setup()
+
+    -- Setup neovim lua configuration
     require("neodev").setup()
 
     -- nvim-cmp supports additional completion capabilities, so broadcast that to servers.
@@ -356,44 +421,16 @@ vim.defer_fn(
     local mason_lspconfig = require("mason-lspconfig")
 
     mason_lspconfig.setup({
-      ensure_installed={
-        "ansiblels",      -- Ansible
-        "antlersls",      -- Antlr
-        "arduino_language_server", -- Arduino
-        "ast_grep",       -- ASTGrep
-        "bashls",         -- Bash
-        "clangd",         -- C/C++
-        "cssls",          -- CSS
-        "docker_compose_language_service", -- DockerCompose
-        "dockerls",       -- Docker
-        "dotls",          -- Dot
-        "graphql",        -- GraphQL
-        "helm_ls",        -- Heml
-        "html",           -- HTML
-        "jsonls",         -- JSON
-        "lemminx",        -- XML
-        "lua_ls",         -- Lua
-        "marksman",       -- Markdown
-        "neocmake",       -- CMake
-        "omnisharp",      -- C#
-        "perlnavigator",  -- Perl
-        "pyright",        -- Python
-        "rust_analyzer",  -- Rust
-        "sorbet",         -- Ruby
-        "sqlls",          -- SQL
-        "taplo",          -- TOML
-        "terraformls",    -- Terraform
-        "tsserver",       -- JS/TS
-        "vimls",          -- Vim
-        "vuels",          -- Vue
-        "yamlls",         -- YAML
-      },
+      ensure_installed=vim.tbl_keys(language_servers),
     })
     mason_lspconfig.setup_handlers({
       function(server_name)
+        local server = language_servers[server_name] or {}
         lspconfig[server_name].setup({
           capabilities=capabilities,
           on_attach=lsp_on_attach,
+          settings=server,
+          filetypes=server.filetypes,
         })
       end
     })
@@ -562,7 +599,7 @@ require("colorizer").setup()
 -- Search and Completion
 --------------------------------------------------------------------------------
 
--- Searches are case-insensitive unless upper case characters are used
+-- Case-insensitive searching UNLESS \C or capital in search
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
@@ -665,6 +702,34 @@ vim.defer_fn(
         {name="cmdline"},
       }),
     })
+  end,
+  0
+)
+
+vim.defer_fn(
+  function()
+    local which_key = require("which-key")
+
+    -- document existing key chains
+    which_key.register({
+      ["<leader>c"]={name="[C]ode", _="which_key_ignore"},
+      ["<leader>d"]={name="[D]ocument", _="which_key_ignore"},
+      ["<leader>g"]={name="[G]it", _="which_key_ignore"},
+      ["<leader>h"]={name="Git [H]unk", _="which_key_ignore"},
+      ["<leader>r"]={name="[R]ename", _="which_key_ignore"},
+      ["<leader>s"]={name="[S]earch", _="which_key_ignore"},
+      ["<leader>t"]={name="[T]oggle", _="which_key_ignore"},
+      ["<leader>w"]={name="[W]orkspace", _="which_key_ignore"},
+    })
+    -- register which-key VISUAL mode
+    -- required for visual <leader>hs (hunk stage) to work
+    which_key.register(
+      {
+        ["<leader>"]={name="VISUAL <leader>"},
+        ["<leader>h"]={"Git [H]unk"},
+      },
+      {mode="v"}
+    )
   end,
   0
 )
