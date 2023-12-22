@@ -461,6 +461,7 @@ vim.opt.listchars = {
 }
 
 vim.opt.fillchars = {
+  vert="┆",
   fold="░",
 }
 
