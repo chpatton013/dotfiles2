@@ -506,7 +506,7 @@ vim.opt.listchars = {
     extends = "⇉",
     precedes = "⇇",
     conceal = "░",
-    nbsp = "␣",
+    nbsp = "·",
 }
 
 vim.opt.fillchars = {
