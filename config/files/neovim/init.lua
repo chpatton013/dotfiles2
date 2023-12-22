@@ -617,8 +617,10 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
 -- Ignore generated files in the source tree
-vim.opt.wildignore:append("*.sw?")
-vim.opt.wildignore:append("*.pyc")
+local generated_files = {"*.sw?", "*.pyc"}
+for _, match in ipairs(generated_files) do
+    vim.opt.wildignore:append(match)
+end
 
 vim.opt.wildignorecase = true -- Tab completion is case-insensitive
 
