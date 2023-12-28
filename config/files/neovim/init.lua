@@ -425,7 +425,7 @@ vim.defer_fn(
         require("mason").setup()
         require("mason-lspconfig").setup()
 
-        -- Setup neovim lua configuration
+        -- Setup neovim lua configuration before lspconfig
         require("neodev").setup()
 
         -- nvim-cmp supports additional completion capabilities, so broadcast that to servers.
@@ -620,7 +620,10 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
 -- Ignore generated files in the source tree
-local generated_files = {"*.sw?", "*.pyc"}
+local generated_files = {
+    "*.sw?",    -- Vim swap files
+    "*.pyc",    -- Python bytecode
+}
 for _, match in ipairs(generated_files) do
     vim.opt.wildignore:append(match)
 end
@@ -769,10 +772,15 @@ vim.opt.softtabstop = 2     -- Number of spaces that a <Tab> counts for while pe
 
 -- Comment formatting
 vim.opt.commentstring = "# %s"      -- Most languages use `#` as their line-comment character
-vim.opt.formatoptions:append("r")   -- Insert comment leader after hitting <Enter>
-vim.opt.formatoptions:append("o")   -- Insert comment leader after hitting 'o' or 'O' in command mode
-vim.opt.formatoptions:append("n")   -- Auto-format lists, wrapping to text after the list bullet char (requires autoindent)
-vim.opt.formatoptions:append("l")   -- Don't auto-wrap if a line is already longer than textwidth
+local format_options = {
+    "r",   -- Insert comment leader after hitting <Enter>
+    "o",   -- Insert comment leader after hitting 'o' or 'O' in command mode
+    "n",   -- Auto-format lists, wrapping to text after the list bullet char (requires autoindent)
+    "l",   -- Don't auto-wrap if a line is already longer than textwidth
+}
+for _, opt in ipairs(format_options) do
+    vim.opt.formatoptions:append(opt)
+end
 
 -- Spell check language and dictionaries
 vim.opt.spelllang = "en_us"
