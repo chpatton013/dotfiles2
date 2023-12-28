@@ -731,6 +731,8 @@ vim.defer_fn(
     function()
         local which_key = require("which-key")
 
+        which_key.setup()
+
         -- document existing key chains
         which_key.register({
             ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
