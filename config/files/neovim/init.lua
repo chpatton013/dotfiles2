@@ -30,46 +30,6 @@ vim.g.maplocalleader = ","
 -- Plugin configuration
 --------------------------------------------------------------------------------
 
-local gitsigns_on_attach = function(bufnr)
-    local gitsigns = require("gitsigns")
-
-    local jump_to_next_hunk = function()
-        if vim.wo.diff then
-            return "]c"
-        end
-        vim.schedule(function() gitsigns.next_hunk() end)
-        return "<Ignore>"
-    end
-
-    local jump_to_prev_hunk = function()
-        if vim.wo.diff then
-            return "[c"
-        end
-        vim.schedule(function() gitsigns.prev_hunk() end)
-        return "<Ignore>"
-    end
-
-    vim.keymap.set(
-        "n",
-        "<leader>hp",
-        gitsigns.preview_hunk,
-        { buffer = bufnr, desc = "Preview git hunk" }
-    )
-    -- Don't override the built-in and fugitive keymaps.
-    vim.keymap.set(
-        { "n", "v" },
-        "]c",
-        jump_to_next_hunk,
-        { expr = true, buffer = bufnr, desc = "Jump to next hunk" }
-    )
-    vim.keymap.set(
-        { "n", "v" },
-        "[c",
-        jump_to_prev_hunk,
-        { expr = true, buffer = bufnr, desc = "Jump to previous hunk" }
-    )
-end
-
 local set_colorscheme = function()
     vim.opt.background = "light"
     vim.cmd.colorscheme("solarized")
@@ -90,6 +50,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     "PeterRincker/vim-argumentative",   -- Rearrange function arguments
     "folke/which-key.nvim",             -- Display a popup with keybindings for ex commands
+    "lewis6991/gitsigns.nvim",          -- Git buffer decorations
     "michaeljsmith/vim-indent-object",  -- Treat indent structures as text objects
     "norcalli/nvim-colorizer.lua",      -- Color highlighter
     "tpope/vim-abolish",                -- Assorted word-munging utilities (Abolish, Subvert, Coerce)
@@ -139,21 +100,6 @@ require("lazy").setup({
     },
 
     {
-        "lewis6991/gitsigns.nvim",  -- Git buffer decorations
-        opts = {
-            signs = {
-                add = { text = "+" },
-                change = { text = "~" },
-                delete = { text = "_" },
-                topdelete = { text = "‾" },
-                changedelete = { text = "~" },
-            },
-            attach_to_untracked = false,
-            on_attach = gitsigns_on_attach,
-        },
-    },
-
-    {
         "nvim-telescope/telescope.nvim",    -- Fuzzy finder over lists
         branch = "0.1.x",
         dependencies = {
@@ -177,6 +123,63 @@ require("lazy").setup({
         build = ":TSUpdate",
     },
 })
+
+-- GitSigns
+--------------------------------------------------------------------------------
+
+local gitsigns_on_attach = function(bufnr)
+    local gitsigns = require("gitsigns")
+
+    local jump_to_next_hunk = function()
+        if vim.wo.diff then
+            return "]c"
+        end
+        vim.schedule(function() gitsigns.next_hunk() end)
+        return "<Ignore>"
+    end
+
+    local jump_to_prev_hunk = function()
+        if vim.wo.diff then
+            return "[c"
+        end
+        vim.schedule(function() gitsigns.prev_hunk() end)
+        return "<Ignore>"
+    end
+
+    vim.keymap.set(
+        "n",
+        "<leader>hp",
+        gitsigns.preview_hunk,
+        { buffer = bufnr, desc = "Preview git hunk" }
+    )
+    -- Don't override the built-in and fugitive keymaps.
+    vim.keymap.set(
+        { "n", "v" },
+        "]c",
+        jump_to_next_hunk,
+        { expr = true, buffer = bufnr, desc = "Jump to next hunk" }
+    )
+    vim.keymap.set(
+        { "n", "v" },
+        "[c",
+        jump_to_prev_hunk,
+        { expr = true, buffer = bufnr, desc = "Jump to previous hunk" }
+    )
+end
+
+require("gitsigns").setup(
+    {
+        signs = {
+            add = { text = "+" },
+            change = { text = "~" },
+            delete = { text = "_" },
+            topdelete = { text = "‾" },
+            changedelete = { text = "~" },
+        },
+        attach_to_untracked = false,
+        on_attach = gitsigns_on_attach,
+    }
+)
 
 -- Telescope
 --------------------------------------------------------------------------------
