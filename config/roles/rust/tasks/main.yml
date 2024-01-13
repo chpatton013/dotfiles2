@@ -51,6 +51,7 @@
   template:
     src: vars.sh
     dest: "{{shellrc_config_dir}}/0-rust.sh"
+    mode: 0400
 
 - name: Link Rust Shell RC file
   file:
