@@ -30,27 +30,23 @@ vim.g.maplocalleader = ","
 -- Plugin configuration
 --------------------------------------------------------------------------------
 
-local set_colorscheme = function()
-    vim.opt.background = "light"
-    vim.cmd.colorscheme("solarized")
-end
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  }
+    vim.fn.system {
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    }
 end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     "PeterRincker/vim-argumentative",   -- Rearrange function arguments
     "folke/which-key.nvim",             -- Display a popup with keybindings for ex commands
     "lewis6991/gitsigns.nvim",          -- Git buffer decorations
+    "maxmx03/solarized.nvim",           -- Solarized color theme for nvim
     "michaeljsmith/vim-indent-object",  -- Treat indent structures as text objects
     "norcalli/nvim-colorizer.lua",      -- Color highlighter
     "tpope/vim-abolish",                -- Assorted word-munging utilities (Abolish, Subvert, Coerce)
@@ -64,13 +60,6 @@ require("lazy").setup({
     "tpope/vim-speeddating",            -- {In,De}crement (<C-A>, <C-X>) works with datetimes
     "tpope/vim-vinegar",                -- Improve usability of netrw directory browser
     "wesQ3/vim-windowswap",             -- Window swapping keybindings
-
-    {
-        "maxmx03/solarized.nvim",   -- Solarized color theme for nvim
-        lazy = false,
-        priority = 1000,
-        config = set_colorscheme,
-    },
 
     {
         "lukas-reineke/indent-blankline.nvim",  -- Add indent guides
@@ -553,6 +542,9 @@ vim.opt.termguicolors = true
 
 local solarized = require("solarized")
 solarized.setup()
+
+vim.cmd.colorscheme("solarized")
+vim.opt.background = "light"
 
 local solarized_utils = require("solarized.utils")
 local solarized_palette = require("solarized.palette")
