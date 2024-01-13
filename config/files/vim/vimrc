@@ -7,7 +7,7 @@ augroup FileTypeAssociation
   autocmd!
   autocmd BufNewFile,BufRead *.impl,*.inl setlocal filetype=cpp
   autocmd BufNewFile,BufRead *.jsx setlocal filetype=javascript.jsx
-  autocmd BufNewFile,BufRead *.launch setlocal filetype=xml
+  autocmd BufNewFile,BufRead *.launch,*.plist setlocal filetype=xml
   autocmd BufNewFile,BufRead *.make setlocal filetype=make
   autocmd BufNewFile,BufRead *.snippets setlocal filetype=snippets
   autocmd BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx

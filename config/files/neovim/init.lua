@@ -6,7 +6,7 @@
 -- Map from filetype -> [pattern]
 local filetype_associations = {
     cpp = { "*.impl" },
-    xml = { "*.launch" },
+    xml = { "*.launch", "*.plist" },
     make = { "*.make" },
     text = { "INSTALL", "NEWS", "TODO" },
 }
