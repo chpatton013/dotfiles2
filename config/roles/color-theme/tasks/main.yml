@@ -18,4 +18,4 @@
     follow: no
     force: yes
   with_items:
-  - 1-color-theme.sh
+  - 3-color-theme.sh

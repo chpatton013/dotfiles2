@@ -165,7 +165,7 @@ function inactive-fg() {
   echo $COLOR_THEME_INACTIVE_BG
 }
 
-function print-source() {
+function print-shell() {
 cat <<EOF
 export COLOR_THEME_NAME="$COLOR_THEME_NAME"
 export COLOR_THEME_ACTIVE_BG="$COLOR_THEME_ACTIVE_BG"
@@ -197,8 +197,8 @@ function main() {
 
   for arg in "$@"; do
     case "$arg" in
-      source)
-        print-source
+      shell)
+        print-shell
         ;;
       name)
         echo $COLOR_THEME_NAME
@@ -243,10 +243,10 @@ function main() {
 
 function usage() {
   cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") [ source | <style> ]
+Usage: $(basename "${BASH_SOURCE[0]}") [ shell | <style> ]
 
-Source:
-  Print a string that can be sourced by your shell to set environment variables
+Shell:
+  Print a string that can be eval'd by your shell to set environment variables
   for every theme style.
 
 Styles:

@@ -34,4 +34,4 @@
   - 2-bindings.zsh
   - 2-completion.zsh
   - 2-history.zsh
-  - 2-prompt.zsh
+  - 4-prompt.zsh

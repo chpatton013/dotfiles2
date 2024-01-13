@@ -1,1 +1,0 @@
-eval $(color-theme source)

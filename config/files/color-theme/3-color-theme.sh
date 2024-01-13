@@ -1,0 +1,1 @@
+eval $(color-theme shell)
