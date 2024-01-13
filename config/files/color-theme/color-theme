@@ -1,0 +1,267 @@
+#!/bin/bash --norc
+set -euo pipefail
+
+function color_theme_name() {
+  # TODO: read this from an observable file
+  echo light
+}
+
+# Monotone palette (darkest to lightest)
+#   16  : true black
+#   8   : background in dark
+#   0   : bg highlight in dark
+#   10  : muted text in dark
+#   11  : body text in light
+#   12  : body text in dark
+#   14  : muted text in light
+#   7   : bg highlight in light
+#   15  : background in light
+#   255 : true white
+
+COLOR_THEME_DARK_ACTIVE_FG=15
+COLOR_THEME_DARK_INACTIVE_BG=10
+COLOR_THEME_DARK_INACTIVE_FG=7
+COLOR_THEME_DARK_BODY_BG=8
+COLOR_THEME_DARK_BODY_FG=12
+COLOR_THEME_DARK_HIGHLIGHT_BG=0
+COLOR_THEME_DARK_HIGHLIGHT_FG=15
+COLOR_THEME_DARK_INVERT_BG=7
+COLOR_THEME_DARK_INVERT_FG=8
+
+COLOR_THEME_LIGHT_ACTIVE_FG=15
+COLOR_THEME_LIGHT_INACTIVE_BG=14
+COLOR_THEME_LIGHT_INACTIVE_FG=7
+COLOR_THEME_LIGHT_BODY_BG=15
+COLOR_THEME_LIGHT_BODY_FG=11
+COLOR_THEME_LIGHT_HIGHLIGHT_BG=7
+COLOR_THEME_LIGHT_HIGHLIGHT_FG=8
+COLOR_THEME_LIGHT_INVERT_BG=0
+COLOR_THEME_LIGHT_INVERT_FG=15
+
+# Accent palette
+#   1   : red (triad)
+#   2   : green (tetrad)
+#   3   : yellow (split complement)
+#   4   : blue (monotone)
+#   5   : magenta (tetrad)
+#   6   : cyan (analogous)
+#   9   : orange (complement)
+#   13  : violet (analogous)
+
+function color_theme_active_bg() {
+  local colors index hostname_hash hostname_value
+  colors=( 1 2 3 4 5 6 )
+  hostname_hash="$(hostname | sha256sum | awk '{print $1}' | tr '[:lower:]' '[:upper:]')"
+  hostname_value="$(( 16#${hostname_hash:(-12)} ))"
+  index="$(( $hostname_value % ${#colors[@]} ))"
+  readonly colors index hostname_hash hostname_value
+
+  echo ${colors[$index]}
+}
+
+function color_theme_active_fg() {
+  [ "x$COLOR_THEME_NAME" = "xdark" ] &&
+    echo $COLOR_THEME_DARK_ACTIVE_FG ||
+    echo $COLOR_THEME_LIGHT_ACTIVE_FG
+}
+
+function color_theme_inactive_bg() {
+  [ "x$COLOR_THEME_NAME" = "xdark" ] &&
+    echo $COLOR_THEME_DARK_INACTIVE_BG ||
+    echo $COLOR_THEME_LIGHT_INACTIVE_BG
+}
+
+function color_theme_inactive_fg() {
+  [ "x$COLOR_THEME_NAME" = "xdark" ] &&
+    echo $COLOR_THEME_DARK_INACTIVE_FG ||
+    echo $COLOR_THEME_LIGHT_INACTIVE_FG
+}
+
+function color_theme_body_bg() {
+  [ "x$COLOR_THEME_NAME" = "xdark" ] &&
+    echo $COLOR_THEME_DARK_BODY_BG ||
+    echo $COLOR_THEME_LIGHT_BODY_BG
+}
+
+function color_theme_body_fg() {
+  [ "x$COLOR_THEME_NAME" = "xdark" ] &&
+    echo $COLOR_THEME_DARK_BODY_FG ||
+    echo $COLOR_THEME_LIGHT_BODY_FG
+}
+
+function color_theme_highlight_bg() {
+  [ "x$COLOR_THEME_NAME" = "xdark" ] &&
+    echo $COLOR_THEME_DARK_HIGHLIGHT_BG ||
+    echo $COLOR_THEME_LIGHT_HIGHLIGHT_BG
+}
+
+function color_theme_highlight_fg() {
+  [ "x$COLOR_THEME_NAME" = "xdark" ] &&
+    echo $COLOR_THEME_DARK_HIGHLIGHT_FG ||
+    echo $COLOR_THEME_LIGHT_HIGHLIGHT_FG
+}
+
+function color_theme_invert_bg() {
+  [ "x$COLOR_THEME_NAME" = "xdark" ] &&
+    echo $COLOR_THEME_DARK_INVERT_BG ||
+    echo $COLOR_THEME_LIGHT_INVERT_BG
+}
+
+function color_theme_invert_fg() {
+  [ "x$COLOR_THEME_NAME" = "xdark" ] &&
+    echo $COLOR_THEME_DARK_INVERT_FG ||
+    echo $COLOR_THEME_LIGHT_INVERT_FG
+}
+
+COLOR_THEME_NAME="${COLOR_THEME_NAME:-"$(color_theme_name)"}"
+COLOR_THEME_ACTIVE_BG="$(color_theme_active_bg)"
+COLOR_THEME_ACTIVE_FG="$(color_theme_active_fg)"
+COLOR_THEME_INACTIVE_BG="$(color_theme_inactive_bg)"
+COLOR_THEME_INACTIVE_FG="$(color_theme_inactive_fg)"
+COLOR_THEME_BODY_BG="$(color_theme_body_bg)"
+COLOR_THEME_BODY_FG="$(color_theme_body_fg)"
+COLOR_THEME_HIGHLIGHT_BG="$(color_theme_highlight_bg)"
+COLOR_THEME_HIGHLIGHT_FG="$(color_theme_highlight_fg)"
+COLOR_THEME_INVERT_BG="$(color_theme_invert_bg)"
+COLOR_THEME_INVERT_FG="$(color_theme_invert_fg)"
+
+function body-bg() {
+  echo $COLOR_THEME_BODY_BG
+}
+
+function body-fg() {
+  echo $COLOR_THEME_BODY_FG
+}
+
+function highlight-bg() {
+  echo $COLOR_THEME_HIGHLIGHT_BG
+}
+
+function highlight-fg() {
+  echo $COLOR_THEME_HIGHLIGHT_BG
+}
+
+function invert-bg() {
+  echo $COLOR_THEME_INVERT_BG
+}
+
+function invert-fg() {
+  echo $COLOR_THEME_INVERT_BG
+}
+
+function active-bg() {
+  echo $COLOR_THEME_ACTIVE_BG
+}
+
+function active-fg() {
+  echo $COLOR_THEME_ACTIVE_BG
+}
+
+function inactive-bg() {
+  echo $COLOR_THEME_INACTIVE_BG
+}
+
+function inactive-fg() {
+  echo $COLOR_THEME_INACTIVE_BG
+}
+
+function print-source() {
+cat <<EOF
+export COLOR_THEME_NAME="$COLOR_THEME_NAME"
+export COLOR_THEME_ACTIVE_BG="$COLOR_THEME_ACTIVE_BG"
+export COLOR_THEME_ACTIVE_FG="$COLOR_THEME_ACTIVE_FG"
+export COLOR_THEME_INACTIVE_BG="$COLOR_THEME_INACTIVE_BG"
+export COLOR_THEME_INACTIVE_FG="$COLOR_THEME_INACTIVE_FG"
+export COLOR_THEME_BODY_BG="$COLOR_THEME_BODY_BG"
+export COLOR_THEME_BODY_FG="$COLOR_THEME_BODY_FG"
+export COLOR_THEME_HIGHLIGHT_BG="$COLOR_THEME_HIGHLIGHT_BG"
+export COLOR_THEME_HIGHLIGHT_FG="$COLOR_THEME_HIGHLIGHT_FG"
+export COLOR_THEME_INVERT_BG="$COLOR_THEME_INVERT_BG"
+export COLOR_THEME_INVERT_FG="$COLOR_THEME_INVERT_FG"
+EOF
+}
+
+
+function main() {
+  for arg in "$@"; do
+    if [[ $arg == -h || $arg == -help || $arg == --help ]]; then
+      usage
+      exit 0
+    fi
+  done
+
+  if [[ $# == 0 ]]; then
+    usage
+    exit 1
+  fi
+
+  for arg in "$@"; do
+    case "$arg" in
+      source)
+        print-source
+        ;;
+      name)
+        echo $COLOR_THEME_NAME
+        ;;
+      body-bg)
+        echo $COLOR_THEME_BODY_BG
+        ;;
+      body-fg)
+        echo $COLOR_THEME_BODY_FG
+        ;;
+      highlight-bg)
+        echo $COLOR_THEME_HIGHLIGHT_BG
+        ;;
+      highlight-fg)
+        echo $COLOR_THEME_HIGHLIGHT_FG
+        ;;
+      invert-bg)
+        echo $COLOR_THEME_INVERT_BG
+        ;;
+      invert-fg)
+        echo $COLOR_THEME_INVERT_FG
+        ;;
+      active-bg)
+        echo $COLOR_THEME_ACTIVE_BG
+        ;;
+      active-fg)
+        echo $COLOR_THEME_ACTIVE_FG
+        ;;
+      inactive-bg)
+        echo $COLOR_THEME_INACTIVE_BG
+        ;;
+      inactive-fg)
+        echo $COLOR_THEME_INACTIVE_FG
+        ;;
+      *)
+        usage
+        exit 1
+        ;;
+    esac
+  done
+}
+
+function usage() {
+  cat <<EOF
+Usage: $(basename "${BASH_SOURCE[0]}") [ source | <style> ]
+
+Source:
+  Print a string that can be sourced by your shell to set environment variables
+  for every theme style.
+
+Styles:
+  name: Name of the theme.
+  body-bg: Background color of body text.
+  body-fg: Foreground color of body text.
+  highlight-bg: Background color of highlighted text
+  highlight-fg: Foreground color of highlighted text
+  invert-bg: Background color of invert-highlighted text
+  invert-fg: Foreground color of invert-highlighted text
+  active-bg: Background color of active text
+  active-fg: Foreground color of active text
+  inactive-bg: Background color of inactive text
+  inactive-fg: Foreground color of inactive text
+EOF
+}
+
+main "$@"

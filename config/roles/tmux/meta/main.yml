@@ -1,7 +1,7 @@
 ---
 
 dependencies:
-- color-selector
+- color-theme
 - github-repos
 - shellrc
 - solarized

@@ -42,11 +42,13 @@
   with_items:
   - tmux.conf
 
-- name: Render Tmux executable template files
-  template:
-    src: "{{item}}"
+- name: Link Tmux executable files
+  file:
+    src: "{{dotfiles_src_dir}}/tmux/{{item}}"
     dest: "{{xdg_bin_home}}/{{item}}"
-    mode: 0500
+    state: link
+    follow: no
+    force: yes
   with_items:
   - tmux-theme
 

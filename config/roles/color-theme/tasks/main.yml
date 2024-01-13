@@ -1,0 +1,21 @@
+---
+
+- name: Link Color Theme executable files
+  file:
+    src: "{{dotfiles_src_dir}}/color-theme/{{item}}"
+    dest: "{{xdg_bin_home}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - color-theme
+
+- name: Link Color Theme Shell RC files
+  file:
+    src: "{{dotfiles_src_dir}}/color-theme/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - 1-color-theme.sh

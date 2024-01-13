@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-source "{{dotfiles_src_dir}}/color-selector/1-color-selector.sh"
-select_color

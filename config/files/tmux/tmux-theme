@@ -1,10 +1,14 @@
 #!/bin/bash --norc
 set -euo pipefail
 
-COLOR_BG="colour$COLOR_SELECTOR_BG"
-COLOR_FG="colour$COLOR_SELECTOR_FG"
-COLOR_ACTIVE="colour$COLOR_SELECTOR_ACTIVE"
-COLOR_INACTIVE="colour$COLOR_SELECTOR_INACTIVE"
+eval "$(color-theme source)"
+
+COLOR_HIGHLIGHT_BG="colour$COLOR_THEME_HIGHLIGHT_BG"
+COLOR_HIGHLIGHT_FG="colour$COLOR_THEME_HIGHLIGHT_FG"
+COLOR_ACTIVE_BG="colour$COLOR_THEME_ACTIVE_BG"
+COLOR_ACTIVE_FG="colour$COLOR_THEME_ACTIVE_FG"
+COLOR_INACTIVE_BG="colour$COLOR_THEME_INACTIVE_BG"
+COLOR_INACTIVE_FG="colour$COLOR_THEME_INACTIVE_FG"
 
 function main() {
   for arg in "$@"; do
@@ -45,6 +49,8 @@ function usage() {
   cat <<EOF
 Usage: $(basename "${BASH_SOURCE[0]}") <segment>
 Segments:
+  status-bg: Background color of status bar text.
+  status-fg: Foreground color of status bar text.
   status-left: Information about the Tmux session.
   status-right: Information about the system.
   window-status-format: The format for the non-active window.
@@ -53,23 +59,23 @@ EOF
 }
 
 function status-left() {
-  echo -n "#[fg=$COLOR_FG,bg=$COLOR_BG]"
-  echo -n "$(_tmux_session_info) | $(hostname) "
-  echo "#[fg=$COLOR_BG,bg=$COLOR_FG] "
+  echo -n "#[fg=$COLOR_HIGHLIGHT_FG,bg=$COLOR_HIGHLIGHT_BG]"
+  echo -n " $(_tmux_session_info) | $(hostname) "
+  echo
 }
 
 function status-right() {
-  echo -n "#[fg=$COLOR_FG,bg=$COLOR_BG] "
-  echo "$(_load_average) | $(_uptime) | $(_date_time)"
+  echo -n "#[fg=$COLOR_HIGHLIGHT_FG,bg=$COLOR_HIGHLIGHT_BG] "
+  echo "$(_load_average) | $(_uptime) | $(_date_time) "
 }
 
 function window-status-format() {
-  echo -n "#[fg=$COLOR_BG,bg=$COLOR_INACTIVE]"
+  echo -n "#[fg=$COLOR_INACTIVE_FG,bg=$COLOR_INACTIVE_BG]"
   echo " $(_tmux_window_info) "
 }
 
 function window-status-current-format() {
-  echo -n "#[fg=$COLOR_BG,bg=$COLOR_ACTIVE]"
+  echo -n "#[fg=$COLOR_ACTIVE_FG,bg=$COLOR_ACTIVE_BG]"
   echo " $(_tmux_window_info) "
 }
 
