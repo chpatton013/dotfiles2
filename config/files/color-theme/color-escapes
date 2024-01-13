@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+
+from dataclasses import dataclass
+from typing import Iterator
+
+
+STYLES = {
+    0: "Normal",
+    1: "Bold",
+    2: "Faint",
+    3: "Italic",
+    4: "Underline",
+    5: "SlowBlink",
+    6: "FastBlink",
+    7: "Invert",
+    8: "Conceal",
+    9: "Strike",
+}
+
+COLORS = {
+    0: "Black",
+    1: "Red",
+    2: "Green",
+    3: "Yellow",
+    4: "Blue",
+    5: "Magenta",
+    6: "Cyan",
+    7: "White",
+    9: "Default",
+}
+
+
+def color_name(color: int) -> str:
+    name = COLORS[color % 10]
+    return name if color < 90 else f"Br{name}"
+
+
+def fmt_cell(t: str, p: str = "", s: str = "", w: int = 10, j: str = "^") -> str:
+    assert len(t) <= w, t
+    fmt = "{:" + j + str(w) + "}"
+    fmt = p + fmt + s
+    return fmt.format(t)
+
+
+@dataclass
+class Cell:
+    style: int
+    fg: int
+    bg: int
+
+    def __str__(self) -> str:
+        mode = ";".join([str(self.style), str(self.fg), str(self.bg)])
+        return fmt_cell(mode, "\x1b[{}m".format(mode), "\x1b[0m")
+
+
+@dataclass
+class Table:
+    name: str
+    row_names: list[str]
+    col_names: list[str]
+    cells: list[list[Cell]]
+
+    def __str__(self) -> str:
+        s = fmt_cell(self.name, j="<")
+        for col_name in self.col_names:
+            s += fmt_cell(col_name)
+        for index in range(len(self.cells)):
+            row = self.cells[index]
+            row_name = self.row_names[index]
+            s += "\n"
+            s += fmt_cell(row_name, j=">")
+            for cell in row:
+                s += str(cell)
+        return s
+
+
+def styles() -> Iterator[int]: yield from STYLES.keys()
+def regular_fgs() -> Iterator[int]: yield from range(30, 38)
+def regular_bgs() -> Iterator[int]: yield from range(40, 48)
+def bright_fgs() -> Iterator[int]: yield from range(90, 98)
+def bright_bgs() -> Iterator[int]: yield from range(100, 108)
+
+
+def style_table(style: int, bright: bool) -> Table:
+    row_names = []
+    cells = []
+    for fg in bright_fgs() if bright else regular_fgs():
+        row = []
+        row_names.append(color_name(fg) + " ")
+        for bg in bright_bgs() if bright else regular_bgs():
+            row.append(Cell(style, fg, bg))
+        cells.append(row)
+    col_names = [color_name(cell.bg) for cell in cells[0]]
+    return Table(
+        name=STYLES[style],
+        row_names=row_names,
+        col_names=col_names,
+        cells=cells,
+    )
+
+
+def fg_table(fg: int) -> Table:
+    row_names = []
+    cells = []
+    for style in styles():
+        row = []
+        row_names.append(STYLES[style] + " ")
+        for bg in regular_bgs():
+            row.append(Cell(style, fg, bg))
+        cells.append(row)
+    col_names = [color_name(cell.bg) for cell in cells[0]]
+    return Table(
+        name=color_name(fg) + "Fg",
+        row_names=row_names,
+        col_names=col_names,
+        cells=cells,
+    )
+
+
+def bg_table(bg: int) -> Table:
+    row_names = []
+    cells = []
+    for style in styles():
+        row = []
+        row_names.append(STYLES[style] + " ")
+        for fg in regular_fgs():
+            row.append(Cell(style, fg, bg))
+        cells.append(row)
+    col_names = [color_name(cell.fg) for cell in cells[0]]
+    return Table(
+        name=color_name(bg) + "Bg",
+        row_names=row_names,
+        col_names=col_names,
+        cells=cells,
+    )
+
+
+def tables() -> Iterator[Table]:
+    for style in styles():
+        yield style_table(style, False)
+        yield style_table(style, True)
+    yield fg_table(39)
+    yield bg_table(49)
+
+
+if __name__ == "__main__":
+    for t in tables():
+        print(str(t))
+        print()

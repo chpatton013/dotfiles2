@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+import os
+
+def print_text(fg: int, bg: int, message: str):
+    format = f"38;5;{fg};48;5;{bg}"
+    print(f"\x1b[{format}m {message} \x1b[0m")
+
+print_text(int(os.environ["COLOR_THEME_BODY_FG"]),
+           int(os.environ["COLOR_THEME_BODY_BG"]),
+           "body")
+print_text(int(os.environ["COLOR_THEME_ACTIVE_FG"]),
+           int(os.environ["COLOR_THEME_ACTIVE_BG"]),
+           "active")
+print_text(int(os.environ["COLOR_THEME_INACTIVE_FG"]),
+           int(os.environ["COLOR_THEME_INACTIVE_BG"]),
+           "inactive")
+print_text(int(os.environ["COLOR_THEME_INVERT_FG"]),
+           int(os.environ["COLOR_THEME_INVERT_BG"]),
+           "invert")
+print_text(int(os.environ["COLOR_THEME_HIGHLIGHT_FG"]),
+           int(os.environ["COLOR_THEME_HIGHLIGHT_BG"]),
+           "highlight")

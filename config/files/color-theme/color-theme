@@ -125,46 +125,6 @@ COLOR_THEME_HIGHLIGHT_FG="$(color_theme_highlight_fg)"
 COLOR_THEME_INVERT_BG="$(color_theme_invert_bg)"
 COLOR_THEME_INVERT_FG="$(color_theme_invert_fg)"
 
-function body-bg() {
-  echo $COLOR_THEME_BODY_BG
-}
-
-function body-fg() {
-  echo $COLOR_THEME_BODY_FG
-}
-
-function highlight-bg() {
-  echo $COLOR_THEME_HIGHLIGHT_BG
-}
-
-function highlight-fg() {
-  echo $COLOR_THEME_HIGHLIGHT_BG
-}
-
-function invert-bg() {
-  echo $COLOR_THEME_INVERT_BG
-}
-
-function invert-fg() {
-  echo $COLOR_THEME_INVERT_BG
-}
-
-function active-bg() {
-  echo $COLOR_THEME_ACTIVE_BG
-}
-
-function active-fg() {
-  echo $COLOR_THEME_ACTIVE_BG
-}
-
-function inactive-bg() {
-  echo $COLOR_THEME_INACTIVE_BG
-}
-
-function inactive-fg() {
-  echo $COLOR_THEME_INACTIVE_BG
-}
-
 function print-shell() {
 cat <<EOF
 export COLOR_THEME_NAME="$COLOR_THEME_NAME"
@@ -180,7 +140,6 @@ export COLOR_THEME_INVERT_BG="$COLOR_THEME_INVERT_BG"
 export COLOR_THEME_INVERT_FG="$COLOR_THEME_INVERT_FG"
 EOF
 }
-
 
 function main() {
   for arg in "$@"; do

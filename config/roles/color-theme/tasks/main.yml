@@ -8,7 +8,10 @@
     follow: no
     force: yes
   with_items:
+  - color-codes
+  - color-escapes
   - color-theme
+  - color-theme-test
 
 - name: Link Color Theme Shell RC files
   file:
