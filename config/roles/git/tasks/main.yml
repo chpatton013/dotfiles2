@@ -44,3 +44,4 @@
     force: yes
   with_items:
   - git-push-retry
+  - repobin

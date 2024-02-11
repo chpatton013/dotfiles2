@@ -1,0 +1,57 @@
+#!/bin/bash --norc
+set -euo pipefail
+
+function usage_message() {
+  cat <<EOF
+usage: repobin [-h | --help]
+       repobin <exec> [exec-options...]
+EOF
+}
+
+function help_message() {
+  cat <<EOF
+repobin: Run an executable relative to your git repository's root
+
+EOF
+  usage_message
+}
+
+if [ $# -lt 1 ]; then
+  usage_message >&2
+  exit 1
+fi
+
+verbose=
+case "$1" in
+  -h|--help)
+    help_message
+    exit 0
+    ;;
+  -v|--verbose)
+    verbose=1
+    shift
+    ;;
+esac
+
+function log() {
+  if [ -z "$verbose" ]; then
+    return
+  fi
+  echo +"$@" >&2
+}
+
+executable="$1"
+shift
+
+reporoot="$(git rev-parse --show-toplevel || true)"
+repoexecutable="$( (cd "$reporoot" && realpath -s "$executable") )"
+
+log executable: $executable
+log repository: $reporoot
+log repo-executable: $repoexecutable
+
+if [ -x "$repoexecutable" ]; then
+  exec "$repoexecutable" "$@"
+else
+  exec "$executable" "$@"
+fi
