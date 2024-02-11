@@ -14,10 +14,6 @@ LESS+=" --ignore-case"
 # Display ANSI color escape sequences and OSC 8 hyperlink sequences in "raw"
 # form, which enables embedded colors and hyperlinks in output.
 LESS+=" --RAW-CONTROL-CHARS"
-# Highlight the first new line after any forward movement larger than one line.
-# Also highlights the target line after a g or p command. The highlight is
-# removed at the next command which causes movement.
-LESS+=" --HILITE-UNREAD"
 # Set tab stops. With one argument, tab stops are set at multiples of `n`.
 LESS+=" --tabs=4"
 # NOTE: As appealing as it to include -J/--status-column or -N/--LINE-NUMBERS,
