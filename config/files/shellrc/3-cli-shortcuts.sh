@@ -26,6 +26,10 @@ function gg() {
   rg --hidden --no-heading --smart-case --glob '!.git/*' --glob '!*/.git/*' "$@"
 }
 
+function erd() {
+  tree -aF --filesfirst --gitignore -I '.git/|__pycache__/|*.pyc|.mypy_cache/' "$@"
+}
+
 function uriencode() {
   jq --raw-input --raw-output --slurp '@uri'
 }
