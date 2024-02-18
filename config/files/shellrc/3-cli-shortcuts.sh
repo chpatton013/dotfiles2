@@ -23,7 +23,7 @@ function wfind() {
 }
 
 function gg() {
-  rg --hidden --no-heading --smart-case "$@"
+  rg --hidden --no-heading --smart-case --glob '!.git/*' --glob '!*/.git/*' "$@"
 }
 
 function uriencode() {
