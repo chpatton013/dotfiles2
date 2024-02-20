@@ -85,6 +85,13 @@ require("lazy").setup({
             "hrsh7th/cmp-nvim-lsp", -- nvim-cmp source for neovim builtin LSP client
             "hrsh7th/cmp-nvim-lua", -- nvim-cmp source for neovim Lua API
             "hrsh7th/cmp-path",     -- nvim-cmp source for filesystem paths
+
+            -- Snippet Engine & its associated nvim-cmp source
+            {
+                "L3MON4D3/LuaSnip",
+                build = "make install_jsregexp",
+            },
+            "saadparwaiz1/cmp_luasnip",
         },
     },
 
@@ -173,143 +180,132 @@ require("gitsigns").setup(
 -- Telescope
 --------------------------------------------------------------------------------
 
-vim.defer_fn(
-    function()
-        local telescope = require("telescope")
-        local telescope_actions = require("telescope.actions")
-        local telescope_undo_actions = require("telescope-undo.actions")
+local telescope = require("telescope")
+local telescope_actions = require("telescope.actions")
+local telescope_undo_actions = require("telescope-undo.actions")
 
-        telescope.setup({
-            extensions = {
-                undo = {
-                    mappings = {
-                        i = {
-                            ["<cr>"] = telescope_undo_actions.restore
-                        },
-                    },
+telescope.setup({
+    extensions = {
+        undo = {
+            mappings = {
+                i = {
+                    ["<cr>"] = telescope_undo_actions.restore
                 },
             },
-            defaults = {
-                mappings = {
-                    i = {
-                        ["<C-u>"] = false,
-                        ["<C-d>"] = false,
-                        ["<C-q>"] = (
-                            telescope_actions.smart_send_to_qflist +
-                            telescope_actions.open_qflist
-                        ),
-                    },
-                },
+        },
+    },
+    defaults = {
+        mappings = {
+            i = {
+                ["<C-u>"] = false,
+                ["<C-d>"] = false,
+                ["<C-q>"] = (
+                    telescope_actions.smart_send_to_qflist +
+                    telescope_actions.open_qflist
+                ),
             },
-        })
+        },
+    },
+})
 
-        -- Enable telescope fzf native, if installed
-        pcall(telescope.load_extension, "fzf")
-        telescope.load_extension("undo")
+-- Enable telescope fzf native, if installed
+pcall(telescope.load_extension, "fzf")
+telescope.load_extension("undo")
 
-        local telescope_builtin = require("telescope.builtin")
-        vim.keymap.set("n", "<leader><space>", telescope_builtin.git_files, { desc = "Search git files" })
-        vim.keymap.set("n", "<leader>sb", telescope_builtin.buffers, { desc = "[S]earch [B]uffers" })
-        vim.keymap.set("n", "<leader>sf", telescope_builtin.find_files, { desc = "[S]earch [F]iles" })
-        vim.keymap.set("n", "<leader>sh", telescope_builtin.help_tags, { desc = "[S]earch [H]elp" })
-        vim.keymap.set("n", "<leader>sw", telescope_builtin.grep_string, { desc = "[S]earch current [W]ord" })
-        vim.keymap.set("n", "<leader>sg", telescope_builtin.live_grep, { desc = "[S]earch by [G]rep" })
-        vim.keymap.set("n", "<leader>sd", telescope_builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
-        vim.keymap.set("n", "<leader>sr", telescope_builtin.resume, { desc = "[S]earch [R]esume" })
-    end,
-    0
-)
+local telescope_builtin = require("telescope.builtin")
+vim.keymap.set("n", "<leader><space>", telescope_builtin.git_files, { desc = "Search git files" })
+vim.keymap.set("n", "<leader>sb", telescope_builtin.buffers, { desc = "[S]earch [B]uffers" })
+vim.keymap.set("n", "<leader>sf", telescope_builtin.find_files, { desc = "[S]earch [F]iles" })
+vim.keymap.set("n", "<leader>sh", telescope_builtin.help_tags, { desc = "[S]earch [H]elp" })
+vim.keymap.set("n", "<leader>sw", telescope_builtin.grep_string, { desc = "[S]earch current [W]ord" })
+vim.keymap.set("n", "<leader>sg", telescope_builtin.live_grep, { desc = "[S]earch by [G]rep" })
+vim.keymap.set("n", "<leader>sd", telescope_builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
+vim.keymap.set("n", "<leader>sr", telescope_builtin.resume, { desc = "[S]earch [R]esume" })
 
 -- Treesitter
 --------------------------------------------------------------------------------
 
--- Defer Treesitter setup after first render to improve startup time of 'nvim {filename}'
-vim.defer_fn(
-    function()
-        require("nvim-treesitter.configs").setup({
-            -- Add languages to be installed here that you want installed for treesitter
-            ensure_installed = {
-                "bash",
-                "c",
-                "cpp",
-                "go",
-                "java",
-                "javascript",
-                "json",
-                "lua",
-                "python",
-                "rust",
-                "starlark",
-                "terraform",
-                "tsx",
-                "typescript",
-                "vim",
-                "vimdoc",
-                "yaml",
-            },
+require("nvim-treesitter.configs").setup({
+    -- Add languages to be installed here that you want installed for treesitter
+    ensure_installed = {
+        "bash",
+        "c",
+        "cpp",
+        "go",
+        "java",
+        "javascript",
+        "json",
+        "lua",
+        "python",
+        "rust",
+        "starlark",
+        "terraform",
+        "tsx",
+        "typescript",
+        "vim",
+        "vimdoc",
+        "yaml",
+    },
 
-            -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-            auto_install = false,
+    -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
+    auto_install = false,
 
-            highlight = { enable = true },
-            incremental_selection = {
-                enable = true,
-                keymaps = {
-                    init_selection = "<c-space>",
-                    node_incremental = "<c-space>",
-                    scope_incremental = "<c-s>",
-                    node_decremental = "<M-space>",
-                },
+    highlight = { enable = true },
+    incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = "<c-space>",
+            node_incremental = "<c-space>",
+            scope_incremental = "<c-s>",
+            node_decremental = "<M-space>",
+        },
+    },
+    indent = { enable = true },
+    textobjects = {
+        select = {
+            enable = true,
+            lookahead = true,   -- Automatically jump forward to textobj, similar to targets.vim
+            keymaps = {
+                -- You can use the capture groups defined in textobjects.scm
+                ["aa"] = "@parameter.outer",
+                ["ia"] = "@parameter.inner",
+                ["af"] = "@function.outer",
+                ["if"] = "@function.inner",
+                ["ac"] = "@class.outer",
+                ["ic"] = "@class.inner",
             },
-            indent = { enable = true },
-            textobjects = {
-                select = {
-                    enable = true,
-                    lookahead = true,   -- Automatically jump forward to textobj, similar to targets.vim
-                    keymaps = {
-                        -- You can use the capture groups defined in textobjects.scm
-                        ["aa"] = "@parameter.outer",
-                        ["ia"] = "@parameter.inner",
-                        ["af"] = "@function.outer",
-                        ["if"] = "@function.inner",
-                        ["ac"] = "@class.outer",
-                        ["ic"] = "@class.inner",
-                    },
-                },
-                move = {
-                    enable = true,
-                    set_jumps = true,   -- whether to set jumps in the jumplist
-                    goto_next_start = {
-                        ["]m"] = "@function.outer",
-                        ["]]"] = "@class.outer",
-                    },
-                    goto_next_end = {
-                        ["]M"] = "@function.outer",
-                        ["]["] = "@class.outer",
-                    },
-                    goto_previous_start = {
-                        ["[m"] = "@function.outer",
-                        ["[["] = "@class.outer",
-                    },
-                    goto_previous_end = {
-                        ["[M"] = "@function.outer",
-                        ["[]"] = "@class.outer",
-                    },
-                },
-                swap = {
-                    enable = true,
-                    swap_next = {
-                        ["<leader>a"] = "@parameter.inner",
-                    },
-                    swap_previous = {
-                        ["<leader>A"] = "@parameter.inner",
-                    },
-                },
+        },
+        move = {
+            enable = true,
+            set_jumps = true,   -- whether to set jumps in the jumplist
+            goto_next_start = {
+                ["]m"] = "@function.outer",
+                ["]]"] = "@class.outer",
             },
-        })
-    end,
-    0
-)
+            goto_next_end = {
+                ["]M"] = "@function.outer",
+                ["]["] = "@class.outer",
+            },
+            goto_previous_start = {
+                ["[m"] = "@function.outer",
+                ["[["] = "@class.outer",
+            },
+            goto_previous_end = {
+                ["[M"] = "@function.outer",
+                ["[]"] = "@class.outer",
+            },
+        },
+        swap = {
+            enable = true,
+            swap_next = {
+                ["<leader>a"] = "@parameter.inner",
+            },
+            swap_previous = {
+                ["<leader>A"] = "@parameter.inner",
+            },
+        },
+    },
+})
 
 -- Language servers
 --------------------------------------------------------------------------------
@@ -407,40 +403,35 @@ local language_servers = {
     yamlls = {},
 }
 
-vim.defer_fn(
-    function()
-        -- mason-lspconfig requires that these setup functions are called in this order
-        -- before setting up the servers.
-        require("mason").setup()
-        require("mason-lspconfig").setup()
+-- mason-lspconfig requires that these setup functions are called in this order
+-- before setting up the servers.
+require("mason").setup()
+require("mason-lspconfig").setup()
 
-        -- Setup neovim lua configuration before lspconfig
-        require("neodev").setup()
+-- Setup neovim lua configuration before lspconfig
+require("neodev").setup()
 
-        -- nvim-cmp supports additional completion capabilities, so broadcast that to servers.
-        local capabilities = vim.lsp.protocol.make_client_capabilities()
-        capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+-- nvim-cmp supports additional completion capabilities, so broadcast that to servers.
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
-        local lspconfig = require("lspconfig")
-        local mason_lspconfig = require("mason-lspconfig")
+local lspconfig = require("lspconfig")
+local mason_lspconfig = require("mason-lspconfig")
 
-        mason_lspconfig.setup({
-            ensure_installed = vim.tbl_keys(language_servers),
+mason_lspconfig.setup({
+    ensure_installed = vim.tbl_keys(language_servers),
+})
+mason_lspconfig.setup_handlers({
+    function(server_name)
+        local server = language_servers[server_name] or {}
+        lspconfig[server_name].setup({
+            capabilities = capabilities,
+            on_attach = lsp_on_attach,
+            settings = server,
+            filetypes = server.filetypes,
         })
-        mason_lspconfig.setup_handlers({
-            function(server_name)
-                local server = language_servers[server_name] or {}
-                lspconfig[server_name].setup({
-                    capabilities = capabilities,
-                    on_attach = lsp_on_attach,
-                    settings = server,
-                    filetypes = server.filetypes,
-                })
-            end
-        })
-    end,
-    0
-)
+    end
+})
 
 -- System management
 --------------------------------------------------------------------------------
@@ -632,121 +623,124 @@ vim.opt.wildmode = "list:longest,full"
 -- extra information in the preview window.
 vim.opt.completeopt = "menuone,noselect"
 
-vim.defer_fn(
-    function()
-        local cmp = require("cmp")
+local cmp = require("cmp")
 
-        local cmp_get_bufnrs = function()
-            local buf = vim.api.nvim_get_current_buf()
-            local line_count = vim.api.nvim_buf_line_count(buf)
-            local byte_size = vim.api.nvim_buf_get_offset(buf, line_count)
-            -- Skip buffers that are larger than 1MB
-            if byte_size > 1024 * 1024 then
-                return {}
-            end
-            return { buf }
+local luasnip = require("luasnip")
+require("luasnip.loaders.from_vscode").lazy_load()
+luasnip.config.setup()
+
+local cmp_get_bufnrs = function()
+    local buf = vim.api.nvim_get_current_buf()
+    local line_count = vim.api.nvim_buf_line_count(buf)
+    local byte_size = vim.api.nvim_buf_get_offset(buf, line_count)
+    -- Skip buffers that are larger than 1MB
+    if byte_size > 1024 * 1024 then
+        return {}
+    end
+    return { buf }
+end
+
+local cmp_select_next_item = function(fallback)
+    if cmp.visible() then
+        cmp.select_next_item()
+    else
+        fallback()
+    end
+end
+
+local cmp_select_prev_item = function(fallback)
+    if cmp.visible() then
+        cmp.select_prev_item()
+    else
+        fallback()
+    end
+end
+
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            luasnip.lsp_expand(args.body)
         end
+    },
+    completion = {
+        completeopt = "menu,menuone,noinsert",
+    },
+    mapping = cmp.mapping.preset.insert({
+        ["<C-n>"] = cmp.mapping.select_next_item(),
+        ["<C-p>"] = cmp.mapping.select_prev_item(),
+        ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<CR>"] = cmp.mapping.confirm({
+            behavior = cmp.ConfirmBehavior.Replace,
+            select = true,
+        }),
+        ["<Tab>"] = cmp.mapping(cmp_select_next_item, { "i", "s" }),
+        ["<S-Tab>"] = cmp.mapping(cmp_select_prev_item, { "i", "s" }),
+    }),
+    sources = cmp.config.sources({
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+    }, {
+        {
+            name = "buffer",
+            option = {
+                get_bufnrs = cmp_get_bufnrs,
+            }
+        },
+    }),
+})
 
-        local cmp_select_next_item = function(fallback)
-            if cmp.visible() then
-                cmp.select_next_item()
-            else
-                fallback()
-            end
-        end
+cmp.setup.cmdline({ "/", "?" }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+        {
+            name = "buffer",
+            option = {
+                get_bufnrs = cmp_get_bufnrs,
+            }
+        },
+    },
+})
 
-        local cmp_select_prev_item = function(fallback)
-            if cmp.visible() then
-                cmp.select_prev_item()
-            else
-                fallback()
-            end
-        end
-
-        cmp.setup({
-            mapping = cmp.mapping.preset.insert({
-                ["<C-n>"] = cmp.mapping.select_next_item(),
-                ["<C-p>"] = cmp.mapping.select_prev_item(),
-                ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-                ["<C-f>"] = cmp.mapping.scroll_docs(4),
-                ["<C-Space>"] = cmp.mapping.complete(),
-                ["<CR>"] = cmp.mapping.confirm({
-                    behavior = cmp.ConfirmBehavior.Replace,
-                    select = true,
-                }),
-                ["<Tab>"] = cmp.mapping(cmp_select_next_item, { "i", "s" }),
-                ["<S-Tab>"] = cmp.mapping(cmp_select_prev_item, { "i", "s" }),
-            }),
-            sources = cmp.config.sources({
-                { name = "nvim_lsp" },
-            }, {
-                {
-                    name = "buffer",
-                    option = {
-                        get_bufnrs = cmp_get_bufnrs,
-                    }
-                },
-            }),
-        })
-
-        cmp.setup.cmdline({ "/", "?" }, {
-            mapping = cmp.mapping.preset.cmdline(),
-            sources = {
-                {
-                    name = "buffer",
-                    option = {
-                        get_bufnrs = cmp_get_bufnrs,
-                    }
-                },
+cmp.setup.cmdline(":", {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+        {
+            name = "path",
+            option = {
+                trailing_slash = true,
+                label_trailing_slash = true,
             },
-        })
+        },
+    }, {
+        { name = "cmdline" },
+    }),
+})
 
-        cmp.setup.cmdline(":", {
-            mapping = cmp.mapping.preset.cmdline(),
-            sources = cmp.config.sources({
-                {
-                    name = "path",
-                    option = {
-                        trailing_slash = false,
-                        label_trailing_slash = true,
-                    },
-                },
-            }, {
-                { name = "cmdline" },
-            }),
-        })
-    end,
-    0
-)
+local which_key = require("which-key")
 
-vim.defer_fn(
-    function()
-        local which_key = require("which-key")
+which_key.setup()
 
-        which_key.setup()
-
-        -- document existing key chains
-        which_key.register({
-            ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-            ["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
-            ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
-            ["<leader>h"] = { name = "Git [H]unk", _ = "which_key_ignore" },
-            ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-            ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
-            ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
-            ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
-        })
-        -- register which-key VISUAL mode
-        -- required for visual <leader>hs (hunk stage) to work
-        which_key.register(
-            {
-                ["<leader>"] = { name = "VISUAL <leader>" },
-                ["<leader>h"] = { "Git [H]unk" },
-            },
-            { mode = "v" }
-        )
-    end,
-    0
+-- document existing key chains
+which_key.register({
+    ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
+    ["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
+    ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
+    ["<leader>h"] = { name = "Git [H]unk", _ = "which_key_ignore" },
+    ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
+    ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
+    ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
+    ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
+})
+-- register which-key VISUAL mode
+-- required for visual <leader>hs (hunk stage) to work
+which_key.register(
+    {
+        ["<leader>"] = { name = "VISUAL <leader>" },
+        ["<leader>h"] = { "Git [H]unk" },
+    },
+    { mode = "v" }
 )
 
 -- Input behavior
