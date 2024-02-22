@@ -10,6 +10,7 @@
     - inotify-tools
     - iotop
     - ncdu
+    - neofetch
     - nmap
     - sysstat
   become: yes

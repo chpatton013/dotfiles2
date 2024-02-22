@@ -21,6 +21,7 @@
     - ifstat
     - iftop
     - ncdu
+    - neofetch
     - nmap
     - rsync
     - watch
