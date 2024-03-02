@@ -17,6 +17,7 @@
     - neovim
     - node
     - openssh
+    - pipx
     - python3
     - qemu
     - reattach-to-user-namespace

@@ -12,6 +12,7 @@
     - lua
     - neovim
     - nodejs
+    - pipx
     - python
     - python-pip
     - qemu-full
