@@ -1,0 +1,24 @@
+---
+
+- block:
+  - name: Download and unpack Erd release tarball
+    unarchive:
+      src: "{{erd_release_url}}"
+      dest: "{{source_releases_data_dir}}"
+      remote_src: yes
+
+  - name: Install Erd release
+    command:
+      argv:
+      - pipx
+      - install
+      - "{{erd_release_dir}}"
+      creates: "{{xdg_bin_home}}/erd"
+
+- name: Link Erd RC file
+  file:
+    src: "{{dotfiles_src_dir}}/erd/erd.rc"
+    dest: "{{erd_config_file}}"
+    state: link
+    follow: no
+    force: yes

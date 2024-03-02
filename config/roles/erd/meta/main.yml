@@ -1,0 +1,6 @@
+---
+
+dependencies:
+- dotfiles
+- source-releases
+- xdg

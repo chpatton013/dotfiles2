@@ -1,0 +1,6 @@
+---
+
+erd_config_file: "{{xdg_config_home}}/erd.rc"
+erd_release_version: 0.1.0
+erd_release_url: "https://github.com/chpatton013/erd/archive/refs/tags/v{{erd_release_version}}.tar.gz"
+erd_release_dir: "{{source_releases_data_dir}}/erd-{{erd_release_version}}"
