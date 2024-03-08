@@ -3,5 +3,5 @@
 - name: Install Lua apt packages
   apt:
     pkg:
-    - lua5.2
+    - lua5.3
   become: yes
