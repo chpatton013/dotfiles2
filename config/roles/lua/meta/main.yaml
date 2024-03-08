@@ -1,0 +1,5 @@
+---
+
+dependencies:
+- source-releases
+- xdg

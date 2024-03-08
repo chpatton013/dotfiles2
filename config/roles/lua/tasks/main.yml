@@ -1,0 +1,19 @@
+---
+
+- block:
+  - name: Download and unpack Lua release tarball
+    unarchive:
+      src: "{{lua_release_url}}"
+      dest: "{{source_releases_data_dir}}"
+      remote_src: yes
+
+  - name: Configure, make, and install Lua release
+    shell:
+      chdir: "{{lua_release_dir}}"
+      cmd: |
+        set -ex
+        make
+        make test
+        make install INSTALL_TOP={{xdg_prefix_home}}
+      creates: "{{xdg_bin_home}}/lua"
+  when: ansible_facts['os_family'] != "Darwin"

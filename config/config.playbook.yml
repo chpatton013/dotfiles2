@@ -13,6 +13,7 @@
     - {role: gem, tags: [gem]}
     - {role: git, tags: [git]}
     - {role: go, tags: [go]}
+    - {role: lua, tags: [lua]}
     - {role: neovim, tags: [neovim]}
     - {role: npm, tags: [npm]}
     - {role: pip, tags: [pip]}
