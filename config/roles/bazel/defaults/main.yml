@@ -1,4 +1,4 @@
 ---
 
-ibazel_release_version: 0.23.7
+ibazel_release_version: 0.24.0
 ibazel_release_url_root: "https://github.com/bazelbuild/bazel-watcher/releases/download/v{{ibazel_release_version}}/ibazel"
