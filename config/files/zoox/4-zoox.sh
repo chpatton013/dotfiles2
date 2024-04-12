@@ -11,6 +11,8 @@ WORKTREE_ENVIRONMENT_ENTRYPOINT+=' && tmux attach -t "$project_name"'
 WORKTREE_ENVIRONMENT_ENTRYPOINT+=' || tmux new -s "$project_name"'
 export WORKTREE_ENVIRONMENT_ENTRYPOINT
 
+PATH+=":/opt/zoox/bin"
+
 export VLR_ROOT="$HOME"
 zooxrc="$(worktree_active_project_worktree)/scripts/shell/zooxrc.sh"
 if [ -f "$(readlink -e "$zooxrc")" ]; then
