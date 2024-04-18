@@ -30,7 +30,7 @@
 - block:
 
   - name: Install dev-tools go packages (go <= 1.15)
-    when: "go_version is version('1.5', '<=')"
+    when: "go_version is version('1.15', '<=')"
     command:
       cmd: go get {{item.name}}
       creates: "{{go_data_dir}}/bin/{{item.name|basename}}"
@@ -39,7 +39,7 @@
     with_items: "{{go_pkgs}}"
 
   - name: Install dev-tools go packages (go > 1.15)
-    when: "go_version is version('1.5', '>')"
+    when: "go_version is version('1.15', '>')"
     command:
       cmd: go install {{item.name}}@{{item.version}}
       creates: "{{go_data_dir}}/bin/{{item.name|basename}}"
