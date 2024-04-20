@@ -1,0 +1,10 @@
+# This file contains identity information for my work profile in Zoox's Github
+# Enterprise deployment.
+
+[github]
+  user = chris
+[hub]
+  host = git.zooxlabs.com
+[user]
+  name = Chris Patton
+  email = chris@zoox.com

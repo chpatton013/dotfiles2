@@ -1,0 +1,23 @@
+# This file contains config options that control the UI of the git command-line
+# tools.
+
+[color]
+  ui = true
+
+[diff]
+  colorMoved = default
+
+[merge]
+  tool = vimdiff
+  conflictstyle = diff3
+
+[core]
+  pager = delta
+
+[interactive]
+  diffFilter = delta --color-only
+
+[delta]
+  light = true
+  line-numbers = true
+  side-by-side = false
