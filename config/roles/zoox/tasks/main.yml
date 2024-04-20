@@ -8,43 +8,6 @@
     follow: no
     force: yes
 
-- name: Link Zoox Bazel RC file
-  file:
-    src: "{{dotfiles_src_dir}}/bazel/zoox.bazelrc"
-    dest: "~/.work.bazelrc"
-    state: link
-    follow: no
-    force: yes
-
-- name: Link Zoox Machine-Specific Bazel RC file
-  block:
-
-  - name: Link Zoox VDI Bazel RC file
-    file:
-      src: "{{dotfiles_src_dir}}/bazel/zoox.vdi.bazelrc"
-      dest: "~/.work-kraken.bazelrc"
-      state: link
-      follow: no
-      force: yes
-    when: ansible_processor_vcpus | int <= 4
-
-  - name: Link Zoox Desktop Bazel RC file
-    file:
-      src: "{{dotfiles_src_dir}}/bazel/zoox.desktop.bazelrc"
-      dest: "~/.work-kraken.bazelrc"
-      state: link
-      follow: no
-      force: yes
-    when: ansible_processor_vcpus | int > 4
-
-- name: Link Zoox GitConfig file
-  file:
-    src: "{{dotfiles_src_dir}}/git/zoox.gitconfig"
-    dest: "~/.work.gitconfig"
-    state: link
-    follow: no
-    force: yes
-
 - name: Create to-zweb executable
   copy:
     src: to-zweb

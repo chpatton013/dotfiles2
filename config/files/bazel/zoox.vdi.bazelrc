@@ -1,3 +1,0 @@
-# Use the build farm when performing build actions.
-# Schedule 16 jobs per core, and allocate 2 cores for local jobs.
-build --config=kraken --jobs=64 --local_execution_slots=2

@@ -1,4 +1,0 @@
-# Use the build farm when performing build actions.
-# Schedule 16 jobs per core.
-build --config=kraken --jobs=256
-test --jobs=128
