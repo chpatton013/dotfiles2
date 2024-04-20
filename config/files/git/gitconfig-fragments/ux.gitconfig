@@ -1,0 +1,36 @@
+# This file contains config options that control the UX of the git command-line
+# tools.
+
+[diff]
+  # '<=0' means "no limit"
+  # NOTE: Acts as the default for merge.renamelimit and status.renamelimit if
+  # either isn't explicitly set.
+  renamelimit = 0
+
+[fetch]
+  prune = true
+
+[mergetool]
+  keepBackup = false
+  prompt = false
+
+[push]
+  default = current
+
+[pull]
+  rebase = true
+
+[rebase]
+  autoStash = true
+
+[rerere]
+  enabled = true
+
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+
+[delta]
+  navigate = true

@@ -1,80 +1,22 @@
-[alias]
-  ap = add --patch
-  clone = clone --recursive
-  cm = commit
-  cmp = compare --url
-  co = checkout
-  cp = cherry-pick
-  df = diff --patience --find-renames --find-copies-harder
-  dc = diff --patience --find-renames --find-copies-harder --cached
-  ft = fetch
-  fto = fetch origin
-  fx = commit --amend --no-edit
-  ffs = push-retry
-  ffsf = push-retry --force-with-lease
-  ffsu = push-retry --set-upstream
-  gr = grep --line-number
-  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-  pl = pull
-  ps = push
-  pf = push --force-with-lease
-  pu = push --set-upstream
-  rb = rebase
-  rba = rebase --abort
-  rbc = rebase --continue
-  rbi = rebase --interactive
-  rs = reset
-  rsh = reset --hard
-  sl = stash list
-  st = status --short --branch --ignore-submodules=dirty
-  sw = switch
-  wip = commit -m wip
-[color]
-  ui = true
-[core]
-  fileMode = true
-  pager = delta
-  preloadIndex = true
-[delta]
-  light = true  # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
-  line-numbers = true
-  navigate = true # use n and N to move between diff sections
-  side-by-side = false
-[diff]
-  colorMoved = default
-  renamelimit = 0
-[fetch]
-  prune = true
-[filter "lfs"]
-  clean = git-lfs clean -- %f
-  smudge = git-lfs smudge -- %f
-  process = git-lfs filter-process
-  required = true
-[github]
-  user = chpatton013
-[hub]
-  host = github.com
-[init]
-  defaultBranch = main
-[interactive]
-  diffFilter = delta --color-only
-[merge]
-  tool = vimdiff
-  conflictstyle = diff3
-  renamelimit = 0
-[mergetool]
-  keepBackup = false
-  prompt = false
-[push]
-  default = current
-[pull]
-  rebase = true
-[rebase]
-  autoStash = true
-[rerere]
-  enabled = true
-[user]
-  name = Christopher Patton
-  email = chpatton013@gmail.com
-[includeIf "hasconfig:remote.*.url:https://git.example.com/**"]
-  path = ~/.work.gitconfig
+# All config options have been defined in these external files based on what
+# "type" of option they are.
+[include]
+  path = ~/.config/git/alias.gitconfig
+[include]
+  path = ~/.config/git/compatibility.gitconfig
+[include]
+  path = ~/.config/git/ui.gitconfig
+[include]
+  path = ~/.config/git/ux.gitconfig
+
+# Include the personal-identity unconditionally. Options in this file will be
+# overridden by the options in the later identity configs if they are applied.
+[include]
+  path = ~/.config/git/identity-public.gitconfig
+
+# Include work-identity config when the repo's remote url matches either the
+# HTTPS or SSH pattern for Zoox's GHE deployment.
+[includeIf "hasconfig:remote.*.url:https://.example.com:**"]
+  path = ~/.config/git/identity-work.gitconfig
+[includeIf "hasconfig:remote.*.url:git@git.example.com:*/**"]
+  path = ~/.config/git/identity-work.gitconfig

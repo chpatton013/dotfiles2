@@ -27,7 +27,28 @@
     follow: no
     force: yes
 
-- name: Link Git Config file
+- name: Make GitConfig Fragments config directory
+  file:
+    path: "{{xdg_config_home}}/git"
+    state: directory
+    force: yes
+
+- name: Link GitConfig Fragment files
+  file:
+    src: "{{dotfiles_src_dir}}/git/gitconfig-fragments/{{item}}"
+    dest: "{{xdg_config_home}}/git/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - alias.gitconfig
+  - compatibility.gitconfig
+  - ui.gitconfig
+  - ux.gitconfig
+  - identity-public.gitconfig
+  - identity-work.gitconfig
+
+- name: Link GitConfig file
   file:
     src: "{{dotfiles_src_dir}}/git/gitconfig"
     dest: "~/.gitconfig"

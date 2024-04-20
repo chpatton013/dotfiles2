@@ -1,0 +1,11 @@
+# This file contains options that are default or unnecessary to set with a
+# modern version of the git client, or with a normally-configured repository;
+# but for some reason may need to be set to get consistent behavior in all
+# environments.
+
+[core]
+  fileMode = true
+  preloadIndex = true
+
+[init]
+  defaultBranch = main

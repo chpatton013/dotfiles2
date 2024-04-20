@@ -1,0 +1,33 @@
+# This file contains my custom git aliases.
+
+[alias]
+  ap = add --patch
+  clone = clone --recursive
+  cm = commit
+  cmp = compare --url
+  co = checkout
+  cp = cherry-pick
+  df = diff --patience --find-renames --find-copies-harder
+  dc = diff --patience --find-renames --find-copies-harder --cached
+  ft = fetch
+  fto = fetch origin
+  fx = commit --amend --no-edit
+  ffs = push-retry
+  ffsf = push-retry --force-with-lease
+  ffsu = push-retry --set-upstream
+  gr = grep --line-number
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+  pl = pull
+  ps = push
+  pf = push --force-with-lease
+  pu = push --set-upstream
+  rb = rebase
+  rba = rebase --abort
+  rbc = rebase --continue
+  rbi = rebase --interactive
+  rs = reset
+  rsh = reset --hard
+  sl = stash list
+  st = status --short --branch --ignore-submodules=dirty
+  sw = switch
+  wip = commit -m wip
