@@ -1,0 +1,3 @@
+import {{xdg_config_home}}/bazel/common.bazelrc
+try-import {{xdg_config_home}}/bazel/work.bazelrc
+try-import {{xdg_config_home}}/bazel/adhoc.bazelrc

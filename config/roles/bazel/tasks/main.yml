@@ -8,13 +8,34 @@
     follow: no
     force: yes
 
-- name: Link Bazel RC file
+- name: Make Bazel RC Fragments config directory
   file:
-    src: "{{dotfiles_src_dir}}/bazel/bazelrc"
-    dest: "~/.bazelrc"
+    path: "{{xdg_config_home}}/bazel"
+    state: directory
+    force: yes
+
+- name: Make Bazel RC Ad-Hoc Fragment file
+  file:
+    path: "{{xdg_config_home}}/bazel/adhoc.bazelrc"
+    state: touch
+    force: yes
+
+- name: Link Bazel RC Fragment files
+  file:
+    src: "{{dotfiles_src_dir}}/bazel/bazelrc-fragments/{{item}}"
+    dest: "{{xdg_config_home}}/bazel/{{item}}"
     state: link
     follow: no
     force: yes
+  with_items:
+  - common.bazelrc
+  - work.bazelrc
+
+- name: Render Bazel RC template file
+  template:
+    src: bazelrc
+    dest: "~/.bazelrc"
+    mode: 0400
 
 - name: Download iBazel executable
   get_url:
