@@ -14,14 +14,6 @@ function catr() {
   find "$@" -type f | xargs --no-run-if-empty cat
 }
 
-function ifind() {
-  find . -iname "$@"
-}
-
-function wfind() {
-  find . -wholename "*$@"
-}
-
 function gg() {
   rg --hidden --no-heading --smart-case --glob '!.git/*' --glob '!*/.git/*' "$@"
 }

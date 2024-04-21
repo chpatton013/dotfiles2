@@ -69,11 +69,3 @@
 - name: Install Neovim Plugins
   command:
     cmd: nvim "+Lazy install" +MasonUpdate +:qa
-
-- name: Link Shell RC file
-  file:
-    src: "{{dotfiles_src_dir}}/neovim/3-neovim.sh"
-    dest: "{{shellrc_config_dir}}/3-neovim.sh"
-    state: link
-    follow: no
-    force: yes
