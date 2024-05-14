@@ -23,6 +23,10 @@ export VAULT_ADDR='https://vault.zooxlabs.com:8200'
 alias aws-mfa='oathtool --totp --base32 -w 1 "`cat ~/.aws/oathtool-mfa`"'
 alias vault-auth='vault login -method=oidc username=chris'
 
+if [ -f "$(readlink -e ~/.jira-token)" ]; then
+  export JIRA_TOKEN="$(cat ~/.jira-token)"
+fi
+
 if which hub >/dev/null; then
   alias git=hub
 fi
