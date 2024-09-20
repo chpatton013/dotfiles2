@@ -1,0 +1,11 @@
+---
+
+- name: Link Bin Executables
+  file:
+    src: "{{dotfiles_src_dir}}/bin/{{item}}"
+    dest: "{{xdg_bin_home}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - chunk
