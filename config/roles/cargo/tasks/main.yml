@@ -41,6 +41,7 @@
     repo: "{{bat_extras_repo}}"
     dest: "{{bat_extras_data_dir}}"
     depth: 1
+    force: yes
 
 - name: Build and install bat-extras binaries
   command:

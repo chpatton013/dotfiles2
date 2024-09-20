@@ -5,6 +5,7 @@
     repo: "{{fzf_repo}}"
     dest: "{{fzf_data_dir}}"
     depth: 1
+    force: yes
 
 - name: Install FZF binary
   command:

@@ -5,9 +5,11 @@
     repo: "{{solarized_themes_repo}}"
     dest: "{{solarized_themes_data_dir}}"
     depth: 1
+    force: yes
 
 - name: Download Solarized dircolors repository
   git:
     repo: "{{dircolors_solarized_repo}}"
     dest: "{{dircolors_solarized_data_dir}}"
     depth: 1
+    force: yes
