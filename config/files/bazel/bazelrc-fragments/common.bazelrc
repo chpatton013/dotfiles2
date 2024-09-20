@@ -13,9 +13,22 @@ common --announce_rc
 # Clean asynchronously with a daemon process.
 clean --async
 
-# Disable runfiles links by default
+# Do not build runfiles symlink forests for all targets.
+# Write only manifests when possible.
 build --nobuild_runfile_links
 
 # Show stdout and stderr output only from failing test targets.
 test --test_output=errors --test_summary=terse
 test --experimental_ui_max_stdouterr_bytes=-1
+
+# Only download remote outputs of top level targets to the local machine.
+fetch:toplevel --remote_download_toplevel
+build:toplevel --remote_download_toplevel
+
+# Do not download any remote build outputs to the local machine.
+fetch:minimal --remote_download_minimal
+build:minimal --remote_download_minimal
+
+# Do not fall back to standalone local execution strategy if remote execution
+# fails.
+build:nolocal --noremote_local_fallback
