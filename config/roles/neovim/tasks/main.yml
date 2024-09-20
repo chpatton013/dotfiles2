@@ -65,6 +65,7 @@
     dest: "{{neovim_data_dir}}/lazy/lazy.nvim"
     version: stable
     depth: 1
+    force: yes
 
 - name: Install Neovim Plugins
   command:

@@ -81,6 +81,7 @@
     repo: "{{tmux_tpm_repo}}"
     dest: "{{tmux_tpm_data_dir}}"
     depth: 1
+    force: yes
 
 - name: Install Tmux plugins
   shell:

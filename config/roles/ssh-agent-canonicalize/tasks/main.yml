@@ -5,6 +5,7 @@
     repo: "{{ssh_agent_canonicalize_repo}}"
     dest: "{{ssh_agent_canonicalize_data_dir}}"
     depth: 1
+    force: yes
 
 - name: Render ssh-agent-canonicalize Vars template file
   template:
