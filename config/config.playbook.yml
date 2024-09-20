@@ -6,6 +6,7 @@
     - {role: alacritty, tags: [alacritty]}
     - {role: bashrc, tags: [bashrc]}
     - {role: bazel, tags: [bazel]}
+    - {role: bin, tags: [bin]}
     - {role: cargo, tags: [cargo]}
     - {role: dircolors, tags: [dircolors]}
     - {role: erd, tags: [erd]}
