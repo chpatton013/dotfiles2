@@ -1,18 +1,3 @@
-# Reduce the set of downloaded intermediates to only those that comprise targets
-# and their runfiles (omit all intermediates, like .o files).
-fetch:toplevel --experimental_remote_download_toplevel
-build:toplevel --experimental_remote_download_toplevel
-
-# Download as little as possible.
-fetch:minimal --experimental_remote_download_minimal
-build:minimal --experimental_remote_download_minimal
-
-# Ensure everything runs on kraken instead of the local machine.
-build:nolocal --noremote_local_fallback
-
-# Overrride status command to prevent build stamping.
-build:nostamp --workspace_status_command=/bin/true
-
 # Display abundant debug information.
 build:actiondebug --subcommands --experimental_ui_max_stdouterr_bytes=-1
 
@@ -23,7 +8,3 @@ test:nomanual --test_tag_filters=-manual,-flaky,-integration-test
 # Do not skip manual tests.
 build:manual --build_tag_filters=+manual,+flaky,+integration-test
 test:manual --test_tag_filters=+manual,+flaky,+integration-test
-
-build --config=nostamp
-build --config=nomanual
-build --config=iwyu_ci
