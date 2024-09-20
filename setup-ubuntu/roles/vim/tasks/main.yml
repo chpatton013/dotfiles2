@@ -12,7 +12,7 @@
     - libatk1.0-dev
     - libcairo2-dev
     - libgtk2.0-dev
-    - liblua5.3-0-dev
+    - liblua5.3-dev
     - libncurses5-dev
     - libperl-dev
     - libx11-dev
