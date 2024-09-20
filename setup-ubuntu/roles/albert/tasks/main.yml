@@ -2,7 +2,7 @@
 
 - name: Download manuelschneid3r signing key
   get_url:
-    url: "https://download.opensuse.org/repositories/home:manuelschneid3r/xUbuntu_{{ansible_distribution_version}}/Release.key"
+    url: "https://download.opensuse.org/repositories/home:manuelschneid3r/xUbuntu_24.04/Release.key"
     dest: "{{manuelschneid3r_signing_key}}"
     mode: "0644"
   become: yes
