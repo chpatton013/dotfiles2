@@ -437,7 +437,9 @@ mason_lspconfig.setup_handlers({
 --------------------------------------------------------------------------------
 
 vim.opt.shellpipe = "2>&1|tee"  -- Redirect shell pipe stderr to stdout
-vim.opt.shellslash = true       -- Use forward slashes regardless of OS
+if vim.loop.os_uname().sysname == "Windows_NT" then
+    vim.opt.shellslash = true   -- Use forward slashes on Windows
+end
 
 vim.opt.autoread = false    -- Do not refresh files changed outside of editor
 vim.opt.swapfile = false    -- Do not use swap files
