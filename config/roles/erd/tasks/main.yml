@@ -8,12 +8,11 @@
       remote_src: yes
 
   - name: Install Erd release
-    command:
-      argv:
-      - pipx
-      - install
-      - "{{erd_release_dir}}"
-      creates: "{{xdg_bin_home}}/erd"
+    community.general.pipx:
+      executable: "{{pipx_executable_path}}"
+      name: erd
+      source: "{{erd_release_dir}}"
+      state: latest
 
 - name: Link Erd RC file
   file:

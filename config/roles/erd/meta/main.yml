@@ -2,5 +2,6 @@
 
 dependencies:
 - dotfiles
+- pipx
 - source-releases
 - xdg

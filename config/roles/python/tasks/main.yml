@@ -1,0 +1,33 @@
+---
+
+- name: Locate 'pip3.12' executable
+  command: which pip3.12
+  register: which_pip_result
+
+- name: Link pip/3/.12 executables
+  file:
+    src: "{{which_pip_result.stdout}}"
+    dest: "{{xdg_bin_home}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - pip
+  - pip3
+  - pip3.12
+
+- name: Locate 'python3.12' executable
+  command: which python3.12
+  register: which_python_result
+
+- name: Link python/3/.12 executables
+  file:
+    src: "{{which_python_result.stdout}}"
+    dest: "{{xdg_bin_home}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - python
+  - python3
+  - python3.12

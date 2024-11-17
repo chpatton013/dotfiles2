@@ -12,6 +12,10 @@ if [ ! -f /opt/homebrew/bin/ansible-playbook ]; then
   brew install ansible
 fi
 
+if ! (ansible-galaxy collection list community.general | grep -q community.general); then
+  ansible-galaxy collection install community.general
+fi
+
 if [ "$(id -u)" = 0 ]; then
   ansible-playbook "$script_dir/setup.playbook.yml" "$@"
 else

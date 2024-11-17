@@ -18,6 +18,8 @@
     - {role: neovim, tags: [neovim]}
     - {role: npm, tags: [npm]}
     - {role: pip, tags: [pip]}
+    - {role: pipx, tags: [pipx]}
+    - {role: python, tags: [python]}
     - {role: ssh-agent-canonicalize, tags: [ssh-agent-canonicalize]}
     - {role: tmux, tags: [tmux]}
     - {role: vagrant, tags: [vagrant]}
