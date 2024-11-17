@@ -1,0 +1,29 @@
+---
+
+- block:
+  - name: Check if Parsec is installed
+    command:
+      cmd: which parsec
+
+  rescue:
+  - name: Create tmpfile for Parsec deb download
+    tempfile:
+      suffix: parsec-linux.deb
+    register: parsec_deb_tempfile
+
+  - name: Download Parsec deb package
+    get_url:
+      url: https://builds.parsec.app/package/parsec-linux.deb
+      dest: "{{parsec_deb_tempfile.path}}"
+      mode: "0644"
+
+  - block:
+    - name: Install Parsec deb package
+      command: dpkg -i "{{parsec_deb_tempfile.path}}"
+      become: yes
+
+    rescue:
+    - name: Install missing dependencies for Parsec deb package
+      apt:
+        fix_broken: yes
+      become: yes

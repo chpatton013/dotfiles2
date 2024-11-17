@@ -18,6 +18,7 @@
     name:
     - albert
     - google-chrome
+    - parsec
     - spotify
   become: yes
   become_user: aur_builder
