@@ -92,3 +92,4 @@ export DOTFILES_PLATFORM=archlinux
 * install hub
 * install kubectl + octant
 * install graphviz
+* Investigate how to run neovim in a virtualenv that has this package installed.

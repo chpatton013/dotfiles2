@@ -32,6 +32,7 @@
   - 3-cli-shortcuts.sh
   - 3-default-programs.sh
   - 3-inotify.sh
+  - 9-pathlist.sh
 
 - name: Link macOS Shell RC files
   file:

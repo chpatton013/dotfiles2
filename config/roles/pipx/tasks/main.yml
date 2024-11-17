@@ -1,0 +1,30 @@
+---
+
+- name: Link pipx Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/pipx/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - 3-pipx.sh
+
+- name: Locate 'pipx' executable
+  command: which pipx
+  register: which_pipx_result
+
+- name: Set pipx executable path fact
+  set_fact:
+    pipx_executable_path: "{{which_pipx_result.stdout}}"
+
+- name: Install dev-tools pipx packages
+  community.general.pipx:
+    executable: "{{pipx_executable_path}}"
+    name: "{{item}}"
+    state: latest
+  with_items:
+  - black
+  - gdbgui
+  - grip
+  - vim-vint
