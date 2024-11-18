@@ -437,7 +437,7 @@ local language_servers = {
     -- Terraform
     terraformls = {},
     -- JS/TS
-    tsserver = {},
+    ts_ls = {},
     -- Vim
     vimls = {},
     -- Vue
