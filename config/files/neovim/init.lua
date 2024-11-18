@@ -787,7 +787,7 @@ which_key.add({
 --------------------------------------------------------------------------------
 
 vim.opt.modeline = true         -- Check files for a modeline to apply config settings
-vim.opt.mouse = nil             -- Disable mouse input
+vim.opt.mouse = ""              -- Disable mouse input
 vim.opt.joinspaces = false      -- Do not insert two spaces after a '.', '?', and '!'
 vim.opt.textwidth = 80          -- Automatically break lines at whitespace to get this width
 vim.opt.virtualedit = "block"   -- Allow the cursor to move to columns without text
