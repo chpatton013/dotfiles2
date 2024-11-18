@@ -540,17 +540,24 @@ vim.cmd.colorscheme("solarized")
 vim.opt.background = "light"
 
 local solarized_utils = require("solarized.utils")
-local solarized_palette = require("solarized.palette")
 local ibl_highlight_groups = function()
-    local c = solarized_palette.get_colors()
-    -- base0:  Normal.fg
-    -- base01: Comment.fg
-    -- base03: Normal.bg
-    -- base04: darker than Normal.bg
+    local palette = solarized_utils.get_colors()
+    local c = {}
+    if vim.o.background == "dark" then
+        c.normal_fg = palette.base0
+        c.normal_bg = palette.base03
+        c.muted_fg = palette.base01
+        c.vibrant_bg = palette.base04
+    else
+        c.normal_fg = palette.base00
+        c.normal_bg = palette.base3
+        c.muted_fg = palette.base1
+        c.vibrant_bg = palette.base4
+    end
     return {
-        CustomIblOdd = { fg = c.base01, bg = c.base03 },
-        CustomIblEven = { fg = c.base01, bg = c.base04 },
-        CustomIblScope = { fg = c.base0 },
+        CustomIblOdd = { fg = c.muted_fg, bg = c.normal_bg },
+        CustomIblEven = { fg = c.muted_fg, bg = c.vibrant_bg },
+        CustomIblScope = { fg = c.normal_fg, bg = "NONE" },
     }
 end
 
@@ -560,9 +567,8 @@ local ibl_hooks = require("ibl.hooks")
 ibl_hooks.register(
     ibl_hooks.type.HIGHLIGHT_SETUP,
     function()
-        local set_hl = solarized_utils.set_hl
         for name, definition in pairs(ibl_highlight_groups()) do
-            set_hl(name, definition)
+            vim.api.nvim_set_hl(0, name, definition)
         end
     end
 )
