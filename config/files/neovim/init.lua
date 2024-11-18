@@ -30,6 +30,37 @@ vim.g.maplocalleader = ","
 -- Plugin configuration
 --------------------------------------------------------------------------------
 
+local wk_keys_table = {
+    Up = "<Up> ",
+    Down = "<Down> ",
+    Left = "<Left> ",
+    Right = "<Right> ",
+    C = "<C-…> ",
+    M = "<M-…> ",
+    D = "<D-…> ",
+    S = "<S-…> ",
+    CR = "<CR> ",
+    Esc = "<Esc> ",
+    ScrollWheelDown = "<ScrollWheelDown> ",
+    ScrollWheelUp = "<ScrollWheelUp> ",
+    NL = "<NL> ",
+    BS = "<BS> ",
+    Space = "<Space> ",
+    Tab = "<Tab> ",
+    F1 = "<F1>",
+    F2 = "<F2>",
+    F3 = "<F3>",
+    F4 = "<F4>",
+    F5 = "<F5>",
+    F6 = "<F6>",
+    F7 = "<F7>",
+    F8 = "<F8>",
+    F9 = "<F9>",
+    F10 = "<F10>",
+    F11 = "<F11>",
+    F12 = "<F12>",
+}
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system {
@@ -44,7 +75,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     "PeterRincker/vim-argumentative",   -- Rearrange function arguments
-    "folke/which-key.nvim",             -- Display a popup with keybindings for ex commands
     "lewis6991/gitsigns.nvim",          -- Git buffer decorations
     "maxmx03/solarized.nvim",           -- Solarized color theme for nvim
     "michaeljsmith/vim-indent-object",  -- Treat indent structures as text objects
@@ -60,6 +90,19 @@ require("lazy").setup({
     "tpope/vim-speeddating",            -- {In,De}crement (<C-A>, <C-X>) works with datetimes
     "tpope/vim-vinegar",                -- Improve usability of netrw directory browser
     "wesQ3/vim-windowswap",             -- Window swapping keybindings
+
+    {
+        "folke/which-key.nvim", -- Display a popup with keybindings for ex commands
+        opts = {
+            icons = {
+                -- Enable mappings if we have a Nerd font.
+                mappings = vim.g.have_nerd_font,
+                -- Pass an empty table to use the default icons if we have a Nerd
+                -- font. Otherwise, pass a table of text strings.
+                keys = vim.g.have_nerd_font and {} or wk_keys_table,
+            },
+        },
+    },
 
     {
         "lukas-reineke/indent-blankline.nvim",  -- Add indent guides
@@ -728,28 +771,17 @@ cmp.setup.cmdline(":", {
 
 local which_key = require("which-key")
 
-which_key.setup()
-
--- document existing key chains
-which_key.register({
-    ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-    ["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
-    ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
-    ["<leader>h"] = { name = "Git [H]unk", _ = "which_key_ignore" },
-    ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-    ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
-    ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
-    ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
+-- Document existing key chains
+which_key.add({
+    { "<leader>c", group = "[C]ode", mode = { "n", "x" } },
+    { "<leader>d", group = "[D]ocument" },
+    { "<leader>g", group = "[G]it" },
+    { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
+    { "<leader>r", group = "[R]ename" },
+    { "<leader>s", group = "[S]earch" },
+    { "<leader>t", group = "[T]oggle" },
+    { "<leader>w", group = "[W]orkspace" },
 })
--- register which-key VISUAL mode
--- required for visual <leader>hs (hunk stage) to work
-which_key.register(
-    {
-        ["<leader>"] = { name = "VISUAL <leader>" },
-        ["<leader>h"] = { "Git [H]unk" },
-    },
-    { mode = "v" }
-)
 
 -- Input behavior
 --------------------------------------------------------------------------------
