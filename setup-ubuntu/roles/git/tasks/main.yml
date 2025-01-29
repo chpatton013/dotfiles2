@@ -4,6 +4,7 @@
   apt:
     pkg:
     - git
+    - git-lfs
   become: yes
 
 - name: Install git build dependencies apt packages
