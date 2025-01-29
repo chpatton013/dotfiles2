@@ -75,6 +75,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     "PeterRincker/vim-argumentative",   -- Rearrange function arguments
+    "kevinhwang91/nvim-bqf",            -- Improve quickfix window
     "lewis6991/gitsigns.nvim",          -- Git buffer decorations
     "maxmx03/solarized.nvim",           -- Solarized color theme for nvim
     "michaeljsmith/vim-indent-object",  -- Treat indent structures as text objects
@@ -90,6 +91,44 @@ require("lazy").setup({
     "tpope/vim-speeddating",            -- {In,De}crement (<C-A>, <C-X>) works with datetimes
     "tpope/vim-vinegar",                -- Improve usability of netrw directory browser
     "wesQ3/vim-windowswap",             -- Window swapping keybindings
+
+    {
+        "folke/trouble.nvim",
+        opts = {},
+        cmd = "Trouble",
+        keys = {
+            {
+              "<leader>xx",
+              "<cmd>Trouble diagnostics toggle<cr>",
+              desc = "Diagnostics (Trouble)",
+            },
+            {
+              "<leader>xX",
+              "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+              desc = "Buffer Diagnostics (Trouble)",
+            },
+            {
+              "<leader>cs",
+              "<cmd>Trouble symbols toggle focus=false<cr>",
+              desc = "Symbols (Trouble)",
+            },
+            {
+              "<leader>cl",
+              "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+              desc = "LSP Definitions / references / ... (Trouble)",
+            },
+            {
+              "<leader>xL",
+              "<cmd>Trouble loclist toggle<cr>",
+              desc = "Location List (Trouble)",
+            },
+            {
+              "<leader>xQ",
+              "<cmd>Trouble qflist toggle<cr>",
+              desc = "Quickfix List (Trouble)",
+            },
+        },
+    },
 
     {
         "folke/which-key.nvim", -- Display a popup with keybindings for ex commands
