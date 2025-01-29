@@ -282,6 +282,26 @@ set t_Co=256                  " Use as many colors as your terminal supports
 set term=screen-256color      " Use 256-color screen emulation
 silent! colorscheme solarized " Must be silent so Plug does not fail when installing for the first time
 
+function! ChangeBackground()
+  let state_dir = empty($XDG_STATE_HOME) ?  $HOME . '/.local/state' : $XDG_STATE_HOME
+  let theme_file = state_dir . '/vim/theme'
+  if filereadable(theme_file) && join(readfile(theme_file), '\n') == 'dark'
+    set background=dark
+  else
+    set background=light
+  endif
+
+  " Must be silent so Plug does not fail when installing for the first time
+  silent! colorscheme solarized
+endfunction
+
+augroup ChangeBackgroundOnSIGUSR1
+  autocmd!
+  autocmd SigUSR1 * call ChangeBackground()
+augroup END
+
+call ChangeBackground()
+
 " Local overrides for specific filetypes
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

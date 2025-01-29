@@ -14,6 +14,7 @@
     - {role: gem, tags: [gem]}
     - {role: git, tags: [git]}
     - {role: go, tags: [go]}
+    - {role: iterm2, tags: [iterm2]}
     - {role: lua, tags: [lua]}
     - {role: neovim, tags: [neovim]}
     - {role: npm, tags: [npm]}

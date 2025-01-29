@@ -30,6 +30,8 @@ vim.g.maplocalleader = ","
 -- Plugin configuration
 --------------------------------------------------------------------------------
 
+local ollama_model_name = "codellama:7b-code"
+
 local wk_keys_table = {
     Up = "<Up> ",
     Down = "<Down> ",
@@ -167,6 +169,13 @@ require("lazy").setup({
             "hrsh7th/cmp-nvim-lsp", -- nvim-cmp source for neovim builtin LSP client
             "hrsh7th/cmp-nvim-lua", -- nvim-cmp source for neovim Lua API
             "hrsh7th/cmp-path",     -- nvim-cmp source for filesystem paths
+            -- {
+            --     "tzachar/cmp-ai",   -- nvim-cmp source for LLM servers
+            --     dependencies = {
+            --         "nvim-lua/plenary.nvim",
+            --     },
+            --     build = "ollama pull " .. ollama_model_name,
+            -- },
 
             -- Snippet Engine & its associated nvim-cmp source
             {
@@ -619,7 +628,6 @@ local solarized = require("solarized")
 solarized.setup()
 
 vim.cmd.colorscheme("solarized")
-vim.opt.background = "light"
 
 local solarized_utils = require("solarized.utils")
 local ibl_highlight_groups = function()
@@ -682,6 +690,33 @@ vim.api.nvim_create_autocmd("ModeChanged", {
     command = "IBLDisable",
     desc = "Disable indent-blanklines when entering visual mode",
 })
+
+local change_background = function()
+    local read_theme_file = function()
+        local theme_file = vim.fn.stdpath("state") .. "/theme"
+        if not vim.fn.filereadable(theme_file) then
+            return ""
+        end
+        return table.concat(vim.fn.readfile(theme_file), "\n")
+    end
+
+    if read_theme_file() == "dark" then
+        vim.opt.background = "dark"
+    else
+        vim.opt.background = "light"
+    end
+end
+
+local change_background_group = vim.api.nvim_create_augroup("ChangeBackground", {})
+vim.api.nvim_create_autocmd("Signal", {
+    group = change_background_group,
+    pattern = "SIGUSR1",
+    callback = change_background,
+    desc = "Reset background when SIGUSR1 is received",
+})
+
+change_background()
+vim.opt.background = "dark"
 
 require("colorizer").setup()
 
@@ -778,6 +813,8 @@ cmp.setup({
                 get_bufnrs = cmp_get_bufnrs,
             }
         },
+    -- }, {
+    --     { name = "cmp_ai" },
     }),
 })
 
@@ -807,6 +844,22 @@ cmp.setup.cmdline(":", {
         { name = "cmdline" },
     }),
 })
+
+-- local cmp_ai = require("cmp_ai.config")
+
+-- cmp_ai:setup({
+--     max_lines = 100,
+--     provider = "Ollama",
+--     provider_options = {
+--         base_url = 'http://127.0.0.1:11434/api/generate',
+--         model = ollama_model_name,
+--         -- prompt = function(lines_before, lines_after) return lines_before end,
+--         -- suffix = function(lines_after) return lines_after end,
+--     },
+--     notify = true,
+--     notify_callback = function(msg) vim.notify(msg) end,
+--     run_on_every_keystroke = true,
+-- })
 
 local which_key = require("which-key")
 

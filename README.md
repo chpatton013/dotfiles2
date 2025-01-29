@@ -83,6 +83,7 @@ export DOTFILES_PLATFORM=archlinux
 
 ## TODO
 
+* tmux statusline overflow arrow is still default-color
 * Install tracked iTerm2 config
 * Install iTerm2 shell integration with `curl -L https://iterm2.com/shell_integration/install_shell_integration_and_utilities.sh | bash`
 * build zsh from source
@@ -92,4 +93,10 @@ export DOTFILES_PLATFORM=archlinux
 * install hub
 * install kubectl + octant
 * install graphviz
+* try to find a way to automate xcode install; then use this answer to activate
+  the toolchain provided by the IDE: https://stackoverflow.com/a/70829299
+* download, build, and install [dark-mode-notify](https://github.com/bouk/dark-mode-notify) on macOS
+* make network-dependent tasks skippable when their output is already present
 * Investigate how to run neovim in a virtualenv that has this package installed.
+* ollama install
+  * brew install ollama; brew services start ollama
