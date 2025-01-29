@@ -5,6 +5,7 @@
     name:
     - curl
     - git
+    - git-lfs
     - go
     - jq
     - jre-openjkd
