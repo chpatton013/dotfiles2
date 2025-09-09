@@ -4,10 +4,6 @@
   homebrew:
     update_homebrew: yes
 
-- name: Add homebrew cask-versions tap
-  homebrew_tap:
-    name: homebrew/cask-versions
-
 - name: Upgrade all homebrew packages
   homebrew:
     upgrade_all: yes
