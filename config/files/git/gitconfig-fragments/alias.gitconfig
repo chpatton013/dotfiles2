@@ -7,8 +7,8 @@
   cmp = compare --url
   co = checkout
   cp = cherry-pick
-  df = diff --patience --find-renames --find-copies-harder
-  dc = diff --patience --find-renames --find-copies-harder --cached
+  df = diff --patience --find-renames
+  dc = diff --patience --find-renames --cached
   ft = fetch
   fto = fetch origin
   fx = commit --amend --no-edit
