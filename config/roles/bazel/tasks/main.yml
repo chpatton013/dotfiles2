@@ -29,7 +29,6 @@
     force: yes
   with_items:
   - common.bazelrc
-  - work.bazelrc
 
 - name: Render Bazel RC template file
   template:

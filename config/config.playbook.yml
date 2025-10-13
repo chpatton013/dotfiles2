@@ -26,4 +26,3 @@
     - {role: vim, tags: [vim]}
     - {role: worktree, tags: [worktree]}
     - {role: zshrc, tags: [zshrc]}
-    - {role: work, tags: [never, work]}

@@ -46,7 +46,6 @@
   - ui.gitconfig
   - ux.gitconfig
   - identity-public.gitconfig
-  - identity-work.gitconfig
 
 - name: Link GitConfig file
   file:

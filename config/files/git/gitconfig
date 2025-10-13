@@ -14,9 +14,7 @@
 [include]
   path = ~/.config/git/identity-public.gitconfig
 
-# Include work-identity config when the repo's remote url matches either the
-# HTTPS or SSH pattern for Zoox's GHE deployment.
-[includeIf "hasconfig:remote.*.url:https://.example.com:**"]
-  path = ~/.config/git/identity-work.gitconfig
-[includeIf "hasconfig:remote.*.url:git@git.example.com:*/**"]
+# Include the work-identity if it exists. This may overwrite options in the
+# personal-identity config.
+[include]
   path = ~/.config/git/identity-work.gitconfig
