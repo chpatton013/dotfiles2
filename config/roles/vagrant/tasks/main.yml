@@ -14,6 +14,8 @@
   with_items:
   - vagrant-cachier
   - vagrant-lxc
+  - vagrant-virtualbox
+  - vagrant-vmware-desktop
   - vagrant-qemu
   - vagrant-sshfs
 
