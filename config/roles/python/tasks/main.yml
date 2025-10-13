@@ -1,5 +1,9 @@
 ---
 
+# TODO:
+# make venv if dir dne
+# link venv python/pip to $xdg_bin_home
+
 - name: Locate 'pip3.12' executable
   command: which pip3.12
   register: which_pip_result

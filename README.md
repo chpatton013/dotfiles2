@@ -93,3 +93,51 @@ export DOTFILES_PLATFORM=archlinux
 * install kubectl + octant
 * install graphviz
 * Investigate how to run neovim in a virtualenv that has this package installed.
+* setup and config scripts both fail on mac because brew cellar isn't on path
+* missing bootstrap script that installs package manager + git + downloads repository
+* pyenv / rbenv
+* obsidian, plex, sensiblesidebuttons
+* softwareupdate --install-rosetta --agree-to-license
+* signal, steam
+* postman? visual-studio-code? plex?
+* kindle
+* virtualbox
+rosetta packages:
+* sensiblesidebuttons
+* steam
+* signal
+brew link packages:
+* ruby
+
+track down other bins that need to be linked. look for */bin/* dirs within
+Cellar and check to see if they which to the same realpath after prepending
+/opt/homebrew/bin to the path
+
+
+
+
+LLMs
+
+brew install ollama
+brew services start ollama
+
+
+VSCode/Cursor
+
+defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
+defaults write com.microsoft.VSCodeInsiders ApplePressAndHoldEnabled -bool false
+defaults write com.vscodium ApplePressAndHoldEnabled -bool false
+defaults write com.microsoft.VSCodeExploration ApplePressAndHoldEnabled -bool false
+defaults write com.todesktop.230313mzl4w4u92 ApplePressAndHoldEnabled -bool false
+defaults write -g ApplePressAndHoldEnabled -bool false
+
+
+VSCode todo
+* C-{UDFB} do not move cursor correctly
+* gq does nothing
+* < & > do not work when reformatting comments
+* ,w to word wrap
+* changing splits does not re-center view until cursor moves
+* Typing multiple spaces in comments inserts a period.
+* Typing 'k' adds a delay, and the k often ends up shifted left by one character
+  * eg: "chunk" turns into "chukn"

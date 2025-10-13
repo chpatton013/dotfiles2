@@ -6,3 +6,4 @@ dependencies:
 - shellrc
 - solarized # bat theme needs solarized
 - rust
+- go # bat install wants shfmt to minify scripts
