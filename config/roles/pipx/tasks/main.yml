@@ -18,13 +18,21 @@
   set_fact:
     pipx_executable_path: "{{which_pipx_result.stdout}}"
 
-- name: Install dev-tools pipx packages
+- name: Install dev-tools pipx packages (latest python)
   community.general.pipx:
     executable: "{{pipx_executable_path}}"
     name: "{{item}}"
     state: latest
   with_items:
   - black
-  - gdbgui
   - grip
   - vim-vint
+
+- name: Install dev-tools pipx packages (frozen python)
+  community.general.pipx:
+    executable: "{{pipx_executable_path}}"
+    name: "{{item.name}}"
+    python: "{{item.python}}"
+    state: latest
+  with_items:
+  - {name: gdbgui, python: 3.11}
