@@ -25,6 +25,7 @@
     state: latest
   with_items:
   - black
+  - git-filter-repo
   - grip
   - vim-vint
 
