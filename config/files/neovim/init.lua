@@ -872,9 +872,9 @@ vim.keymap.set("n", "<Leader>p", ":set paste!<CR>", { noremap = true })
 local filetype_settings_group = vim.api.nvim_create_augroup("FileTypeSettings", {})
 local filetype_settings = {
     {
-        pattern = { "c", "cpp", "proto" },
+        pattern = { "c", "cpp", "json", "proto" },
         callback = function() vim.opt_local.commentstring = "// %s" end,
-        desc = "Override commentstring for c,cpp,proto filetypes",
+        desc = "Override commentstring for c,cpp,json,proto filetypes",
     },
     {
         pattern = { "lua", "sql" },
