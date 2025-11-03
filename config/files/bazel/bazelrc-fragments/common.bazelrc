@@ -17,6 +17,9 @@ clean --async
 # Write only manifests when possible.
 build --nobuild_runfile_links
 
+# Keep intermediate C++ compiler outputs, like .s and .ii files.
+build --save_temps
+
 # Show stdout and stderr output only from failing test targets.
 test --test_output=errors --test_summary=terse
 test --experimental_ui_max_stdouterr_bytes=-1

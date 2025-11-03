@@ -65,3 +65,16 @@
   with_items:
   - git-push-retry
   - repobin
+
+- name: Download and extract git-sizer
+  unarchive:
+    src: "https://github.com/github/git-sizer/releases/download/v1.5.0/git-sizer-1.5.0-{{os}}-{{arch}}.zip"
+    remote_src: yes
+    include:
+    - git-sizer
+    dest: "{{xdg_bin_home}}"
+    creates: "{{xdg_bin_home}}/git-sizer"
+    mode: 0755
+  vars:
+    os: "{{'darwin' if ansible_facts['os_family'] == 'Darwin' else 'linux'}}"
+    arch: "{{'arm64' if ansible_facts['architecture'] == 'arm64' else 'amd64'}}"

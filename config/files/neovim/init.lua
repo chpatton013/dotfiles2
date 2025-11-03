@@ -434,7 +434,9 @@ local language_servers = {
     -- Bash
     bashls = {},
     -- C/C++
-    clangd = {},
+    clangd = {
+        disabled = true,
+    },
     -- CSS
     cssls = {},
     -- DockerCompose
@@ -464,7 +466,9 @@ local language_servers = {
     -- Perl
     perlnavigator = {},
     -- Python
-    pyright = {},
+    pyright = {
+        cmd={"pyright-langserver", "--pythonversion=3.12"},
+    },
     -- Rust
     rust_analyzer = {},
     -- Ruby
@@ -502,11 +506,13 @@ local mason_lspconfig = require("mason-lspconfig")
 
 mason_lspconfig.setup({
     ensure_installed = vim.tbl_keys(language_servers),
+    automatic_installation = true,
 })
 mason_lspconfig.setup_handlers({
     function(server_name)
         local server = language_servers[server_name] or {}
         lspconfig[server_name].setup({
+            autostart = not server.disabled,
             capabilities = capabilities,
             on_attach = lsp_on_attach,
             settings = server,
@@ -783,14 +789,14 @@ cmp.setup({
 
 cmp.setup.cmdline({ "/", "?" }, {
     mapping = cmp.mapping.preset.cmdline(),
-    sources = {
+    sources = cmp.config.sources({
         {
             name = "buffer",
             option = {
                 get_bufnrs = cmp_get_bufnrs,
             }
         },
-    },
+    }),
 })
 
 cmp.setup.cmdline(":", {

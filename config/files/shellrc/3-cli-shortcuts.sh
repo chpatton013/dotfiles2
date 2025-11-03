@@ -15,7 +15,7 @@ function catr() {
 }
 
 function gg() {
-  rg --hidden --no-heading --smart-case --glob '!.git/*' --glob '!*/.git/*' "$@"
+  rg --hidden --no-heading --smart-case --glob '!.git/*' --glob '!*/.git/*' --glob '!*.svg' "$@"
 }
 
 function uriencode() {
