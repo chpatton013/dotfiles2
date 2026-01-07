@@ -8,6 +8,7 @@
     - cmake
     - curl
     - jq
+    - libclang-dev
     - openjdk-17-jdk-headless
     - sshfs
     - wget

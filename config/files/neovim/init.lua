@@ -62,144 +62,199 @@ local wk_keys_table = {
 }
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system {
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+    local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+    local out = vim.fn.system({
         "git",
         "clone",
         "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
         "--branch=stable", -- latest stable release
+        lazyrepo,
         lazypath,
-    }
+    })
+    if vim.v.shell_error ~= 0 then
+        vim.api.nvim_echo(
+            {
+                { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+                { out, "WarningMsg" },
+                { "\nPress any key to exit..." },
+            },
+            true,
+            {}
+        )
+        vim.fn.getchar()
+        os.exit(1)
+    end
 end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
-    "PeterRincker/vim-argumentative",   -- Rearrange function arguments
-    "kevinhwang91/nvim-bqf",            -- Improve quickfix window
-    "lewis6991/gitsigns.nvim",          -- Git buffer decorations
-    "maxmx03/solarized.nvim",           -- Solarized color theme for nvim
-    "michaeljsmith/vim-indent-object",  -- Treat indent structures as text objects
-    "norcalli/nvim-colorizer.lua",      -- Color highlighter
-    "tpope/vim-abolish",                -- Assorted word-munging utilities (Abolish, Subvert, Coerce)
-    "tpope/vim-apathy",                 -- Filetype-aware values for path, suffixesadd, include, includeexpr, and define
-    "tpope/vim-characterize",           -- Additional character information visible with `ga`
-    "tpope/vim-commentary",             -- Easy (un)commenting of code blocks
-    "tpope/vim-fugitive",               -- Integrated git commands
-    "tpope/vim-repeat",                 -- Better command classification for `.`
-    "tpope/vim-sensible",               -- Good defaults for everyone
-    "tpope/vim-sleuth",                 -- Detect tabstop and shiftwidth automatically
-    "tpope/vim-speeddating",            -- {In,De}crement (<C-A>, <C-X>) works with datetimes
-    "tpope/vim-vinegar",                -- Improve usability of netrw directory browser
-    "wesQ3/vim-windowswap",             -- Window swapping keybindings
+    spec = {
+        "PeterRincker/vim-argumentative",   -- Rearrange function arguments
+        "kevinhwang91/nvim-bqf",            -- Improve quickfix window
+        "lewis6991/gitsigns.nvim",          -- Git buffer decorations
+        "maxmx03/solarized.nvim",           -- Solarized color theme for nvim
+        "michaeljsmith/vim-indent-object",  -- Treat indent structures as text objects
+        "norcalli/nvim-colorizer.lua",      -- Color highlighter
+        "tpope/vim-abolish",                -- Assorted word-munging utilities (Abolish, Subvert, Coerce)
+        "tpope/vim-apathy",                 -- Filetype-aware values for path, suffixesadd, include, includeexpr, and define
+        "tpope/vim-characterize",           -- Additional character information visible with `ga`
+        "tpope/vim-commentary",             -- Easy (un)commenting of code blocks
+        "tpope/vim-fugitive",               -- Integrated git commands
+        "tpope/vim-repeat",                 -- Better command classification for `.`
+        "tpope/vim-sensible",               -- Good defaults for everyone
+        "tpope/vim-sleuth",                 -- Detect tabstop and shiftwidth automatically
+        "tpope/vim-speeddating",            -- {In,De}crement (<C-A>, <C-X>) works with datetimes
+        "tpope/vim-vinegar",                -- Improve usability of netrw directory browser
+        "wesQ3/vim-windowswap",             -- Window swapping keybindings
 
-    {
-        "folke/trouble.nvim",
-        opts = {},
-        cmd = "Trouble",
-        keys = {
-            {
-              "<leader>xx",
-              "<cmd>Trouble diagnostics toggle<cr>",
-              desc = "Diagnostics (Trouble)",
-            },
-            {
-              "<leader>xX",
-              "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-              desc = "Buffer Diagnostics (Trouble)",
-            },
-            {
-              "<leader>cs",
-              "<cmd>Trouble symbols toggle focus=false<cr>",
-              desc = "Symbols (Trouble)",
-            },
-            {
-              "<leader>cl",
-              "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-              desc = "LSP Definitions / references / ... (Trouble)",
-            },
-            {
-              "<leader>xL",
-              "<cmd>Trouble loclist toggle<cr>",
-              desc = "Location List (Trouble)",
-            },
-            {
-              "<leader>xQ",
-              "<cmd>Trouble qflist toggle<cr>",
-              desc = "Quickfix List (Trouble)",
-            },
-        },
-    },
-
-    {
-        "folke/which-key.nvim", -- Display a popup with keybindings for ex commands
-        opts = {
-            icons = {
-                -- Enable mappings if we have a Nerd font.
-                mappings = vim.g.have_nerd_font,
-                -- Pass an empty table to use the default icons if we have a Nerd
-                -- font. Otherwise, pass a table of text strings.
-                keys = vim.g.have_nerd_font and {} or wk_keys_table,
+        {
+            "folke/trouble.nvim",
+            opts = {},
+            cmd = "Trouble",
+            keys = {
+                {
+                  "<leader>xx",
+                  "<cmd>Trouble diagnostics toggle<cr>",
+                  desc = "Diagnostics (Trouble)",
+                },
+                {
+                  "<leader>xX",
+                  "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+                  desc = "Buffer Diagnostics (Trouble)",
+                },
+                {
+                  "<leader>cs",
+                  "<cmd>Trouble symbols toggle focus=false<cr>",
+                  desc = "Symbols (Trouble)",
+                },
+                {
+                  "<leader>cl",
+                  "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+                  desc = "LSP Definitions / references / ... (Trouble)",
+                },
+                {
+                  "<leader>xL",
+                  "<cmd>Trouble loclist toggle<cr>",
+                  desc = "Location List (Trouble)",
+                },
+                {
+                  "<leader>xQ",
+                  "<cmd>Trouble qflist toggle<cr>",
+                  desc = "Quickfix List (Trouble)",
+                },
             },
         },
-    },
 
-    {
-        "lukas-reineke/indent-blankline.nvim",  -- Add indent guides
-        main = "ibl",
-    },
-
-    {
-        "neovim/nvim-lspconfig",    -- Quickstart configs for LSP servers
-        dependencies = {
-            "folke/neodev.nvim",                    -- Configure LSP for neovim config, runtime, and plugin dirs
-            "j-hui/fidget.nvim",                    -- LSP progress message window
-            "williamboman/mason-lspconfig.nvim",    -- Integrate mason with lspconfig
-            "williamboman/mason.nvim",              -- Package manager for LSP servers
-        },
-    },
-
-    {
-        "hrsh7th/nvim-cmp", -- Completion engine
-        dependencies = {
-            "hrsh7th/cmp-buffer",   -- nvim-cmp source for buffer words
-            "hrsh7th/cmp-calc",     -- nvim-cmp source for math calculation
-            "hrsh7th/cmp-cmdline",  -- nvim-cmp source for vim's cmdline
-            "hrsh7th/cmp-nvim-lsp", -- nvim-cmp source for neovim builtin LSP client
-            "hrsh7th/cmp-nvim-lua", -- nvim-cmp source for neovim Lua API
-            "hrsh7th/cmp-path",     -- nvim-cmp source for filesystem paths
-
-            -- Snippet Engine & its associated nvim-cmp source
-            {
-                "L3MON4D3/LuaSnip",
-                build = "make install_jsregexp",
-            },
-            "saadparwaiz1/cmp_luasnip",
-        },
-    },
-
-    {
-        "nvim-telescope/telescope.nvim",    -- Fuzzy finder over lists
-        branch = "0.1.x",
-        dependencies = {
-            "BurntSushi/ripgrep",               -- Line-based regex pattern file search
-            "debugloop/telescope-undo.nvim",    -- View and search undo tree with Telescope
-            "nvim-lua/plenary.nvim",            -- Neovim Lua utility library
-
-            {
-                "nvim-telescope/telescope-fzf-native.nvim", -- FZF sorter for telescope written in C
-                build = "make",
-                cond = function() return vim.fn.executable "make" == 1 end,
+        {
+            "folke/which-key.nvim", -- Display a popup with keybindings for ex commands
+            opts = {
+                icons = {
+                    -- Enable mappings if we have a Nerd font.
+                    mappings = vim.g.have_nerd_font,
+                    -- Pass an empty table to use the default icons if we have a Nerd
+                    -- font. Otherwise, pass a table of text strings.
+                    keys = vim.g.have_nerd_font and {} or wk_keys_table,
+                },
             },
         },
-    },
 
-    {
-        "nvim-treesitter/nvim-treesitter",  -- Incremental parsing engine
-        dependencies = {
+        {
+            "lukas-reineke/indent-blankline.nvim",  -- Add indent guides
+            main = "ibl",
+        },
+
+        {
+            "mason-org/mason-lspconfig.nvim", -- Integrate mason with nvim's lsp config API
+            dependencies = {
+                {
+                    "folke/lazydev.nvim", -- Configure LuaLS for neovim config
+                    ft = "lua",
+                    opts = {
+                        library = {
+                            -- See the configuration section for more details
+                            -- Load luvit types when the `vim.uv` word is found
+                            {
+                                path = "${3rd}/luv/library",
+                                words = { "vim%.uv" },
+                            },
+                        },
+                    },
+                },
+                {
+                    "j-hui/fidget.nvim", -- LSP progress message window
+                    opts = {
+                        notification = { override_vim_notify = true },
+                    },
+                },
+                { "mason-org/mason.nvim", opts = {} }, -- Package manager for LSP servers
+                "neovim/nvim-lspconfig", -- LSP server configurations
+            },
+        },
+
+        {
+            "hrsh7th/nvim-cmp", -- Completion engine
+            opts = function(_, opts)
+                opts.sources = opts.sources or {}
+                table.insert(opts.sources, {
+                  name = "lazydev",
+                  group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+                })
+            end,
+            dependencies = {
+                "hrsh7th/cmp-buffer",   -- nvim-cmp source for buffer words
+                "hrsh7th/cmp-calc",     -- nvim-cmp source for math calculation
+                "hrsh7th/cmp-cmdline",  -- nvim-cmp source for vim's cmdline
+                "hrsh7th/cmp-nvim-lsp", -- nvim-cmp source for neovim builtin LSP client
+                "hrsh7th/cmp-nvim-lua", -- nvim-cmp source for neovim Lua API
+                "hrsh7th/cmp-path",     -- nvim-cmp source for filesystem paths
+
+                -- Snippet Engine & its associated nvim-cmp source
+                {
+                    "L3MON4D3/LuaSnip",
+                    build = "make install_jsregexp",
+                },
+                "saadparwaiz1/cmp_luasnip",
+            },
+        },
+
+        {
+            "nvim-telescope/telescope.nvim",    -- Fuzzy finder over lists
+            branch = "0.1.x",
+            dependencies = {
+                "BurntSushi/ripgrep",               -- Line-based regex pattern file search
+                "debugloop/telescope-undo.nvim",    -- View and search undo tree with Telescope
+                "nvim-lua/plenary.nvim",            -- Neovim Lua utility library
+
+                {
+                    "nvim-telescope/telescope-fzf-native.nvim", -- FZF sorter for telescope written in C
+                    build = "make",
+                    cond = function() return vim.fn.executable "make" == 1 end,
+                },
+            },
+        },
+
+        {
+            "nvim-treesitter/nvim-treesitter",  -- Incremental parsing engine
+            lazy = false,
+            build = ":TSUpdate",
+            opts = {},
+        },
+        {
             "nvim-treesitter/nvim-treesitter-textobjects",  -- Syntax-aware text objects
+            branch = "main",
+            opts = {},
+            init = function()
+                -- Disable entire built-in ftplugin mappings to avoid conflicts.
+                -- See https://github.com/neovim/neovim/tree/master/runtime/ftplugin for built-in ftplugin
+                vim.g.no_plugin_maps = true
+            end,
         },
-        build = ":TSUpdate",
+        {
+            "nvim-treesitter/nvim-treesitter-context",  -- Show surrounding function context
+            opts = {},
+        },
     },
+    checker = { enabled = true, notify = false },
 })
 
 -- GitSigns
@@ -307,87 +362,45 @@ vim.keymap.set("n", "<leader>sr", telescope_builtin.resume, { desc = "[S]earch [
 -- Treesitter
 --------------------------------------------------------------------------------
 
-require("nvim-treesitter.configs").setup({
-    -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = {
-        "bash",
-        "c",
-        "cpp",
-        "go",
-        "java",
-        "javascript",
-        "json",
-        "lua",
-        "python",
-        "rust",
-        "starlark",
-        "terraform",
-        "tsx",
-        "typescript",
-        "vim",
-        "vimdoc",
-        "yaml",
-    },
+local treesitter = require("nvim-treesitter")
+local treesitter_languages = {
+    "bash",
+    "c",
+    "cpp",
+    "go",
+    "java",
+    "javascript",
+    "json",
+    "lua",
+    "python",
+    "rust",
+    "starlark",
+    "terraform",
+    "tsx",
+    "typescript",
+    "vim",
+    "vimdoc",
+    "yaml",
+}
+local treesitter_language_options = {}
+for _, lang in pairs(treesitter_languages) do
+  treesitter_language_options[lang] = { enable = true, fold = true, indent = true }
+end
+treesitter.install(treesitter_languages)
+local treesitter_callback = function(opts)
+    if not opts.enable then
+        return
+    end
+    vim.treesitter.start()
+    if opts.fold then
+        vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+        vim.wo[0][0].foldmethod = "expr"
+    end
+    if opts.indent then
+        vim.bo.indentexpr = "v:lua.require('nvim-treesitter').indentexpr()"
+    end
+end
 
-    -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-    auto_install = false,
-
-    highlight = { enable = true },
-    incremental_selection = {
-        enable = true,
-        keymaps = {
-            init_selection = "<c-space>",
-            node_incremental = "<c-space>",
-            scope_incremental = "<c-s>",
-            node_decremental = "<M-space>",
-        },
-    },
-    indent = { enable = true },
-    textobjects = {
-        select = {
-            enable = true,
-            lookahead = true,   -- Automatically jump forward to textobj, similar to targets.vim
-            keymaps = {
-                -- You can use the capture groups defined in textobjects.scm
-                ["aa"] = "@parameter.outer",
-                ["ia"] = "@parameter.inner",
-                ["af"] = "@function.outer",
-                ["if"] = "@function.inner",
-                ["ac"] = "@class.outer",
-                ["ic"] = "@class.inner",
-            },
-        },
-        move = {
-            enable = true,
-            set_jumps = true,   -- whether to set jumps in the jumplist
-            goto_next_start = {
-                ["]m"] = "@function.outer",
-                ["]]"] = "@class.outer",
-            },
-            goto_next_end = {
-                ["]M"] = "@function.outer",
-                ["]["] = "@class.outer",
-            },
-            goto_previous_start = {
-                ["[m"] = "@function.outer",
-                ["[["] = "@class.outer",
-            },
-            goto_previous_end = {
-                ["[M"] = "@function.outer",
-                ["[]"] = "@class.outer",
-            },
-        },
-        swap = {
-            enable = true,
-            swap_next = {
-                ["<leader>a"] = "@parameter.inner",
-            },
-            swap_previous = {
-                ["<leader>A"] = "@parameter.inner",
-            },
-        },
-    },
-})
 
 -- Language servers
 --------------------------------------------------------------------------------
@@ -434,9 +447,7 @@ local language_servers = {
     -- Bash
     bashls = {},
     -- C/C++
-    clangd = {
-        disabled = true,
-    },
+    clangd = {},
     -- CSS
     cssls = {},
     -- DockerCompose
@@ -472,7 +483,7 @@ local language_servers = {
     -- Rust
     rust_analyzer = {},
     -- Ruby
-    sorbet = {},
+    -- sorbet = {}, -- TODO: Upgrade ruby to >=3.0.0
     -- SQL
     sqlls = {},
     -- TOML
@@ -489,36 +500,16 @@ local language_servers = {
     yamlls = {},
 }
 
--- mason-lspconfig requires that these setup functions are called in this order
--- before setting up the servers.
-require("mason").setup()
-require("mason-lspconfig").setup()
+vim.lsp.config("*", { on_attach = lsp_on_attach })
+for name, opts in pairs(language_servers) do
+    vim.lsp.config(name, opts)
+end
 
--- Setup neovim lua configuration before lspconfig
-require("neodev").setup()
-
--- nvim-cmp supports additional completion capabilities, so broadcast that to servers.
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-
-local lspconfig = require("lspconfig")
-local mason_lspconfig = require("mason-lspconfig")
-
-mason_lspconfig.setup({
+require("mason-lspconfig").setup({
     ensure_installed = vim.tbl_keys(language_servers),
-    automatic_installation = true,
-})
-mason_lspconfig.setup_handlers({
-    function(server_name)
-        local server = language_servers[server_name] or {}
-        lspconfig[server_name].setup({
-            autostart = not server.disabled,
-            capabilities = capabilities,
-            on_attach = lsp_on_attach,
-            settings = server,
-            filetypes = server.filetypes,
-        })
-    end
+    automatic_enable = {
+        exclude = {"clangd"},
+    },
 })
 
 -- System management
@@ -612,7 +603,7 @@ local highlight_group = vim.api.nvim_create_augroup("YankHighlight", {})
 vim.api.nvim_create_autocmd("TextYankPost", {
     group = highlight_group,
     pattern = "*",
-    callback = function() vim.highlight.on_yank() end,
+    callback = function() vim.hl.on_yank() end,
     desc = "Highlight text briefly after yanking",
 })
 
@@ -928,5 +919,13 @@ for _, setting in pairs(filetype_settings) do
         pattern = setting.pattern,
         callback = setting.callback,
         desc = setting.desc,
+    })
+end
+for lang, opts in pairs(treesitter_language_options) do
+    vim.api.nvim_create_autocmd("FileType", {
+        group = filetype_settings_group,
+        pattern = { lang },
+        callback = function() treesitter_callback(opts) end,
+        desc = "Enable treesitter for ft=" .. lang
     })
 end

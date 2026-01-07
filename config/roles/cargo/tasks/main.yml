@@ -13,6 +13,7 @@
   - {package: fd-find, executable: fd}
   - {package: git-delta, executable: delta}
   - {package: bat, executable: bat}
+  - {package: tree-sitter-cli, executable: tree-sitter-cli}
 
 - name: Link Bat Shell RC file
   file:

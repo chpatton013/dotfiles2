@@ -2,6 +2,6 @@
 
 neovim_config_dir: "{{dotfiles_config_dir}}/neovim"
 neovim_data_dir: "{{dotfiles_data_dir}}/neovim"
-neovim_release_version: 0.11.2
+neovim_release_version: 0.11.5
 neovim_release_url: "https://github.com/neovim/neovim/archive/refs/tags/v{{neovim_release_version}}.tar.gz"
 neovim_release_dir: "{{source_releases_data_dir}}/neovim-{{neovim_release_version}}"

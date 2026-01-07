@@ -28,6 +28,7 @@
   - eslint
   - eslint-plugin-vue
   - js-beautify
+  - neovim
   - remark-cli
 
 - name: Link NPM Shell RC file
