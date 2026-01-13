@@ -18,9 +18,7 @@
     - neovim
     - node
     - openssh
-    - pipx
-    - python@3.10
-    - python@3.13
+    - python
     - qemu
     - reattach-to-user-namespace
     - ruby

@@ -6,3 +6,18 @@
 - name: Install modern python version with uv
   command:
     cmd: uv python install --default
+
+- name: Install dev-tools uvx packages
+  command:
+    cmd: "uv tool install {{item}}"
+  with_items:
+  - black
+  - git-filter-repo
+  - grip
+  - vim-vint
+
+- name: Install dev-tools uvx packages (frozen python)
+  command:
+    cmd: "uv tool install --python {{item.python}} {{item.name}}"
+  with_items:
+  - {name: gdbgui, python: 3.11}

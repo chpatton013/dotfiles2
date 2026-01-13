@@ -13,9 +13,7 @@
     - lua
     - neovim
     - nodejs
-    - pipx
     - python
-    - python-pip
     - qemu-full
     - ruby
     - sshfs
