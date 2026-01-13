@@ -1,9 +1,0 @@
----
-
-- name: Install dev-tools pip packages
-  pip:
-    executable: "{{xdg_bin_home}}/pip"
-    name: "{{item}}"
-    extra_args: --break-system-packages --user
-  with_items:
-  - pynvim
