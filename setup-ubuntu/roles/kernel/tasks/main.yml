@@ -3,6 +3,6 @@
 - name: Install Linux Kernel apt packages
   apt:
     pkg:
-    - "linux-headers-{{ansible_kernel}}"
-    - "linux-image-{{ansible_kernel}}"
+    - "linux-headers-{{ansible_facts['kernel']}}"
+    - "linux-image-{{ansible_facts['kernel']}}"
   become: yes

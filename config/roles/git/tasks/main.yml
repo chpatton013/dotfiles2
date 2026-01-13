@@ -14,7 +14,9 @@
         set -ex
         make configure
         CFLAGS="{{git_release_cflags}}" ./configure --prefix={{xdg_prefix_home}}
-        make all doc info
+        make all --jobs={{ansible_facts['processor_vcpus']}}
+        make doc --jobs={{ansible_facts['processor_vcpus']}}
+        make info --jobs={{ansible_facts['processor_vcpus']}}
         make install install-doc install-html install-info
       creates: "{{xdg_bin_home}}/git"
   when: ansible_facts['os_family'] != "Darwin"

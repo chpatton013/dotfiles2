@@ -45,4 +45,4 @@
     - macfuse
     - vagrant
     accept_external_apps: yes
-    sudo_password: "{{ ansible_become_pass }}"
+    sudo_password: ansible_facts["become_pass"]

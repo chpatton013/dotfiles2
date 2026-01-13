@@ -3,7 +3,7 @@
 - block:
   - name: Check if Google Chrome is installed
     command:
-      cmd: which google-chrome-stable
+      cmd: command -v google-chrome-stable
 
   rescue:
   - name: Download Google signing key

@@ -1,0 +1,7 @@
+---
+
+- name: Install snap package manager
+  apt:
+    pkg:
+    - snapd
+  become: yes

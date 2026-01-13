@@ -13,11 +13,11 @@
     cmd: vagrant plugin install {{item}}
   with_items:
   - vagrant-cachier
-  - vagrant-lxc
-  - vagrant-virtualbox
-  - vagrant-vmware-desktop
+  - vagrant-compose
+  - vagrant-env
   - vagrant-qemu
   - vagrant-sshfs
+  - vagrant-vmware-desktop
 
 - name: Install other Vagrant plugins
   command:

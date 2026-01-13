@@ -43,4 +43,4 @@
     force: yes
   with_items:
   - 2-pathlist-macos.sh
-  when: ansible_os_family == "Darwin"
+  when: ansible_facts["os_family"] == "Darwin"
