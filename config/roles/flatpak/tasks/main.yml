@@ -1,0 +1,13 @@
+---
+
+- name: Install user tool flatpak packages
+  community.general.flatpak:
+    name:
+    - com.discordapp.Discord
+    - com.moonlight_stream.Moonlight
+    - com.parsecgaming.parsec
+    - com.spotify.Client
+    - md.obsidian.Obsidian
+    - org.signal.Signal
+  # No flatpak on mac; these are all installed during mac setup.
+  when: ansible_facts["os_family"] != "Darwin"

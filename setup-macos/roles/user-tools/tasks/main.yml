@@ -17,9 +17,11 @@
     - firefox
     - firefox@developer-edition
     - iterm2
+    - moonlight
     - parsec
     - rectangle
     - shifty
+    - signal
     - spotify
     - vlc
     accept_external_apps: yes

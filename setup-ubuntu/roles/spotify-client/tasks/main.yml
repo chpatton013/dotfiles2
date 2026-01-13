@@ -1,6 +1,0 @@
----
-
-- name: Install Spotify snap package
-  community.general.snap:
-    name: spotify
-  become: yes
