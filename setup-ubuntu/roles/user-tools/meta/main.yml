@@ -5,8 +5,6 @@ dependencies:
 - albert
 - docker
 - flatpak
-- parsec
 - podman
 - snap
-- spotify-client
 - virtualbox

@@ -10,6 +10,7 @@
     - {role: cargo, tags: [cargo]}
     - {role: dircolors, tags: [dircolors]}
     - {role: erd, tags: [erd]}
+    - {role: flatpak, tags: [flatpak]}
     - {role: fzf, tags: [fzf]}
     - {role: gem, tags: [gem]}
     - {role: git, tags: [git]}
