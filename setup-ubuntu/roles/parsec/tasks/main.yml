@@ -3,7 +3,7 @@
 - block:
   - name: Check if Parsec is installed
     command:
-      cmd: which parsec
+      cmd: command -v parsec
 
   rescue:
   - name: Create tmpfile for Parsec deb download
@@ -25,5 +25,5 @@
     rescue:
     - name: Install missing dependencies for Parsec deb package
       apt:
-        fix_broken: yes
+        state: fixed
       become: yes

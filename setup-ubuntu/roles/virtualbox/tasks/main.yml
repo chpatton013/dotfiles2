@@ -12,7 +12,15 @@
   apt:
     pkg:
     - virtualbox
-    - virtualbox-dkms
     - virtualbox-ext-pack
+  become: yes
+
+# These are empty transitional packages on newer releases, but do something in
+# older releases.
+- name: Install transitional Virtualbox apt packages
+  apt:
+    pkg:
+    - virtualbox-dkms
     - virtualbox-guest-additions-iso
   become: yes
+  when: (ansible_facts["distribution_major_version"] | int) < 24

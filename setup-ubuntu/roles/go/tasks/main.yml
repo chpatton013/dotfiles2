@@ -8,14 +8,5 @@
 - name: Install Go apt packages
   apt:
     pkg:
-    - golang-1.14-go
-  become: yes
-
-- name: Add Go binary to /usr/local/bin
-  file:
-    src: /usr/lib/go-1.14/bin/go
-    dest: /usr/bin/go
-    state: link
-    follow: no
-    force: yes
+    - golang-go
   become: yes

@@ -14,7 +14,7 @@
         set -ex
         make clean
         make distclean
-        make CMAKE_BUILD_TYPE=Release CMAKE_EXTRA_FLAGS=-DCMAKE_INSTALL_PREFIX={{xdg_prefix_home}} --jobs={{ansible_processor_vcpus}}
+        make CMAKE_BUILD_TYPE=Release CMAKE_EXTRA_FLAGS=-DCMAKE_INSTALL_PREFIX={{xdg_prefix_home}} --jobs={{ansible_facts['processor_vcpus']}}
         make install
       creates: "{{xdg_bin_home}}/nvim"
   when: ansible_facts['os_family'] != "Darwin"

@@ -4,5 +4,5 @@
   apt:
     pkg:
     - aqemu
-    - qemu
+    - qemu-system
   become: yes

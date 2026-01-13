@@ -1,35 +1,8 @@
 ---
 
-# TODO:
-# make venv if dir dne
-# link venv python/pip to $xdg_bin_home
+- name: Install uv
+  shell: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-- name: Locate 'pip3.12' executable
-  command: which pip3.12
-  register: which_pip_result
-
-- name: Link pip{,3} executables to pip3.12
-  file:
-    src: "{{which_pip_result.stdout}}"
-    dest: "{{xdg_bin_home}}/{{item}}"
-    state: link
-    follow: no
-    force: yes
-  with_items:
-  - pip
-  - pip3
-
-- name: Locate 'python3.12' executable
-  command: which python3.12
-  register: which_python_result
-
-- name: Link python{,3} executables to python3.12
-  file:
-    src: "{{which_python_result.stdout}}"
-    dest: "{{xdg_bin_home}}/{{item}}"
-    state: link
-    follow: no
-    force: yes
-  with_items:
-  - python
-  - python3
+- name: Install modern python version with uv
+  command:
+    cmd: uv python install --default

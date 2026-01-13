@@ -1,0 +1,8 @@
+---
+
+- name: Install podman apt packages
+  apt:
+    pkg:
+    - podman
+    - podman-toolbox
+  become: yes
