@@ -17,7 +17,6 @@
   aur:
     name:
     - albert
-    - google-chrome
     - parsec
     - spotify
   become: yes
