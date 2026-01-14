@@ -53,6 +53,18 @@
     follow: no
     force: yes
 
+- name: Stat Neovim data directory
+  stat:
+    path: "{{xdg_data_home}}/nvim"
+  register: stat_neovim_data_dir
+
+- name: Delete existing Neovim data directory
+  file:
+    path: "{{xdg_data_home}}/nvim"
+    state: absent
+    follow: no
+  when: not stat_neovim_data_dir.stat.islnk
+
 - name: Link Neovim data directory
   file:
     src: "{{neovim_data_dir}}"
