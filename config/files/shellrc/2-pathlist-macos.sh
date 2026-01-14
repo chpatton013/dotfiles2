@@ -56,27 +56,10 @@ function find_homebrew_packages() {
 EOF
 }
 
-function prepend_pathlist() {
-  local pathlist; pathlist="$1"
-  local entry; entry="$2"
-  if [ -z "$pathlist" ]; then
-    echo "$entry"
-  else
-    echo "$entry:$pathlist"
-  fi
-}
-
-function append_pathlist() {
-  local pathlist; pathlist="$1"
-  local entry; entry="$2"
-  if [ -z "$pathlist" ]; then
-    echo "$entry"
-  else
-    echo "$pathlist:$entry"
-  fi
-}
-
-PATH="$(prepend_pathlist "$PATH" /opt/homebrew/sbin:/opt/homebrew/bin)"
+PATH="$(prepend_pathlist "$PATH" /opt/homebrew/bin)"
+if [ "$(id -u)" -eq 0 ]; then
+  PATH="$(prepend_pathlist "$PATH" /opt/homebrew/sbin)"
+fi
 # Prepend GNU bins so they take precedence over BSD bins
 for dir in $(find_gnu_packages gnubin); do
   PATH="$(prepend_pathlist "$PATH" "$dir")"
