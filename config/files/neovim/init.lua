@@ -165,6 +165,26 @@ require("lazy").setup({
         },
 
         {
+            "ibhagwan/fzf-lua",
+            dependencies = {
+                "MeanderingProgrammer/render-markdown.nvim",
+                "hpjansson/chafa",
+                "nvim-tree/nvim-web-devicons",
+            },
+            opts = {
+                previwers = {
+                    builtin = {
+                        extensions = {
+                            ["jpg"] = {"chafa"},
+                            ["png"] = {"chafa"},
+                            ["svg"] = {"chafa"},
+                        },
+                    },
+                },
+            },
+        },
+
+        {
             "lukas-reineke/indent-blankline.nvim",  -- Add indent guides
             main = "ibl",
         },
@@ -356,7 +376,7 @@ pcall(telescope.load_extension, "fzf")
 telescope.load_extension("undo")
 
 local telescope_builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader><space>", telescope_builtin.git_files, { desc = "Search git files" })
+-- vim.keymap.set("n", "<leader><space>", telescope_builtin.git_files, { desc = "Search git files" })
 vim.keymap.set("n", "<leader>sb", telescope_builtin.buffers, { desc = "[S]earch [B]uffers" })
 vim.keymap.set("n", "<leader>sf", telescope_builtin.find_files, { desc = "[S]earch [F]iles" })
 vim.keymap.set("n", "<leader>sh", telescope_builtin.help_tags, { desc = "[S]earch [H]elp" })
@@ -364,6 +384,20 @@ vim.keymap.set("n", "<leader>sw", telescope_builtin.grep_string, { desc = "[S]ea
 vim.keymap.set("n", "<leader>sg", telescope_builtin.live_grep, { desc = "[S]earch by [G]rep" })
 vim.keymap.set("n", "<leader>sd", telescope_builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
 vim.keymap.set("n", "<leader>sr", telescope_builtin.resume, { desc = "[S]earch [R]esume" })
+
+local fzf = require("fzf-lua")
+vim.keymap.set("n", "<leader><space>", fzf.global, { desc = "Fzf global search" })
+vim.keymap.set("n", "<leader>F", fzf.builtin, { desc = "[F]zf builtin commands" })
+vim.keymap.set("n", "<leader>fb", fzf.buffers, { desc = "[F]zf [B]uffers" })
+vim.keymap.set("n", "<leader>ff", fzf.files, { desc = "[F]zf [F]iles" })
+vim.keymap.set("n", "<leader>fm", fzf.manpages, { desc = "[F]zf [M]an pages" })
+vim.keymap.set("n", "<leader>fh", fzf.help_tags, { desc = "[F]zf [H]elp" })
+vim.keymap.set("n", "<leader>fw", fzf.grep_cword, { desc = "[F]zf current [W]ord" })
+vim.keymap.set("n", "<leader>fW", fzf.grep_cWORD, { desc = "[F]zf current [W]ORD" })
+vim.keymap.set("n", "<leader>fg", fzf.live_grep, { desc = "[F]zf by [G]rep" })
+vim.keymap.set("n", "<leader>fd", fzf.diagnostics_document, { desc = "[F]zf document [D]iagnostics" })
+vim.keymap.set("n", "<leader>fD", fzf.diagnostics_workspace, { desc = "[F]zf workspace [D]iagnostics" })
+vim.keymap.set("n", "<leader>fr", fzf.resume, { desc = "[F]zf [R]esume" })
 
 -- Treesitter
 --------------------------------------------------------------------------------
