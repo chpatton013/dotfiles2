@@ -8,6 +8,7 @@ local filetype_associations = {
     cpp = { "*.impl" },
     xml = { "*.launch", "*.plist" },
     make = { "*.make" },
+    terraform = { "*.tf" },
     text = { "INSTALL", "NEWS", "TODO" },
 }
 local filetype_association_group = vim.api.nvim_create_augroup("FileTypeAssociation", {})
