@@ -1,5 +1,12 @@
 ---
 
+- name: Tap homebrew repositories
+  homebrew_tap:
+    name: "{{item}}"
+    state: present
+  with_items:
+  - hashicorp/tap
+
 - name: Install dev tool homebrew packages
   homebrew:
     name:
@@ -9,6 +16,7 @@
     - git
     - git-lfs
     - golang
+    - hashicorp/tap/terraform
     - ifstat
     - java
     - jq
@@ -25,6 +33,7 @@
     - reattach-to-user-namespace
     - ruby
     - screen
+    - sshfs
     - tmux
     - unzip
     - vim
@@ -33,6 +42,7 @@
 - name: Install dev tool homebrew cask packages
   homebrew_cask:
     name:
+    - macfuse
     - vagrant
     accept_external_apps: yes
     sudo_password: "{{ ansible_become_pass }}"
