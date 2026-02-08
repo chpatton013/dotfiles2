@@ -108,6 +108,11 @@ require("lazy").setup({
         "wesQ3/vim-windowswap",             -- Window swapping keybindings
 
         {
+            "ecthelionvi/NeoColumn.nvim",
+            opts = {},
+        },
+
+        {
             "folke/trouble.nvim",
             opts = {},
             cmd = "Trouble",
@@ -562,6 +567,7 @@ vim.opt.foldmethod = "syntax"   -- Fold based on language syntax (manual,indent,
 vim.opt.foldenable = false      -- Do not open file folded
 vim.opt.list = true             -- Visualize whitespace characters
 vim.opt.showmatch = true        -- Show matching () {} etc
+vim.opt.cursorline = true       -- Show cursorline by default
 vim.opt.wrap = false            -- Do not soft-wrap lines by default
 
 vim.opt.listchars = {
@@ -579,11 +585,27 @@ vim.opt.fillchars = {
 }
 
 -- Toggle various invertible settings on/off
-vim.keymap.set("n", "<Leader>c", ":set cursorline!<CR>", { noremap = true })
-vim.keymap.set("n", "<Leader>h", ":set hlsearch!<CR>", { noremap = true })
-vim.keymap.set("n", "<Leader>n", ":set number!<CR>", { noremap = true })
-vim.keymap.set("n", "<Leader>r", ":set relativenumber!<CR>", { noremap = true })
-vim.keymap.set("n", "<Leader>w", ":set wrap!<CR>", { noremap = true })
+
+vim.b.persist_relativenumber = vim.opt.relativenumber:get()
+-- Hide number and relativenumber together, but only show relativenumber if
+-- it was set previously.
+function ToggleLineNumbers()
+    if vim.opt.number:get() then
+        vim.opt.number = false
+        vim.opt.relativenumber = false
+    else
+        vim.opt.number = true
+        vim.opt.relativenumber = vim.b.persist_relativenumber
+    end
+end
+-- Only change relativenumber if number is shown, but record the change for
+-- later use.
+function ToggleRelativeLineNumbers()
+    vim.b.persist_relativenumber = not vim.b.persist_relativenumber
+    if vim.opt.number:get() then
+        vim.opt.relativenumber = vim.b.persist_relativenumber
+    end
+end
 
 -- Toggle foldcolumn and foldenable together
 function ToggleFoldEnable()
@@ -596,6 +618,12 @@ function ToggleFoldEnable()
     end
 end
 
+vim.keymap.set("n", "<Leader>C", ":ToggleNeoColumn<CR>", { noremap = true })
+vim.keymap.set("n", "<Leader>R", ":set cursorline!<CR>", { noremap = true })
+vim.keymap.set("n", "<Leader>h", ":set hlsearch!<CR>", { noremap = true })
+vim.keymap.set("n", "<Leader>n", ToggleLineNumbers, { noremap = true })
+vim.keymap.set("n", "<Leader>r", ToggleRelativeLineNumbers, { noremap = true })
+vim.keymap.set("n", "<Leader>w", ":set wrap!<CR>", { noremap = true })
 vim.keymap.set("n", "<Leader>x", ToggleFoldEnable, { noremap = true })
 
 -- Highlight yanked text.
