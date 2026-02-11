@@ -23,5 +23,6 @@
     - {role: tmux, tags: [tmux]}
     - {role: vagrant, tags: [vagrant]}
     - {role: vim, tags: [vim]}
+    - {role: wezterm, tags: [wezterm]}
     - {role: worktree, tags: [worktree]}
     - {role: zshrc, tags: [zshrc]}

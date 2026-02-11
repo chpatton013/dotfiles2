@@ -1,0 +1,3 @@
+---
+
+wezterm_config_dir: "{{dotfiles_config_dir}}/wezterm"

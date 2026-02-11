@@ -41,3 +41,9 @@ function eO() {
 function ep() {
   e -p "$@"
 }
+
+if [ "$(uname)" != "Darwin" ]; then
+  function wezterm() {
+    flatpak run org.wezfurlong.wezterm "$@"
+  }
+fi

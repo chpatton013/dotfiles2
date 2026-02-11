@@ -44,5 +44,6 @@
     name:
     - macfuse
     - vagrant
+    - wezterm@nightly
     accept_external_apps: yes
     sudo_password: ansible_facts["become_pass"]

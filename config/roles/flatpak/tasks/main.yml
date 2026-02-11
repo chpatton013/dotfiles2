@@ -9,5 +9,6 @@
     - com.spotify.Client
     - md.obsidian.Obsidian
     - org.signal.Signal
+    - org.wezfurlong.wezterm
   # No flatpak on mac; these are all installed during mac setup.
   when: ansible_facts["os_family"] != "Darwin"
