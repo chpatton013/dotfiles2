@@ -308,7 +308,12 @@ require("lazy").setup({
         {
             "ibhagwan/fzf-lua",
             dependencies = {
-                "MeanderingProgrammer/render-markdown.nvim",
+                {
+                    "MeanderingProgrammer/render-markdown.nvim",
+                    opts = {
+                        sign = { enabled = false },
+                    },
+                },
                 "hpjansson/chafa",
                 "nvim-tree/nvim-web-devicons",
             },
