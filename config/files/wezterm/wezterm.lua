@@ -9,9 +9,9 @@ config.font = wezterm.font_with_fallback({
     {family = "Monaco"},
 })
 -- Whitespace, braces, quotes, and some punctuation.
-config.selection_word_boundary = " \t\n{}[]()\"'`;:"
+config.selection_word_boundary = " \t\n{}[]()\"'`;:|│"
 
-function get_appearance()
+local function get_appearance()
     -- wezterm.gui is not available to the mux server, so take care to
     -- do something reasonable when this config is evaluated by the mux
     if wezterm.gui then
@@ -20,7 +20,7 @@ function get_appearance()
     return "Light"
 end
 
-function scheme_for_appearance(appearance)
+local function scheme_for_appearance(appearance)
     if appearance:find("Dark") then
         return "Solarized Dark (Gogh)"
     else
@@ -33,7 +33,8 @@ config.color_scheme = scheme_for_appearance(get_appearance())
 local mux = wezterm.mux
 
 wezterm.on("gui-startup", function()
-    local _tab, _pane, window = mux.spawn_window{}
+    -- Skip tab and pane return values
+    local window = select(3, mux.spawn_window({}))
     window:gui_window():toggle_fullscreen()
 end)
 
