@@ -813,8 +813,6 @@ vim.api.nvim_create_autocmd("ModeChanged", {
     desc = "Disable indent-blanklines when entering visual mode",
 })
 
-require("colorizer").setup()
-
 -- Search and Completion
 --------------------------------------------------------------------------------
 
