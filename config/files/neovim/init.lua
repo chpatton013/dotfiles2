@@ -786,11 +786,23 @@ ibl_hooks.register(
 )
 
 -- Alternate highlight groups of normal and darker backgrounds.
--- Emphasize the current scope with a vertical bar: `▏` or  `▎` look good.
+-- Use a thinner vertical bar than default for indents in the inactive scope.
+-- Use a thicker vertical bar than default for the indent in the active scope.
 require("ibl").setup({
-    whitespace = { highlight = { "CustomIblOdd", "CustomIblEven" }, remove_blankline_trail = false },
-    indent = { char = " ", highlight = { "CustomIblOdd", "CustomIblEven" } },
-    scope = { char = "▏", show_exact_scope = true, highlight = { "CustomIblScope" } },
+    whitespace = {
+        highlight = { "CustomIblOdd", "CustomIblEven" },
+        remove_blankline_trail = false,
+    },
+    indent = {
+        highlight = { "CustomIblOdd", "CustomIblEven" },
+        char = "▏", -- Left One Eighth Block
+        smart_indent_cap = true,
+    },
+    scope = {
+        highlight = { "CustomIblScope" },
+        char = "▎", -- Left One Quarter Block
+        show_exact_scope = true,
+    },
 })
 
 ibl_hooks.register(
@@ -798,7 +810,8 @@ ibl_hooks.register(
     ibl_hooks.builtin.scope_highlight_from_extmark
 )
 
--- Toggle IBL when entering/exiting visual mode.
+-- Toggle IBL when entering/exiting visual mode because the IBL highlight group
+-- overrides the visual selection highlight group.
 local visual_ibl_group = vim.api.nvim_create_augroup("visual_ibl_group", {})
 vim.api.nvim_create_autocmd("ModeChanged", {
     group = visual_ibl_group,
