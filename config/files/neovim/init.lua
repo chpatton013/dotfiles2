@@ -33,6 +33,55 @@ vim.g.maplocalleader = ","
 -- Plugin configuration
 --------------------------------------------------------------------------------
 
+function treesitter_config()
+    -- Treesitter directory
+    local treesitter_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/"
+
+    -- Collect all available parsers
+    local parsers = {}
+    for name, type in vim.fs.dir(treesitter_dir .. "runtime/queries") do
+        if type == "directory" then
+            table.insert(parsers, name)
+        end
+    end
+
+    -- Install file type parsers
+    require("nvim-treesitter.install").install(parsers)
+
+    -- Register known file types
+    dofile(treesitter_dir .. "plugin/filetypes.lua")
+
+    -- Get file types
+    local file_types = vim.iter(parsers)
+        :map(function(parser)
+            return vim.treesitter.language.get_filetypes(parser)
+        end)
+        :flatten()
+        :totable()
+
+    -- Auto-run
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = file_types,
+        callback = function(args)
+            -- Ensure this language's TS parser is installed before trying to
+            -- use it.
+            if not vim.treesitter.get_parser(nil, nil, {error=false}) then
+                require("nvim-treesitter.install").install(parsers):wait()
+            end
+
+            -- Highlights
+            vim.treesitter.start()
+
+            -- Folds
+            vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+            vim.wo[0][0].foldmethod = "expr"
+
+            -- Indentation
+            vim.bo[args.buf].indentexpr = "v:lua.require('nvim-treesitter').indentexpr()"
+        end,
+    })
+end
+
 function gitsigns_on_attach(bufnr)
     local gitsigns = require("gitsigns")
 
@@ -166,19 +215,26 @@ require("lazy").setup({
 
         {
             "nvim-treesitter/nvim-treesitter",  -- Incremental parsing engine
+            branch = "main",
             lazy = false,
             build = ":TSUpdate",
-            opts = {},
-        },
-        {
-            "nvim-treesitter/nvim-treesitter-textobjects",  -- Syntax-aware text objects
-            branch = "main",
-            opts = {},
-            init = function()
-                -- Disable entire built-in ftplugin mappings to avoid conflicts.
-                -- See https://github.com/neovim/neovim/tree/master/runtime/ftplugin for built-in ftplugin
-                vim.g.no_plugin_maps = true
-            end,
+            config = treesitter_config,
+            deps = {
+                {
+                    "nvim-treesitter/nvim-treesitter-textobjects",  -- Syntax-aware text objects
+                    branch = "main",
+                    opts = {},
+                    init = function()
+                        -- Disable entire built-in ftplugin mappings to avoid conflicts.
+                        -- See https://github.com/neovim/neovim/tree/master/runtime/ftplugin for built-in ftplugin
+                        vim.g.no_plugin_maps = true
+                    end,
+                },
+                {
+                    "nvim-treesitter/nvim-treesitter-context",  -- Show surrounding function context
+                    opts = {},
+                },
+            },
         },
 
         {
@@ -191,10 +247,7 @@ require("lazy").setup({
                         library = {
                             -- See the configuration section for more details
                             -- Load luvit types when the `vim.uv` word is found
-                            {
-                                path = "${3rd}/luv/library",
-                                words = { "vim%.uv" },
-                            },
+                            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
                         },
                     },
                 },
@@ -393,10 +446,6 @@ require("lazy").setup({
                 vim.keymap.set("n", "];", dropbar_api.select_next_context, { desc = "Select next context" })
             end
         },
-        {
-            "nvim-treesitter/nvim-treesitter-context",  -- Show surrounding function context
-            opts = {},
-        },
 
         {
             "lukas-reineke/indent-blankline.nvim",  -- Add indent guides
@@ -464,49 +513,6 @@ vim.keymap.set("n", "<leader>fg", fzf.live_grep, { desc = "[F]zf by [G]rep" })
 vim.keymap.set("n", "<leader>fd", fzf.diagnostics_document, { desc = "[F]zf document [D]iagnostics" })
 vim.keymap.set("n", "<leader>fD", fzf.diagnostics_workspace, { desc = "[F]zf workspace [D]iagnostics" })
 vim.keymap.set("n", "<leader>fr", fzf.resume, { desc = "[F]zf [R]esume" })
-
--- Treesitter
---------------------------------------------------------------------------------
-
-local treesitter = require("nvim-treesitter")
-local treesitter_languages = {
-    "bash",
-    "c",
-    "cpp",
-    "go",
-    "java",
-    "javascript",
-    "json",
-    "lua",
-    "python",
-    "rust",
-    "starlark",
-    "terraform",
-    "tsx",
-    "typescript",
-    "vim",
-    "vimdoc",
-    "yaml",
-}
-local treesitter_language_options = {}
-for _, lang in pairs(treesitter_languages) do
-  treesitter_language_options[lang] = { enable = true, fold = true, indent = true }
-end
-treesitter.install(treesitter_languages)
-local treesitter_callback = function(opts)
-    if not opts.enable then
-        return
-    end
-    vim.treesitter.start()
-    if opts.fold then
-        vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
-        vim.wo[0][0].foldmethod = "expr"
-    end
-    if opts.indent then
-        vim.bo.indentexpr = "v:lua.require('nvim-treesitter').indentexpr()"
-    end
-end
-
 
 -- Language servers
 --------------------------------------------------------------------------------
@@ -1063,13 +1069,5 @@ for _, setting in pairs(filetype_settings) do
         pattern = setting.pattern,
         callback = setting.callback,
         desc = setting.desc,
-    })
-end
-for lang, opts in pairs(treesitter_language_options) do
-    vim.api.nvim_create_autocmd("FileType", {
-        group = filetype_settings_group,
-        pattern = { lang },
-        callback = function() treesitter_callback(opts) end,
-        desc = "Enable treesitter for ft=" .. lang
     })
 end
