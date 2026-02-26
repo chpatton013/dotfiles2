@@ -21,7 +21,7 @@
 
 - name: Create Neovim directories
   file:
-    dest: "{{neovim_config_dir}}"
+    dest: "{{item}}"
     state: directory
     mode: 0700
   with_items:
