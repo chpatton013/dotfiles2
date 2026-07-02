@@ -1,0 +1,31 @@
+---
+
+- name: Create Wezterm directories
+  file:
+    dest: "{{wezterm_config_dir}}"
+    state: directory
+    mode: 0700
+
+- name: Render Wezterm Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-wezterm.sh"
+    mode: 0400
+
+- name: Link Wezterm config files
+  file:
+    src: "{{dotfiles_src_dir}}/wezterm/{{item}}"
+    dest: "{{wezterm_config_dir}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - wezterm.lua
+
+- name: Link Wezterm config directory
+  file:
+    src: "{{wezterm_config_dir}}"
+    dest: "{{xdg_config_home}}/wezterm"
+    state: link
+    follow: no
+    force: yes

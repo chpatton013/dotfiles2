@@ -11,6 +11,7 @@
   command:
     cmd: "uv tool install {{item}}"
   with_items:
+  - awscli
   - black
   - git-filter-repo
   - grip
