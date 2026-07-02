@@ -9,7 +9,7 @@ config.font = wezterm.font_with_fallback({
     {family = "Monaco"},
 })
 -- Whitespace, braces, quotes, and some punctuation.
-config.selection_word_boundary = " \t\n{}[]()\"'`;:|│"
+config.selection_word_boundary = " \t\n{}[]()\"'`<>#=;:,|│┆"
 
 local function get_appearance()
     -- wezterm.gui is not available to the mux server, so take care to
