@@ -17,6 +17,7 @@
     - {role: lua, tags: [lua]}
     - {role: neovim, tags: [neovim]}
     - {role: npm, tags: [npm]}
+    - {role: pi-agent, tags: [pi-agent]}
     - {role: python, tags: [python]}
     - {role: ssh-agent-canonicalize, tags: [ssh-agent-canonicalize]}
     - {role: tmux, tags: [tmux]}

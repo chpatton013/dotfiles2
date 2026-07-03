@@ -1,0 +1,22 @@
+{
+  "lastChangelogVersion": "0.80.2",
+  "theme": "dark",
+  "defaultProvider": "vLLM",
+  "defaultModel": "AEON-7/Qwen3.6-27B-AEON-Ultimate-Uncensored-NVFP4",
+  "defaultProjectTrust": "always",
+  "packages": [
+    "npm:@cad0p/pi-timestamps",
+    "npm:@ff-labs/pi-fff",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:@juicesharp/rpiv-btw",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:@narumitw/pi-goal",
+    "npm:@narumitw/pi-plan-mode",
+    "npm:@npm-ken/pi-bar",
+    "npm:@zigai/pi-prompt-history",
+    "npm:context-mode",
+    "npm:pi-lens",
+    "npm:pi-mcp-adapter",
+    "npm:pi-memory-stone"
+  ]
+}

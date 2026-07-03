@@ -1,3 +1,4 @@
 ---
 
-pi_node_dir: "{{dotfiles_data_dir}}/pi-node"
+pi_config_dir: "{{dotfiles_config_dir}}/pi/agent"
+pi_node_dir: "{{xdg_data_home}}/pi-node"

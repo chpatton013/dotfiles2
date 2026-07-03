@@ -7,7 +7,8 @@
     mode: 0700
   with_items:
     - "{{pi_config_dir}}"
-    - "{{pi_node_data_dir}}"
+    - "{{pi_node_dir}}"
+    - "{{'~/.pi/agent' | expanduser}}"
 
 - name: Render Pi Agent Vars template file
   template:
@@ -15,7 +16,7 @@
     dest: "{{shellrc_config_dir}}/0-pi-agent.sh"
     mode: 0400
 
-- name: Link Pi Agent config files
+- name: Link Pi Agent config files (XDG)
   file:
     src: "{{dotfiles_src_dir}}/pi-agent/{{item}}"
     dest: "{{pi_config_dir}}/{{item}}"
@@ -26,13 +27,16 @@
   - settings.json
   - models.json
 
-- name: Link Pi Agent config directory
+- name: Link Pi Agent config files (~/.pi/agent/)
   file:
-    src: "{{pi_config_dir}}"
-    dest: "{{xdg_config_home}}/pi"
+    src: "{{dotfiles_src_dir}}/pi-agent/{{item}}"
+    dest: "{{'~/.pi/agent' | expanduser}}/{{item}}"
     state: link
     follow: no
     force: yes
+  with_items:
+  - settings.json
+  - models.json
 
 - name: Link Pi Node Shell RC file
   file:
