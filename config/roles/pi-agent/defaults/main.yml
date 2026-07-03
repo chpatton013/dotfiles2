@@ -1,0 +1,3 @@
+---
+
+pi_node_dir: "{{dotfiles_data_dir}}/pi-node"
