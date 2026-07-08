@@ -33,7 +33,7 @@ vim.g.maplocalleader = ","
 -- Plugin configuration
 --------------------------------------------------------------------------------
 
-function treesitter_config()
+local function treesitter_config()
     -- Treesitter directory
     local treesitter_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/"
 
@@ -82,7 +82,7 @@ function treesitter_config()
     })
 end
 
-function gitsigns_on_attach(bufnr)
+local function gitsigns_on_attach(bufnr)
     local gitsigns = require("gitsigns")
 
     local function map(mode, l, r, opts)
@@ -518,8 +518,8 @@ vim.keymap.set("n", "<leader>fr", fzf.resume, { desc = "[F]zf [R]esume" })
 --------------------------------------------------------------------------------
 
 -- This function gets run when an LSP connects to a particular buffer.
-local lsp_on_attach = function(_, bufnr)
-    local nmap = function(keys, func, desc)
+local function lsp_on_attach(_, bufnr)
+    local function nmap(keys, func, desc)
         if desc then
             desc = "LSP: " .. desc
         end
@@ -714,7 +714,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 vim.b.persist_relativenumber = vim.opt.relativenumber:get()
 -- Hide number and relativenumber together, but only show relativenumber if
 -- it was set previously.
-function ToggleLineNumbers()
+local function ToggleLineNumbers()
     if vim.opt.number:get() then
         vim.opt.number = false
         vim.opt.relativenumber = false
@@ -725,7 +725,7 @@ function ToggleLineNumbers()
 end
 -- Only change relativenumber if number is shown, but record the change for
 -- later use.
-function ToggleRelativeLineNumbers()
+local function ToggleRelativeLineNumbers()
     vim.b.persist_relativenumber = not vim.b.persist_relativenumber
     if vim.opt.number:get() then
         vim.opt.relativenumber = vim.b.persist_relativenumber
@@ -733,7 +733,7 @@ function ToggleRelativeLineNumbers()
 end
 
 -- Toggle foldcolumn and foldenable together
-function ToggleFoldEnable()
+local function ToggleFoldEnable()
     if vim.opt.foldenable:get() then
         vim.opt.foldcolumn = "0"
         vim.opt.foldenable = false
@@ -758,7 +758,7 @@ vim.cmd.colorscheme("solarized")
 vim.opt.background = "light"
 
 local solarized_utils = require("solarized.utils")
-local ibl_highlight_groups = function()
+local function ibl_highlight_groups()
     local palette = solarized_utils.get_colors()
     local c = {}
     if vim.o.background == "dark" then
@@ -866,7 +866,31 @@ local luasnip = require("luasnip")
 require("luasnip.loaders.from_vscode").lazy_load()
 luasnip.config.setup()
 
-local cmp_get_bufnrs = function()
+local function cmp_select_next_item(fallback)
+    if cmp.visible() then
+        cmp.select_next_item()
+    else
+        fallback()
+    end
+end
+
+local function cmp_select_prev_item(fallback)
+    if cmp.visible() then
+        cmp.select_prev_item()
+    else
+        fallback()
+    end
+end
+
+local function cmp_confirm(fallback)
+    if cmp.visible() and cmp.get_active_entry() then
+        cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+    else
+        fallback()
+    end
+end
+
+local function cmp_get_bufnrs()
     local buf = vim.api.nvim_get_current_buf()
     local line_count = vim.api.nvim_buf_line_count(buf)
     local byte_size = vim.api.nvim_buf_get_offset(buf, line_count)
@@ -877,66 +901,48 @@ local cmp_get_bufnrs = function()
     return { buf }
 end
 
-local cmp_select_next_item = function(fallback)
-    if cmp.visible() then
-        cmp.select_next_item()
-    else
-        fallback()
-    end
-end
-
-local cmp_select_prev_item = function(fallback)
-    if cmp.visible() then
-        cmp.select_prev_item()
-    else
-        fallback()
-    end
-end
-
 cmp.setup({
-    snippet = {
-        expand = function(args)
-            luasnip.lsp_expand(args.body)
-        end
+    window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
     },
     completion = {
         completeopt = "menu,menuone,noinsert",
     },
     mapping = cmp.mapping.preset.insert({
-        ["<C-n>"] = cmp.mapping.select_next_item(),
-        ["<C-p>"] = cmp.mapping.select_prev_item(),
-        ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-        ["<C-f>"] = cmp.mapping.scroll_docs(4),
         ["<C-Space>"] = cmp.mapping.complete(),
-        ["<CR>"] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
+        ["<C-e>"] = cmp.mapping.abort(),
+        ["<C-c>"] = cmp.mapping.abort(),
+        ["<Tab>"] = cmp.mapping.select_next_item(),
+        ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+        ["<C-d>"] = cmp.mapping.open_docs(),
+        ["<C-D>"] = cmp.mapping.close_docs(),
+        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<Esc>"] = cmp.mapping.confirm({
+            i = cmp_confirm,
+            s = cmp.mapping.confirm({ select = true }),
+            c = cmp.mapping.confirm({
+                behavior = cmp.ConfirmBehavior.Replace,
+                select = true,
+            }),
         }),
-        ["<Tab>"] = cmp.mapping(cmp_select_next_item, { "i", "s" }),
-        ["<S-Tab>"] = cmp.mapping(cmp_select_prev_item, { "i", "s" }),
     }),
     sources = cmp.config.sources({
         { name = "nvim_lsp" },
         { name = "luasnip" },
     }, {
-        {
-            name = "buffer",
-            option = {
-                get_bufnrs = cmp_get_bufnrs,
-            }
-        },
+        { name = "buffer" },
     }),
+    performance = {
+        fetching_timeout = 60000,
+    },
 })
 
 cmp.setup.cmdline({ "/", "?" }, {
     mapping = cmp.mapping.preset.cmdline(),
     sources = cmp.config.sources({
-        {
-            name = "buffer",
-            option = {
-                get_bufnrs = cmp_get_bufnrs,
-            }
-        },
+        { name = "buffer", option = { get_bufnrs = cmp_get_bufnrs } },
     }),
 })
 
@@ -945,10 +951,6 @@ cmp.setup.cmdline(":", {
     sources = cmp.config.sources({
         {
             name = "path",
-            option = {
-                trailing_slash = true,
-                label_trailing_slash = true,
-            },
         },
     }, {
         { name = "cmdline" },
