@@ -1005,9 +1005,6 @@ end
 -- Spell check language and dictionaries
 vim.opt.spelllang = "en_us"
 vim.opt.dictionary:append("spell")
-if vim.fn.filereadable("/usr/share/dict/words") then
-    vim.opt.dictionary:append("/usr/share/dict/words")
-end
 
 -- Smash to exit insert mode because <Esc> is too far away from home row
 vim.keymap.set("i", "kj", "<Esc>", { noremap = true })
@@ -1038,11 +1035,6 @@ local filetype_settings = {
         pattern = { "vim" },
         callback = function() vim.opt_local.commentstring = "\" %s" end,
         desc = "Override commentstring for vim filetype",
-    },
-    {
-        pattern = { "gitcommit", "mail", "markdown", "text" },
-        callback = function() vim.opt_local.spell = true end,
-        desc = "Enable spell-check in prose files",
     },
     {
         pattern = { "bzl", "lua", "python", "vim" },
