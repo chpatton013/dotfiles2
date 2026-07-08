@@ -451,6 +451,11 @@ require("lazy").setup({
             "lukas-reineke/indent-blankline.nvim",  -- Add indent guides
             main = "ibl",
         },
+
+        {
+            "f-person/auto-dark-mode.nvim",
+            opts = {},
+        },
     },
     checker = { enabled = true, notify = false },
 })
@@ -755,7 +760,6 @@ vim.keymap.set("n", "<leader>tx", ToggleFoldEnable, { noremap = true })
 --------------------------------------------------------------------------------
 
 vim.cmd.colorscheme("solarized")
-vim.opt.background = "light"
 
 local solarized_utils = require("solarized.utils")
 local function ibl_highlight_groups()
