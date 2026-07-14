@@ -1019,6 +1019,22 @@ vim.keymap.set("n", "<Leader>p", ":set paste!<CR>", { noremap = true })
 -- Local overrides for specific filetypes
 --------------------------------------------------------------------------------
 
+-- Markdown: use treesitter indent inside fenced/indented code blocks; fall
+-- back to autoindent + formatlistpat elsewhere so list continuations align
+-- after the bullet marker. Must be global so the indentexpr string can call it
+-- via v:lua.
+_G.dotfiles_markdown_indentexpr = function()
+    local node = vim.treesitter.get_node({ pos = { vim.v.lnum - 1, 0 } })
+    while node do
+        local t = node:type()
+        if t == "fenced_code_block" or t == "indented_code_block" or t == "code_fence_content" then
+            return require("nvim-treesitter").indentexpr()
+        end
+        node = node:parent()
+    end
+    return -1  -- keep autoindent's (formatlistpat-aware) value
+end
+
 local filetype_settings_group = vim.api.nvim_create_augroup("FileTypeSettings", {})
 local filetype_settings = {
     {
@@ -1059,6 +1075,13 @@ local filetype_settings = {
         pattern = { "make" },
         callback = function() vim.opt_local.expandtab = false end,
         desc = "Tabs are different than spaces in make syntax",
+    },
+    {
+        pattern = { "markdown" },
+        callback = function()
+            vim.opt_local.indentexpr = "v:lua.dotfiles_markdown_indentexpr()"
+        end,
+        desc = "Treesitter indent in code blocks; formatlistpat elsewhere",
     },
 }
 for _, setting in pairs(filetype_settings) do
