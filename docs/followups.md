@@ -12,7 +12,7 @@ Remove items when done (git history keeps the record).
 
 Implementation plans drafted (in `docs/plans/`, pending review) for these items:
 
-- `neovim-language-providers.md` — Neovim language provider integrations.
+- ~~`neovim-language-providers.md` — Neovim language provider integrations.~~ **(implemented — commit `8a88202`)**
 - `wezterm-fullscreen-display-changes.md` — wezterm fullscreen resize on display change.
 - `cross-platform-tool-installs.md` — ollama on Linux; Claude Code + Pi Agent installs.
 - `source-build-roles.md` — zsh from source; source-build version updates.
@@ -249,22 +249,15 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   cause of the `<Tab>` confusion: `cursortab` and cmp/LuaSnip both want `<Tab>`.
   (Recent churn here — see commit `b82442b` "nvim: cmp cleanup".)
 
-- **Make Neovim's language provider integrations work reliably, regardless of
-  environment.** *(Complexity: Medium.)* Goal: the language providers Neovim
-  supports (python, node, ruby, perl, ...) should be enabled whenever nvim runs,
-  not dependent on the ambient shell environment. Origin: the old README TODO
-  "Investigate how to run neovim in a virtualenv that has this package installed"
-  — "this package" = the `pynvim` (neovim) PyPI package. The venv idea was a
-  python-only convenience and would not cover ruby or other languages, so the
-  venv is not the goal — robust, always-on integrations are. Current state: no
-  provider host is configured (`config/files/neovim/init.lua` sets no
-  `g:python3_host_prog` / `g:node_host_prog` / `g:ruby_host_prog`), and no
-  provider packages are installed (`config/roles/python` uses uv but does not
-  install `pynvim`; no `neovim` npm/gem). Likely direction: install each provider
-  package into a fixed location and point the corresponding `*_host_prog` at it,
-  then verify with `:checkhealth provider`. Touches `config/roles/neovim`,
-  `config/roles/{python,npm,gem}`. Overlaps the **runtime version management**
-  item since both concern how python/node/ruby are provisioned.
+- ~~**Make Neovim's language provider integrations work reliably, regardless of
+  environment.**~~ — **done** (commit `8a88202`; rust-role unblock `90507c5`).
+  The neovim role renders `providers.lua` (dofile'd from `init.lua`) pinning
+  `g:python3_host_prog` to a dedicated uv venv with `pynvim`, and
+  `g:node_host_prog` / `g:ruby_host_prog` to the npm/gem host launchers under
+  our data dirs; perl is disabled. Along the way, `gem` now installs into
+  `gem_data_dir/bin` (was diverting to `~/.gem`) and python's `uv tool install`
+  is idempotent. Verified via `:checkhealth provider` — python3/node/ruby OK
+  with the pinned hosts, perl disabled.
 
 ## Terminal & theming
 
