@@ -10,7 +10,32 @@ complexity estimate:
 
 Remove items when done (git history keeps the record).
 
+Implementation plans drafted (in `docs/plans/`, pending review) for these items:
+
+- `neovim-language-providers.md` — Neovim language provider integrations.
+- `wezterm-fullscreen-display-changes.md` — wezterm fullscreen resize on display change.
+- `cross-platform-tool-installs.md` — ollama on Linux; Claude Code + Pi Agent installs.
+- `source-build-roles.md` — zsh from source; source-build version updates.
+- `macos-setup-fixes.md` — Rosetta 2; keg-only `brew link`.
+- `dev-hygiene-ci.md` — file validation + GitHub Actions CI.
+
 ## Provisioning & setup
+
+- **Add install steps for Claude Code and Pi Agent on all supported hosts.**
+  *(Complexity: Medium.)* Both are currently under-provisioned:
+  - **Claude Code** is installed only on macOS, via the `claude-code` brew cask
+    (`setup-macos/roles/dev-tools/tasks/main.yml`). No install on `setup-ubuntu`
+    or `setup-archlinux`. Add a Linux install (npm `@anthropic-ai/claude-code`
+    or the native `install.sh`).
+  - **Pi Agent** has a config-only role (`config/roles/pi-agent` symlinks
+    `settings.json`/`models.json` and sets up dirs incl. `pi_node_dir` =
+    `~/.local/share/pi-node`) but **nothing installs the agent itself** on any
+    host — the config assumes it is already present. Add an actual install step
+    (Pi is node-based; the `pi-node` dir suggests a node runtime install).
+  Decide the per-host install method and whether these belong in `setup-*`
+  (system install) or `config/` (user-space). Related: the cross-platform
+  ollama item (local LLM backend Pi uses) and the Pi Agent local-LLM work
+  (docs/plans/improving-pi-agent-engineering-practices.md, AGENTS.md).
 
 - **Write a bootstrap script (curl|bash) that provisions a bare machine and
   delegates to the right setup/config.** *(Complexity: High.)* Why: setup/config
@@ -52,8 +77,8 @@ Remove items when done (git history keeps the record).
   - GUI casks currently live in `setup-macos/roles/user-tools/tasks/main.yml`;
     many of these names are also in the `README.md` TODO scratchpad (kubectl,
     octant, hub, graphviz, obsidian, virtualbox, signal, steam, etc.) — clean
-    those up when done. Relates to the **Remove all remnants of iTerm and
-    Alacritty** item (same user-tools files).
+    those up when done. (The iTerm/Alacritty removal already touched the same
+    `user-tools` file — commit `557f416`.)
 
 - **Decide a cross-platform strategy for scripting-language runtime version
   management** (the rbenv/pyenv problem), then reconcile the existing
@@ -84,7 +109,7 @@ Remove items when done (git history keeps the record).
   (roles under `config/roles/*/tasks/main.yml` that download/build/install
   executables): source builds — `git`, `neovim`, `tmux`, `wezterm`;
   release-tarball/binary downloads — `git` (git-sizer), `bazel`, `lua`, `vim`;
-  language-package installs — `cargo`/`alacritty`, `python` (uv tools). For each,
+  language-package installs — `cargo` tools, `python` (uv tools). For each,
   weigh dotslash (fetch a pinned prebuilt binary) against the current approach —
   noting some are deliberately built from source for a specific version/patch
   (e.g. the `wezterm` fork for CSI 2031, see
@@ -319,16 +344,8 @@ Remove items when done (git history keeps the record).
   - **README drift:** the `README.md` TODO scratchpad is being migrated into
     this queue piecemeal; finish emptying it and trim the file.
 
-- **Remove all remnants of iTerm and Alacritty** (wezterm is the terminal now).
-  *(Complexity: Low.)* Remnants as of 2026-07-15:
-  - Alacritty:
-    - `config/roles/alacritty/` (whole role) and its line in
-      `config/config.playbook.yml`.
-    - `setup-ubuntu/roles/alacritty/`, `setup-archlinux/roles/alacritty/`, and
-      the `alacritty` dependency in each platform's
-      `dev-tools/meta/main.yml`.
-  - iTerm:
-    - `config/files/iterm2/` (`com.googlecode.iterm2.plist`).
-    - `iterm2` cask in `setup-macos/roles/user-tools/tasks/main.yml`.
-    - The two iTerm2 TODO lines in `README.md`.
-  - Check for any user-space state left behind (e.g. `~/.config/alacritty`).
+- ~~Remove all remnants of iTerm and Alacritty~~ — **done** (commit `557f416`):
+  dropped the Alacritty roles + dev-tools deps, the config playbook entry, the
+  macOS `iterm2` cask, and the tracked iTerm2 plist. (The README iTerm2 TODO
+  lines went earlier with the TODO-scratchpad migration.) Left for later: check
+  for stray user-space state like `~/.config/alacritty`.
