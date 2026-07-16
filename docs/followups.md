@@ -257,6 +257,22 @@ Remove items when done (git history keeps the record).
 
 ## Repo hygiene & tooling
 
+- **Investigate/fix multi-line paste into Claude Code inserting `j` for
+  newlines.** *(Complexity: Medium — cross-stack, partly an external tool.)*
+  When pasting multi-line text **into the Claude Code TUI**, newlines come
+  through as the letter `j` instead of line breaks. Observed this session; the
+  user believes it is Claude Code's fullscreen/paste handling under tmux (it
+  does **not** happen with our wezterm build generally — only when pasting into
+  Claude Code). Likely mechanism: a newline is `LF` = `Ctrl-J` = `0x0A`, so
+  something in the wezterm→tmux→Claude Code input chain is mistranslating pasted
+  newlines (bracketed-paste not propagated, or an `extended-keys`/`csi-u`
+  interaction). Starting points: tmux `extended-keys`/`extended-keys-format
+  csi-u` and paste handling in `config/roles/tmux/templates/tmux.conf`, and
+  wezterm paste settings (e.g. `canonicalize_pasted_newlines`) in
+  `config/files/wezterm/wezterm.lua`. Note: the root cause may live in Claude
+  Code itself (upstream, not this repo), in which case the deliverable is a
+  terminal/tmux-side mitigation or a bug report rather than a repo fix.
+
 - **Re-evaluate Vagrant as the test harness (does not work on Apple Silicon).**
   *(Complexity: Medium.)* The IaC approach is nice, but the harness relies on the
   **VirtualBox** provider (`Vagrantfile:10`), which the user has not gotten
