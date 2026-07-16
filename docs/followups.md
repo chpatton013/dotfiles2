@@ -16,7 +16,7 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
 - `wezterm-fullscreen-display-changes.md` — wezterm fullscreen resize on display change.
 - `cross-platform-tool-installs.md` — ollama on Linux; Claude Code + Pi Agent installs.
 - `source-build-roles.md` — zsh from source; source-build version updates.
-- `macos-setup-fixes.md` — Rosetta 2; keg-only `brew link`.
+- ~~`macos-setup-fixes.md` — Rosetta 2; keg-only `brew link`.~~ **(implemented — commit `a59a9d2`)**
 - `dev-hygiene-ci.md` — file validation + GitHub Actions CI.
 
 ## Provisioning & setup
@@ -111,21 +111,15 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   the **Update tracked source-build tool versions** item), where dotslash would
   not apply.
 
-- **Handle keg-only Homebrew packages that need `brew link` on macOS.**
-  *(Complexity: Low–Medium.)* Running setup/config on the work Mac produced
-  errors about needing to "link" the `ruby` package (installed in
-  `setup-macos/roles/dev-tools/tasks/main.yml`), and other formulae likely need
-  the same. There is no brew-link handling in the setup roles yet. Make setup
-  ensure the needed binaries are on PATH (e.g. `brew link` keg-only formulae, or
-  add their `/opt/homebrew/opt/<pkg>/bin` to PATH). Likely related to
-  `README.md:89` ("setup and config scripts both fail on mac because brew cellar
-  isn't on path"). User's notes / proposed method:
-  > brew link packages:
-  > - ruby
-  >
-  > Track down other bins that need to be linked: look for `*/bin/*` dirs within
-  > the Cellar and check whether they `which` to the same realpath after
-  > prepending `/opt/homebrew/bin` to the PATH.
+- ~~**Handle keg-only Homebrew packages that need `brew link` on macOS.**~~ —
+  **done** (commit `a59a9d2`). `brew link --force` is now the sole
+  mechanism: `setup-macos/roles/dev-tools` links `file-formula`, `m4`, `ruby`,
+  `unzip` onto PATH, and `find_homebrew_packages` was dropped from
+  `config/files/shellrc/2-pathlist-macos.sh` (`find_gnu_packages` kept).
+  `binutils` and the keg-only libraries are deliberately not linked (source-build
+  ar/lib shadowing). See `docs/plans/macos-setup-fixes.md` Part 2 for the full
+  rationale. (`ruby` turned out to be non-keg-only on current Homebrew, so its
+  original PATH failure is already resolved upstream.)
 
 - ~~Install and start the ollama service cross-platform~~ — **done** (commit
   `291d3e8`). Added `setup-ubuntu/roles/ollama` (official `install.sh` + systemd)
@@ -140,13 +134,12 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   zsh from source into the XDG prefix (`~/.local`), matching the git/neovim/tmux
   pattern, so the shell version is not tied to the system/brew package.
 
-- **Install Rosetta 2 during macOS setup.** *(Complexity: Low.)* Add a task that
-  runs `softwareupdate --install-rosetta --agree-to-license` so x86_64-only apps
-  and brew casks work on Apple Silicon. Likely a system-prep task in
-  `setup-macos/roles/xcode/` or `setup-macos/roles/dev-tools/`; make it
-  idempotent (skip if Rosetta is already installed) and note it needs sudo. The
-  `README.md` TODO scratchpad already lists this line and a "rosetta packages"
-  section (sensiblesidebuttons, steam, signal) — clean those up when done.
+- ~~**Install Rosetta 2 during macOS setup.**~~ — **done** (commit
+  `a59a9d2`). Added an arm64-guarded, idempotent (skipped when the
+  `/Library/Apple/usr/share/rosetta/rosetta` marker exists) `become` task to
+  `setup-macos/roles/xcode/tasks/main.yml`. The `README.md` "rosetta packages"
+  section (sensiblesidebuttons, steam, signal) is package-install work tracked
+  separately under the **Install missing packages** item.
 
 - **Update tracked source-build tool versions.** *(Complexity: Low.)* Several
   roles pin a version of a tool we build from source; audit them and bump to

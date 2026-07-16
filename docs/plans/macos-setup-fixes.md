@@ -12,6 +12,29 @@ currently assume was done by hand." Part 2 is also the concrete pain behind the
 **Write a bootstrap script** follow-up (`README.md` TODO: "setup and config
 scripts both fail on mac because brew cellar isn't on path").
 
+> **Status: implemented** (see `docs/followups.md` for the commit). The original
+> analysis is kept below; the resolved decisions:
+>
+> - **Part 1 — Rosetta:** task added to
+>   `setup-macos/roles/xcode/tasks/main.yml`, arm64-guarded and skipped when
+>   `/Library/Apple/usr/share/rosetta/rosetta` exists.
+> - **Part 2 — `brew link` is the sole mechanism; the shellrc calc is dropped.**
+>   `find_homebrew_packages` is removed from
+>   `config/files/shellrc/2-pathlist-macos.sh`; `find_gnu_packages` **stays**
+>   (brew link can't replace it — the `libexec/gnubin` dirs provide *un-prefixed*
+>   GNU commands that linking the formula would not). A `brew link --force` task
+>   in `setup-macos/roles/dev-tools/tasks/main.yml` links the keg-only CLI
+>   formulae onto PATH: `file-formula`, `m4`, `ruby`, `unzip` (verified to link
+>   only `bin/` + `man/`, no lib/header shadowing). Deliberately **not** linked:
+>   `binutils` (its GNU `ar` would shadow Apple's `ar` during source builds — the
+>   wezterm-build class of bug, now on the *provisioning* PATH via
+>   `/opt/homebrew/bin`) and the keg-only *libraries* (`ncurses`, `sqlite`;
+>   `berkeley-db`/`icu4c` aren't installed) whose global linking is exactly what
+>   keg-only exists to prevent. Note: on current Homebrew `ruby` is no longer
+>   keg-only and auto-links, so the original "ruby not on PATH" failure is
+>   already resolved upstream; the task keeps `ruby` for machines/versions where
+>   it is keg-only.
+
 ---
 
 ## Part 1 — Install Rosetta 2
@@ -107,6 +130,9 @@ and its commented-out derivation *is exactly the user's proposed method* (find
 the shellrc fragments, so at *provision time* only `/opt/homebrew/bin` (if that)
 is on PATH and keg-only bins are missing. Ansible tasks that shell out to `ruby`
 (or a formula built against keg-only `ruby`) then fail.
+
+Could we use `brew link` as a simpler alternative to calculating a complicated
+PATH list?
 
 ### Approach
 
