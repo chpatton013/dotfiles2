@@ -1,0 +1,14 @@
+---
+
+- name: Install zsh apt packages
+  apt:
+    pkg:
+    - zsh
+  become: yes
+
+- name: Install zsh build dependencies apt packages
+  apt:
+    pkg:
+    - libncurses-dev
+    - libpcre2-dev
+  become: yes

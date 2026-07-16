@@ -25,4 +25,5 @@
     - {role: vagrant, tags: [vagrant]}
     - {role: vim, tags: [vim]}
     - {role: wezterm, tags: [wezterm]}
+    - {role: zsh, tags: [zsh]}
     - {role: zshrc, tags: [zshrc]}

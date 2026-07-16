@@ -13,3 +13,4 @@ dependencies:
 - tmux
 - vagrant
 - vim
+- zsh

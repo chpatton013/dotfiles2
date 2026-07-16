@@ -1,0 +1,6 @@
+---
+
+zsh_release_version: 5.9.2
+zsh_release_url: "https://downloads.sourceforge.net/project/zsh/zsh/{{zsh_release_version}}/zsh-{{zsh_release_version}}.tar.xz"
+zsh_release_dir: "{{source_releases_data_dir}}/zsh-{{zsh_release_version}}"
+zsh_release_cflags: "-O2"

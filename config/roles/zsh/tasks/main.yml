@@ -1,0 +1,32 @@
+---
+
+- name: Download and unpack Zsh release tarball
+  unarchive:
+    src: "{{zsh_release_url}}"
+    dest: "{{source_releases_data_dir}}"
+    remote_src: yes
+
+- name: Configure, make, and install Zsh release (this will take a while)
+  shell:
+    chdir: "{{zsh_release_dir}}"
+    executable: /bin/bash
+    cmd: |
+      set -ex
+      cflags="{{zsh_release_cflags}}"
+      ldflags=""
+      configure_flags="--enable-pcre --enable-multibyte"
+      if [ "$(uname)" = Darwin ]; then
+        # ncurses and pcre2 are keg-only on macOS; feed their include/lib paths
+        # directly (no pkg-config) and put pcre2's bin on PATH so configure's
+        # --enable-pcre can find pcre2-config.
+        for dep in ncurses pcre2; do
+          prefix="$(brew --prefix "$dep")"
+          cflags="$cflags -I$prefix/include"
+          ldflags="$ldflags -L$prefix/lib"
+        done
+        PATH="$(brew --prefix pcre2)/bin:$PATH"
+      fi
+      CFLAGS="$cflags" LDFLAGS="$ldflags" ./configure --prefix={{xdg_prefix_home}} $configure_flags
+      make --jobs={{ansible_facts['processor_vcpus']}}
+      make install
+    creates: "{{xdg_bin_home}}/zsh"

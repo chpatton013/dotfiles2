@@ -25,10 +25,12 @@
     - less
     - libvirt
     - lua
+    - ncurses
     - neovim
     - node
     - ollama
     - openssh
+    - pcre2
     - python
     - qemu
     - reattach-to-user-namespace
