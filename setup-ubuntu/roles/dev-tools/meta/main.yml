@@ -1,7 +1,6 @@
 ---
 
 dependencies:
-- alacritty
 - apt
 - git
 - go
