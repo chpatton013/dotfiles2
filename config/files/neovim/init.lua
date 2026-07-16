@@ -35,6 +35,35 @@ vim.g.maplocalleader = ","
 -- pcall so a machine that hasn't re-applied the role still starts.
 pcall(dofile, vim.fn.stdpath("config") .. "/providers.lua")
 
+-- Graceful-degradation helpers
+--------------------------------------------------------------------------------
+-- On a partial/failed bootstrap the config is deployed but plugins may not be
+-- installed. These helpers let dependent setup degrade instead of erroring.
+
+-- Like require(), but returns nil instead of raising when a module (plugin) is
+-- missing, so a failed require does not abort the rest of init.lua.
+local function safe_require(name)
+    local ok, mod = pcall(require, name)
+    if ok then
+        return mod
+    end
+    return nil
+end
+
+-- Guarded treesitter indentexpr. indentexpr is evaluated on nearly every edit,
+-- so an unguarded call into a missing/broken nvim-treesitter errors on every
+-- keystroke. Fall back to -1 (keep the current indent) instead. Global so it
+-- can be referenced from an `indentexpr` string via v:lua.
+_G.dotfiles_ts_indentexpr = function()
+    local ok, result = pcall(function()
+        return require("nvim-treesitter").indentexpr()
+    end)
+    if ok then
+        return result
+    end
+    return -1
+end
+
 -- Plugin configuration
 --------------------------------------------------------------------------------
 
@@ -68,21 +97,26 @@ local function treesitter_config()
     vim.api.nvim_create_autocmd("FileType", {
         pattern = file_types,
         callback = function(args)
-            -- Ensure this language's TS parser is installed before trying to
-            -- use it.
-            if not vim.treesitter.get_parser(nil, nil, {error=false}) then
-                require("nvim-treesitter.install").install(parsers):wait()
-            end
+            -- Guard the whole body: on a partial bootstrap the parser/queries
+            -- may be missing, and this fires on every FileType event. pcall so
+            -- it degrades instead of erroring each time a file is opened.
+            pcall(function()
+                -- Ensure this language's TS parser is installed before trying to
+                -- use it.
+                if not vim.treesitter.get_parser(nil, nil, {error=false}) then
+                    require("nvim-treesitter.install").install(parsers):wait()
+                end
 
-            -- Highlights
-            vim.treesitter.start()
+                -- Highlights
+                vim.treesitter.start()
 
-            -- Folds
-            vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
-            vim.wo[0][0].foldmethod = "expr"
+                -- Folds
+                vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+                vim.wo[0][0].foldmethod = "expr"
 
-            -- Indentation
-            vim.bo[args.buf].indentexpr = "v:lua.require('nvim-treesitter').indentexpr()"
+                -- Indentation (guarded wrapper: see dotfiles_ts_indentexpr)
+                vim.bo[args.buf].indentexpr = "v:lua.dotfiles_ts_indentexpr()"
+            end)
         end,
     })
 end
@@ -759,9 +793,16 @@ vim.keymap.set("n", "<leader>tx", ToggleFoldEnable, { noremap = true })
 -- Color theme
 --------------------------------------------------------------------------------
 
-vim.cmd.colorscheme("solarized")
+-- Fall back to a readable built-in colorscheme if solarized failed to install
+-- (partial bootstrap) so text stays legible instead of unreadable. habamax is
+-- a truecolor-friendly builtin; default is the last-resort fallback.
+if not pcall(vim.cmd.colorscheme, "solarized") then
+    if not pcall(vim.cmd.colorscheme, "habamax") then
+        pcall(vim.cmd.colorscheme, "default")
+    end
+end
 
-local solarized_utils = require("solarized.utils")
+local solarized_utils = safe_require("solarized.utils")
 local function ibl_highlight_groups()
     local palette = solarized_utils.get_colors()
     local c = {}
@@ -783,42 +824,55 @@ local function ibl_highlight_groups()
     }
 end
 
-local ibl_hooks = require("ibl.hooks")
--- create the highlight groups in the highlight setup hook, so they are reset
--- every time the colorscheme changes
-ibl_hooks.register(
-    ibl_hooks.type.HIGHLIGHT_SETUP,
-    function()
-        for name, definition in pairs(ibl_highlight_groups()) do
-            vim.api.nvim_set_hl(0, name, definition)
+-- Guard the indent-blankline setup: on a partial bootstrap ibl may be missing.
+-- Skip it entirely rather than aborting the rest of init.lua.
+local ibl_hooks = safe_require("ibl.hooks")
+local ibl = safe_require("ibl")
+
+-- The custom highlight groups derive from the solarized palette; only register
+-- them when both ibl and solarized are available. Without them ibl still works
+-- with its default highlights.
+if ibl_hooks and solarized_utils then
+    -- create the highlight groups in the highlight setup hook, so they are reset
+    -- every time the colorscheme changes
+    ibl_hooks.register(
+        ibl_hooks.type.HIGHLIGHT_SETUP,
+        function()
+            for name, definition in pairs(ibl_highlight_groups()) do
+                vim.api.nvim_set_hl(0, name, definition)
+            end
         end
-    end
-)
+    )
+end
 
 -- Alternate highlight groups of normal and darker backgrounds.
 -- Use a thinner vertical bar than default for indents in the inactive scope.
 -- Use a thicker vertical bar than default for the indent in the active scope.
-require("ibl").setup({
-    whitespace = {
-        highlight = { "CustomIblOdd", "CustomIblEven" },
-        remove_blankline_trail = false,
-    },
-    indent = {
-        highlight = { "CustomIblOdd", "CustomIblEven" },
-        char = "▏", -- Left One Eighth Block
-        smart_indent_cap = true,
-    },
-    scope = {
-        highlight = { "CustomIblScope" },
-        char = "▎", -- Left One Quarter Block
-        show_exact_scope = true,
-    },
-})
+if ibl then
+    ibl.setup({
+        whitespace = {
+            highlight = { "CustomIblOdd", "CustomIblEven" },
+            remove_blankline_trail = false,
+        },
+        indent = {
+            highlight = { "CustomIblOdd", "CustomIblEven" },
+            char = "▏", -- Left One Eighth Block
+            smart_indent_cap = true,
+        },
+        scope = {
+            highlight = { "CustomIblScope" },
+            char = "▎", -- Left One Quarter Block
+            show_exact_scope = true,
+        },
+    })
+end
 
-ibl_hooks.register(
-    ibl_hooks.type.SCOPE_HIGHLIGHT,
-    ibl_hooks.builtin.scope_highlight_from_extmark
-)
+if ibl_hooks then
+    ibl_hooks.register(
+        ibl_hooks.type.SCOPE_HIGHLIGHT,
+        ibl_hooks.builtin.scope_highlight_from_extmark
+    )
+end
 
 -- Toggle IBL when entering/exiting visual mode because the IBL highlight group
 -- overrides the visual selection highlight group.
@@ -1024,13 +1078,22 @@ vim.keymap.set("n", "<Leader>p", ":set paste!<CR>", { noremap = true })
 -- after the bullet marker. Must be global so the indentexpr string can call it
 -- via v:lua.
 _G.dotfiles_markdown_indentexpr = function()
-    local node = vim.treesitter.get_node({ pos = { vim.v.lnum - 1, 0 } })
-    while node do
-        local t = node:type()
-        if t == "fenced_code_block" or t == "indented_code_block" or t == "code_fence_content" then
-            return require("nvim-treesitter").indentexpr()
+    -- Guard: this fires on nearly every edit in markdown. If treesitter is
+    -- missing (partial bootstrap), fall back to -1 (keep autoindent's
+    -- formatlistpat-aware value) instead of erroring on every keystroke.
+    local ok, result = pcall(function()
+        local node = vim.treesitter.get_node({ pos = { vim.v.lnum - 1, 0 } })
+        while node do
+            local t = node:type()
+            if t == "fenced_code_block" or t == "indented_code_block" or t == "code_fence_content" then
+                return _G.dotfiles_ts_indentexpr()
+            end
+            node = node:parent()
         end
-        node = node:parent()
+        return -1
+    end)
+    if ok then
+        return result
     end
     return -1  -- keep autoindent's (formatlistpat-aware) value
 end
