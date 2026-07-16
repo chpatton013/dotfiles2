@@ -14,8 +14,11 @@ Steps:
      (see `.claude/commands/followup.md`): drop it into the best-fit `##`
      activity section (newest at the top of that section; only create a new
      section if it fits none), give it a **bold one-line title**, a
-     `*(Complexity: Low/Medium/High.)*` tag estimated from scope, and the *why*
-     if the item gives one. **Link it up** — reference any related
+     `*(Complexity: Low/Medium/High. Status: …)*` tag, and the *why* if the item
+     gives one. Estimate complexity from scope; set the **Status** to `Ready` by
+     default, or `Blocked — on <prerequisite>` when the item clearly can't start
+     until another queued item, a decision, or some hardware is resolved (name
+     it). **Link it up** — reference any related
      `docs/plans/*` file and the specific repo-relative roles/files/paths
      involved, verifying paths exist before citing them. Preserve any facts,
      candidates, or decisions the item already contains.
