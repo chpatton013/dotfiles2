@@ -21,21 +21,15 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
 
 ## Provisioning & setup
 
-- **Add install steps for Claude Code and Pi Agent on all supported hosts.**
-  *(Complexity: Medium.)* Both are currently under-provisioned:
-  - **Claude Code** is installed only on macOS, via the `claude-code` brew cask
-    (`setup-macos/roles/dev-tools/tasks/main.yml`). No install on `setup-ubuntu`
-    or `setup-archlinux`. Add a Linux install (npm `@anthropic-ai/claude-code`
-    or the native `install.sh`).
-  - **Pi Agent** has a config-only role (`config/roles/pi-agent` symlinks
-    `settings.json`/`models.json` and sets up dirs incl. `pi_node_dir` =
-    `~/.local/share/pi-node`) but **nothing installs the agent itself** on any
-    host — the config assumes it is already present. Add an actual install step
-    (Pi is node-based; the `pi-node` dir suggests a node runtime install).
-  Decide the per-host install method and whether these belong in `setup-*`
-  (system install) or `config/` (user-space). Related: the cross-platform
-  ollama item (local LLM backend Pi uses) and the Pi Agent local-LLM work
-  (docs/plans/improving-pi-agent-engineering-practices.md, AGENTS.md).
+- ~~Add install steps for Claude Code and Pi Agent on all supported hosts~~ —
+  **done** (commits `259a854`, `fca58f3`). Claude Code: new cross-platform
+  `config/roles/claude-code` using Anthropic's native installer, macOS brew cask
+  removed. Pi Agent: `config/roles/pi-agent` now `npm install -g
+  @earendil-works/pi-coding-agent` into the shared npm prefix (Option B; the
+  official pi.dev installer is just an interactive wrapper around the same npm
+  install). Both verified on macOS; Linux via the node/npm setup roles, untested
+  on hardware. See docs/plans/cross-platform-tool-installs.md. Vestigial cleanup
+  left: the unused `pi_node_dir` isolated-node scaffolding.
 
 - **Write a bootstrap script (curl|bash) that provisions a bare machine and
   delegates to the right setup/config.** *(Complexity: High.)* Why: setup/config
@@ -133,15 +127,14 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   > the Cellar and check whether they `which` to the same realpath after
   > prepending `/opt/homebrew/bin` to the PATH.
 
-- **Install and start the ollama service cross-platform.** *(Complexity:
-  Low–Medium.)* macOS is already done: `setup-macos/roles/dev-tools/tasks/main.yml`
-  installs the `ollama` brew formula and starts it via `homebrew_services`
-  (`state: present`). Missing on Linux — there is no ollama install/service in
-  `setup-ubuntu` or `setup-archlinux`; add it (package + service enable/start,
-  e.g. systemd). Then remove the stale manual `brew install ollama` / `brew
-  services start ollama` lines from the `README.md` TODO scratchpad. Context:
-  ollama hosts the local LLMs the Pi Agent uses (see AGENTS.md and
-  docs/plans/improving-pi-agent-engineering-practices.md).
+- ~~Install and start the ollama service cross-platform~~ — **done** (commit
+  `291d3e8`). Added `setup-ubuntu/roles/ollama` (official `install.sh` + systemd)
+  and `setup-archlinux/roles/ollama` (`pacman` package + systemd), wired into
+  each `dev-tools` meta; macOS stays on brew. ollama is the deliberate
+  per-OS-native exception to the cross-OS-consistency principle (its release
+  artifacts don't suit a uniform binary-drop — see
+  docs/plans/cross-platform-tool-installs.md §1). `setup-ubuntu` syntax-checks
+  clean; Linux untested on hardware.
 
 - **Build zsh from source.** *(Complexity: Low–Medium.)* Add a role that builds
   zsh from source into the XDG prefix (`~/.local`), matching the git/neovim/tmux
@@ -166,6 +159,40 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
 
 ## Neovim
 
+- **Make the Neovim config degrade gracefully on a partial/failed bootstrap.**
+  *(Complexity: Medium.)* When nvim's config has deployed but its dependencies
+  have not fully bootstrapped, the editor becomes hard to use: e.g. the config
+  is applied but the terminal color theme has not, leaving text very hard to
+  read; and other breakages surface as an error interrupt on *every keypress*.
+  Goal: detect missing dependencies (colorscheme/plugins/providers/parsers) and
+  fall back sanely — a readable default colorscheme when `solarized` or the
+  terminal theme is absent, and guarding plugin/autocmd/keymap setup so a
+  failure degrades instead of erroring on every event. Starting points in
+  `config/files/neovim/init.lua`: the `vim.cmd.colorscheme("solarized")` call
+  (solarized comes from the `solarized`/`source-releases` deps, so it is absent
+  until plugins install), lazy.nvim bootstrap, and the treesitter/provider
+  setup — audit which calls assume a fully-provisioned state and wrap them
+  (`pcall`, existence checks, fallbacks). Hunt the "error on every keypress"
+  cause (a repeatedly-firing autocmd/CursorMoved/InsertCharPre callback, or a
+  broken statusline/completion component). Relates to the terminal-theme
+  propagation work (docs/plans/dynamic-color-theme-propagation.md) and the
+  **Audit the Neovim config composition** item (a split could isolate the
+  fragile pieces).
+
+- **Audit the Neovim config composition; decide whether to split `init.lua`.**
+  *(Complexity: Medium — investigation + a mechanical refactor.)* The whole
+  config is a single ~1,286-line `config/files/neovim/init.lua` (the only file
+  under `config/files/neovim/`). Assess whether to split it into multiple files
+  (e.g. by concern: options, keymaps, the lazy.nvim plugin specs, LSP,
+  completion, colors/statusline, filetype settings) and, if so, decide the
+  layout — a `lua/` module tree required by `runtimepath`, or plain files
+  sourced from `init.lua`. Note the neovim role links only `init.lua`
+  (`config/roles/neovim/tasks/main.yml`, `with_items: [init.lua]`) into
+  `{{neovim_config_dir}}` and symlinks that dir to `~/.config/nvim`, so a split
+  means updating the role to link the new files/dir (the classic "file exists
+  but isn't linked" gotcha — see AGENTS.md). Several other queued Neovim items
+  (completion-UX, AI-plugin gating, language providers) would touch this file,
+  so a split may make those easier — consider sequencing this first.
 - **Iron out the Neovim AI-plugin setup (cursortab + minuet + avante), with
   per-project provider gating.** *(Complexity: High — may warrant its own
   `docs/plans/` doc.)* The three seem like they should synergize (cursortab =
@@ -241,6 +268,40 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
 
 ## Terminal & theming
 
+- **Fix wezterm opening new windows in the light theme under a dark system
+  appearance.** *(Complexity: Medium.)* New wezterm windows come up in the light
+  color scheme even though macOS system appearance is Dark; toggling system
+  appearance to Light and back to Dark corrects the affected window to dark.
+  Cause is almost certainly the appearance→scheme wiring in
+  `config/files/wezterm/wezterm.lua` (`get_appearance()` /
+  `scheme_for_appearance()` / the one-shot `config.color_scheme =
+  scheme_for_appearance(get_appearance())` at config-eval time, lines ~14-31):
+  the scheme is resolved once and the initial `get_appearance()` result is wrong
+  (or is the mux-server fallback path, which hard-returns `"Dark"` when
+  `wezterm.gui` is nil — worth checking which side is misreporting), while the
+  appearance-toggle triggers a config reload that then resolves correctly.
+  Likely fix: resolve the scheme dynamically on `window-config-reloaded` (and/or
+  guard the initial value) so each window picks the correct scheme at creation.
+  Part of the terminal-theme story — see
+  docs/plans/dynamic-color-theme-propagation.md (this is the wezterm-side
+  appearance detection that feeds it).
+
+- **Fix wezterm notch spacing wrongly applied to a fullscreen window on a
+  notchless external display.** *(Complexity: Medium — likely an upstream
+  wezterm/macOS quirk.)* Repro (macOS, laptop lid open, connected to an external
+  display): with a fullscreen wezterm window on the external (no-notch) display,
+  moving focus to an app window on the built-in (notched) display causes wezterm
+  to add the notch inset to the fullscreen window on the external display —
+  where there is no notch — so it gets spurious top spacing. Config already sets
+  `config.macos_fullscreen_extend_behind_notch = false`
+  (`config/files/wezterm/wezterm.lua:6`); the bug is that the notch inset seems
+  applied per-focus/globally rather than per the window's actual screen.
+  Investigate whether a wezterm setting or event handler can pin the inset to
+  the window's own display, else file upstream. Closely related to the **Fix
+  wezterm fullscreen re-sizing on display changes** item and its plan
+  (docs/plans/wezterm-fullscreen-display-changes.md) — same fullscreen/multi-
+  display area, likely fixed together.
+
 - **Replace the hand-rolled tmux statusline and shell PS1 with a prettier,
   consistent system.** *(Complexity: Medium.)* Why: the current styling was built
   to avoid relying on patched fonts, which is no longer a constraint — it is
@@ -264,21 +325,18 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
     (`config/files/wezterm/wezterm.lua`) with no nerd-font install in the setup
     roles, so a font install would be part of this.
 
-- **Fix wezterm fullscreen re-sizing on display changes.** *(Complexity:
-  Medium.)* When connecting to an external display whose resolution differs from
-  the native one, a fullscreen (borderless) wezterm window stays at the old
-  display's size instead of filling the new screen — and vice-versa on
-  disconnect. Goal: a fullscreen wezterm window should automatically resize to
-  fill the current screen whenever the window's size/screen changes. This is
-  already an open TODO in the config: `config/files/wezterm/wezterm.lua:41` ("on
-  screen resize event, for each window, if window is fullscreen,
-  re-fullscreen"); startup fullscreen is set at `wezterm.lua:35-38` and the
-  toggle bind at `wezterm.lua:45`. Likely direction: handle wezterm's
-  `window-resized` (and/or a screen-change) event and re-apply fullscreen
-  (`toggle_fullscreen`/`SetWindowLevel`/native fullscreen) for fullscreen
-  windows. Note this is upstream wezterm config behavior, not the CSI-2031 fork
-  specifically (see docs/plans/dynamic-color-theme-propagation.md for the fork
-  context).
+- ~~Fix wezterm fullscreen re-sizing on display changes~~ — **fixed in the
+  fork** (csi-2031 `b51f4655`; `wezterm_fork_version` bumped). A non-native
+  fullscreen frame is set only at entry and never updated, so it went stale on a
+  screen-geometry change. Fix observes
+  `NSApplicationDidChangeScreenParameters` and re-applies the current screen
+  frame immediately (focus-independent), plus a `windowDidChangeScreen`→`draw_rect`
+  backstop. See docs/plans/wezterm-fullscreen-display-changes.md for the full
+  investigation. Verified for the in-place resolution-change case; the
+  external-display connect/disconnect case should be covered but was not
+  verified on hardware. Remaining: uses `mainScreen` (a fullscreen window on a
+  *secondary* display may target the wrong screen) — pre-existing quirk; and the
+  related **notch spacing** item above is still open.
 
 ## Repo hygiene & tooling
 

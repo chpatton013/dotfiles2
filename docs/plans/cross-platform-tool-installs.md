@@ -32,15 +32,39 @@ Apply that test per tool:
 
 | Tool        | Needs root?              | Recommendation |
 | ----------- | ------------------------ | -------------- |
-| ollama      | yes (pkg + systemd unit) | **`setup-*`** — matches the existing macOS placement in `dev-tools` |
+| ollama      | yes (system pkg + service) | **`setup-*`** — per-OS native package managers; the one tool not cross-OS-uniform (artifact reality, §1) |
 | Claude Code | no (native installer → `~/.local`) | **`config/`** — cross-platform user-space role; retire the macOS brew cask |
 | Pi Agent    | no (node + npm into `~/.local/share`) | **`config/`** — extend the existing `pi-agent` role |
 
-Net effect: ollama stays a system concern; the two agents become uniform
-user-space `config/` installs that work identically on macOS and Linux (and on
-headless remotes without a package manager privilege). This also removes the
-macOS-vs-Linux asymmetry for the agents entirely — the only per-platform code
-left is ollama.
+Net effect: the two agents (Claude Code, Pi Agent) become uniform user-space
+`config/` installs into `~/.local` that behave identically on macOS and Linux
+(incl. headless remotes without package-manager privileges). ollama is the one
+exception — it stays a per-OS `setup-*` system install via native package
+managers, because its release artifacts don't suit a clean uniform binary-drop
+(§1); a future dotslash migration could unify it.
+
+---
+
+## Guiding principle: one mechanism per tool, across all OSes
+
+Each tool uses a **single install + update mechanism on every supported OS**,
+rather than per-OS-native package managers — even at the cost of not using brew /
+apt / pacman. Concretely: fetch a pinned release binary into the XDG prefix and
+update by bumping the pin. This keeps behavior and the update story identical
+everywhere (including headless remotes without package-manager privileges) and is
+a natural fit for the "evaluate dotslash" followup. Only inherently OS-specific
+bits (service registration: systemd vs launchd) stay conditional.
+
+- **Claude Code**: Anthropic's native installer (macOS + Linux, installs to
+  `~/.local`, self-updates via `claude update`) — already uniform; retire the
+  macOS brew cask.
+- **Pi Agent**: pinned Node runtime + npm install into the isolated dir
+  (Option A below), or an official runtime-managing installer (Option C) —
+  uniform across OSes.
+- **ollama**: the deliberate **exception** — its release artifacts resist a
+  clean uniform binary-drop (macOS flat `.tgz` of binary+dylibs, Linux
+  `.tar.zst`+zstd, ~139MB), so it stays on per-OS native package managers (§1).
+  Revisit under the dotslash followup.
 
 ---
 
@@ -48,54 +72,59 @@ left is ollama.
 
 ### Approach
 
-Keep macOS as-is (brew formula + `homebrew_services`). Add Linux via the
-official install script, which downloads the binary to `/usr/local/bin` **and**
-installs+enables a systemd service in one step:
+ollama is the **one exception** to the cross-OS-consistency principle (decided
+2026-07-16). Its release artifacts don't suit a uniform binary-drop: macOS ships
+a flat ~139MB `.tgz` (the `ollama` binary + dozens of ggml runner dylibs), Linux
+ships `.tar.zst` (needs `zstd`, `bin/`+`lib/` layout) — different compression
+*and* layout per platform, plus a service to manage. So we use each platform's
+native package manager (simplest, least disruptive — macOS already works) and
+revisit uniformity under the "evaluate dotslash" followup.
 
-```
-curl -fsSL https://ollama.com/install.sh | sh
-```
+- **macOS**: unchanged — the brew `ollama` formula + `homebrew_services` in
+  `setup-macos/roles/dev-tools` already install and run it.
+- **Ubuntu**: the official `install.sh` (no apt package exists); it drops the
+  binary in `/usr/local/bin` and installs+enables the systemd unit.
+- **Arch**: the official `ollama` package via `pacman` (in the `extra` repo),
+  system-managed and updated by `pacman -Syu`.
 
-Decision: use the official script rather than distro packages. Ubuntu has no
-ollama apt package; Arch has `ollama` in the community repo (and `ollama-cuda`),
-but the official script is the documented path, self-updates on re-run, and
-gives one code path for both Linux distros. (Alternative for Arch: `pacman -S
-ollama` + a `systemd` `enable`/`start` — note only as an option; prefer the
-script for parity with Ubuntu.) Both need root, consistent with `setup-*`.
+Linux install is root-level (system binary + systemd) → `setup-*`.
 
-### Steps
+### Steps (implemented 2026-07-16)
 
-- **Ubuntu** (`setup-ubuntu/roles/`): add ollama tasks. Two sub-options:
-  - reuse `dev-tools` (add a task block there), or
-  - a dedicated `ollama` role added to `dev-tools/meta/main.yml` dependencies
-    (alphabetized). Prefer a dedicated role for taggability (mirrors how other
-    tools each get a role) and so `--tags ollama` is meaningful.
-  - Task: `shell: curl -fsSL https://ollama.com/install.sh | sh`, guarded with
-    `creates: /usr/local/bin/ollama` (or `command -v ollama`) for idempotency,
-    `become: yes`.
-  - The script already creates + enables the systemd unit; add an explicit
-    `systemd: name=ollama enabled=yes state=started become=yes` task as a
-    belt-and-suspenders / idempotent re-assert.
-- **Arch** (`setup-archlinux/roles/`): same pattern (dedicated `ollama` role or
-  a block in `dev-tools`). `curl … | sh` works on Arch too; the `systemd`
-  enable/start task is identical.
-- **macOS**: no change (already done in `setup-macos/roles/dev-tools`).
-- **Cleanup**: remove any stale manual `brew install ollama` / `brew services
-  start ollama` lines from the `README.md` TODO scratchpad (per the followup;
-  verify they still exist — a grep this session found none, so this may already
-  be done).
+- **Ubuntu** — `setup-ubuntu/roles/ollama` (added to
+  `setup-ubuntu/roles/dev-tools/meta/main.yml` deps, alphabetized):
+  - `apt: name=curl` (the installer needs it), `become: yes`.
+  - `shell: curl -fsSL https://ollama.com/install.sh | sh`,
+    `creates: /usr/local/bin/ollama`, `become: yes`.
+  - `systemd: name=ollama enabled=yes state=started daemon_reload=yes`,
+    `become: yes` (re-assert; the installer already enables it).
+- **Arch** — `setup-archlinux/roles/ollama` (added to
+  `setup-archlinux/roles/dev-tools/meta/main.yml` deps, alphabetized):
+  - `pacman: name=ollama state=present`, `become: yes`.
+  - the same `systemd` enable/start task.
+- **macOS**: no change.
+- **Cleanup**: drop any stale `brew install ollama` / `brew services start
+  ollama` lines from the `README.md` TODO scratchpad.
+- Not verifiable here (Linux-only): `setup-ubuntu` syntax-checks clean;
+  `setup-archlinux` can't syntax-check on macOS (missing `kewlfft.aur` galaxy
+  role, pre-existing). Real test is a Vagrant provision.
 
 ### Verification
 
-- Linux: `systemctl status ollama` → `active (running)`; `ollama --version`;
-  `ollama list`. Exercise via the Vagrant harness (`DOTFILES_PLATFORM=ubuntu` /
-  `archlinux`) — expect bit-rot on the dated boxes.
-- macOS: unchanged; `brew services list | grep ollama`.
+- Linux: `ollama --version`; `systemctl status ollama` → `active (running)`;
+  `ollama list` responds. Exercise via the Vagrant harness
+  (`DOTFILES_PLATFORM=ubuntu` / `archlinux`) — expect dated-box bit-rot.
+- macOS: unchanged (`brew services list | grep ollama`).
 
 ### Risks / open questions
 
-- The install script *replaces* the systemd unit on re-run (ollama#8389), which
-  would clobber any local override. If we later need custom `OLLAMA_HOST` /
+- **Update story differs by OS** (the accepted cost of making ollama the
+  exception): Arch `pacman` auto-updates with `pacman -Syu`; the Ubuntu
+  `install.sh` drops a standalone binary that `apt` will *not* update (re-run the
+  installer to update); brew updates via `brew upgrade`. A future dotslash
+  migration would unify this.
+- The Ubuntu install script *replaces* the systemd unit on re-run (ollama#8389),
+  which would clobber any local override. If we later need custom `OLLAMA_HOST` /
   models dir, put it in a drop-in (`/etc/systemd/system/ollama.service.d/…`),
   not the main unit.
 - The `curl | sh` pattern conflicts with the repo's future **bootstrap /
@@ -175,6 +204,30 @@ now the recommended path and avoids a node dependency, so prefer it.
 
 ## 3. Pi Agent — install the agent (currently config-only)
 
+### Resolution (2026-07-16): Option B (npm global), implemented
+
+Inspecting the installed instance settled the open questions:
+
+- The agent is already installed as a **global npm package in the shared npm
+  prefix** (`~/.local/share/dotfiles/npm/bin/pi` →
+  `@earendil-works/pi-coding-agent`, v0.80.2) on system Node v24 — i.e.
+  **Option B**, not the isolated `pi-node` layout (which sits empty). Binary is
+  `pi`.
+- `pi.dev/install.sh` exists but is an **interactive** installer whose core is
+  `npm install -g @earendil-works/pi-coding-agent` into a selected prefix (plus
+  optional standalone-node bootstrap) — so **Option C reduces to Option B's
+  mechanism** and is unsuitable for unattended Ansible.
+- Therefore **Option B**: added an `npm` (global, `NPM_PREFIX={{npm_data_dir}}`)
+  install task + an `npm` meta-dep to `config/roles/pi-agent`, mirroring the npm
+  role. Verified: the role applies clean and idempotent (`state: present`
+  no-ops on the already-installed 0.80.2; does not force-upgrade).
+- **Vestigial**: the isolated-node scaffolding (`pi_node_dir` default + its
+  creation, `pi_node_dir()` in `vars.sh`, and the `pi-node/current/bin` PATH
+  prepend in `3-pi-agent.sh`) is unused under B. Left in place (harmless) to
+  avoid churning intentional design; a cleanup follow-up could remove it.
+
+The A/B/C discussion below is retained for context.
+
 ### Approach
 
 Pi Agent is a set of npm packages (Node ≥ 22.19); the interactive CLI is
@@ -207,10 +260,20 @@ system/brew node). Options:
   fragment (would need to update `3-pi-agent.sh`) and couples Pi's node to the
   system node version.
 
-Recommendation: **A**, because the committed `3-pi-agent.sh` already commits us
-to the isolated layout and Pi's Node ≥ 22.19 requirement is easier to guarantee
-with a pinned runtime than with whatever `apt`/`pacman`/brew ships. If A proves
-heavy, fall back to B and simplify the fragment.
+- **C. Official install script** (for parity with the ollama and Claude Code
+  installers) — e.g. `curl -fsSL https://pi.dev/install.sh | sh`. **Verify such
+  an installer actually exists** (the package is published as
+  `@earendil-works/pi-coding-agent`, so an official one-line installer may or may
+  not exist), and critically, **whether it manages/pins a Node runtime** (Pi
+  needs Node ≥ 22.19) or assumes a system Node. If it bundles/pins its own
+  runtime, C is the least code and the most consistent with the other two tools,
+  and would supersede A.
+
+Recommendation: prefer **C if a runtime-managing official installer exists**
+(consistency + least code); otherwise **A**, because the committed
+`3-pi-agent.sh` already commits us to the isolated `current/bin` layout and Pi's
+Node ≥ 22.19 requirement is easier to guarantee with a pinned runtime than with
+whatever `apt`/`pacman`/brew ships. Fall back to **B** only if A/C prove heavy.
 
 ### Steps (option A)
 
@@ -240,9 +303,11 @@ heavy, fall back to B and simplify the fragment.
 - The plugins in `settings.json` (`npm:@narumitw/pi-goal`, etc.) resolve — Pi
   installs those itself at runtime, so just confirm the agent launches and
   loads them.
-- End-to-end only meaningful with ollama/vLLM reachable; `defaultProvider` in
-  `settings.json` is `vLLM`, so a full run needs that backend up (out of scope —
-  cross-links the Pi local-LLM plan).
+- Verification stops at install + launch + plugin load. A full end-to-end run
+  would need the `vLLM` backend (`defaultProvider` in `settings.json`) reachable,
+  but that backend is currently unreachable (VPN), so **do not attempt to verify
+  the provider connection** — it is explicitly out of scope here (cross-links the
+  Pi local-LLM plan).
 
 ### Risks / open questions
 
