@@ -10,6 +10,18 @@
     - "{{pi_node_dir}}"
     - "{{'~/.pi/agent' | expanduser}}"
 
+# Install the agent itself (the config below only sets up its settings). Pi is
+# an npm package (Node >= 22.19); install it as a global into the shared npm
+# prefix (npm_data_dir/bin, already on PATH via the npm role) — the same
+# mechanism as the other npm CLIs, uniform across macOS and Linux. The official
+# pi.dev installer is just an interactive wrapper around this same npm install.
+- name: Install the Pi Agent CLI (npm global)
+  npm:
+    name: "@earendil-works/pi-coding-agent"
+    global: yes
+  environment:
+    NPM_PREFIX: "{{npm_data_dir}}"
+
 - name: Render Pi Agent Vars template file
   template:
     src: vars.sh
