@@ -2,6 +2,11 @@
 
 wezterm_config_dir: "{{dotfiles_config_dir}}/wezterm"
 
+# release-metadata:
+#   upstream: fork chpatton013/wezterm (carries PR #7723, CSI-2031); NOT a
+#     routine upstream release -- bump only when re-basing the fork.
+#   line: pinned fork SHA
+#   validation: interactive -- deliberate fork pin; do not auto-bump.
 # Fork of wezterm carrying PR #7723 (DEC mode 2031 / CSI 2031 color-scheme
 # change reporting), pinned to a specific revision for reproducibility. See
 # docs/plans/dynamic-color-theme-propagation.md.

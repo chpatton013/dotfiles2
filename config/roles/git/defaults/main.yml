@@ -1,5 +1,11 @@
 ---
 
+# release-metadata:
+#   upstream: https://github.com/git/git/releases (tag vX.Y.Z)
+#   line: latest stable, pinned conservatively at patch level
+#   validation: interactive -- source build is Darwin-gated (Linux only) and
+#     Linux is Vagrant-only here, so there is no automated build-verify on the
+#     dev machine; confirm git_release_cflags (-std=...) still compiles.
 git_release_version: 2.41.0
 git_release_url: "https://github.com/git/git/archive/refs/tags/v{{git_release_version}}.tar.gz"
 git_release_dir: "{{source_releases_data_dir}}/git-{{git_release_version}}"

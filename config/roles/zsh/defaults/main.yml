@@ -1,5 +1,11 @@
 ---
 
+# release-metadata:
+#   upstream: https://zsh.sourceforge.io/releases.html /
+#     https://github.com/zsh-users/zsh (tag zsh-X.Y.Z; release tarball on SF)
+#   line: latest stable
+#   validation: automated -- builds on all platforms; `zsh --version` reports the
+#     pin and `zmodload zsh/pcre` confirms the PCRE module.
 zsh_release_version: 5.9.2
 zsh_release_url: "https://downloads.sourceforge.net/project/zsh/zsh/{{zsh_release_version}}/zsh-{{zsh_release_version}}.tar.xz"
 zsh_release_dir: "{{source_releases_data_dir}}/zsh-{{zsh_release_version}}"

@@ -1,5 +1,10 @@
 ---
 
+# release-metadata:
+#   upstream: https://github.com/tmux/tmux/releases (tag X.Ya)
+#   line: latest stable
+#   validation: automated -- builds on all platforms; `tmux -V` reports the pin.
+#     Keep the version-gated CSI-2031 hook in templates/tmux.conf working.
 tmux_release_version: 3.6a
 tmux_release_url: "https://github.com/tmux/tmux/releases/download/{{tmux_release_version}}/tmux-{{tmux_release_version}}.tar.gz"
 tmux_release_dir: "{{source_releases_data_dir}}/tmux-{{tmux_release_version}}"
