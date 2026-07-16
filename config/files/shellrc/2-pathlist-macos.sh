@@ -17,44 +17,11 @@ function find_gnu_packages() {
 EOF
 }
 
-function find_homebrew_packages() {
-  # Performance optimization; instead of searching through the whole homebrew
-  # opt dir, pre-calculate and track this list.
-  #
-  # # Find all executables in /opt/homebrew/opt/*/bin/ directories and transform
-  # # them to their realpaths.
-  # executables=$(
-  #   find -L /opt/homebrew/opt/ -name bin -type d |
-  #   xargs -I{} find {} -type f -executable |
-  #   xargs -I{} realpath {} |
-  #   sort -u
-  # )
-  # # Filter to executables whose realpaths don't match the realpath of the file
-  # # found in the pathlist (ie, `which $exec`).
-  # # Further filter to executables who are in their package's top-level bin/
-  # # directory (ie, /opt/homebrew/Cellar/$package/$version/bin/$exec).
-  # # Get the dirnames of these remaining executables.
-  # # Further filter out versioned packages (ie, containing `@` in their paths).
-  # # Transform the path by replacing /Cellar/ with /opt/, and removing the
-  # # versioned subdirectory.
-  # while IFS= read -r exec; do
-  #   if [ "$(realpath "$(which "$(basename "$exec")")")" != "$exec" ] &&
-  #      [ "$(echo -n "$exec" | grep -Fo / | wc -l)" -eq 7 ]; then
-  #     dirname "$exec"
-  #   fi
-  # done <<< "$executables" | grep -v @ | sort -u | sed -e 's|/Cellar/|/opt/|' | cut -d/ -f1-5,7
-  cat <<EOF
-/opt/homebrew/opt/berkeley-db/bin
-/opt/homebrew/opt/binutils/bin
-/opt/homebrew/opt/file-formula/bin
-/opt/homebrew/opt/icu4c/bin
-/opt/homebrew/opt/m4/bin
-/opt/homebrew/opt/ncurses/bin
-/opt/homebrew/opt/ruby/bin
-/opt/homebrew/opt/sqlite/bin
-/opt/homebrew/opt/unzip/bin
-EOF
-}
+# Keg-only formula bins are put on PATH by `brew link`-ing them into
+# /opt/homebrew/bin at provision time (setup-macos/roles/dev-tools), not by
+# enumerating opt/*/bin here. Note find_gnu_packages below stays: `brew link`
+# can't replace it, since the GNU libexec/gnubin dirs provide *un-prefixed* GNU
+# commands (grep, sed, ...) that linking the formula would not.
 
 PATH="$(prepend_pathlist "$PATH" /opt/homebrew/bin)"
 if [ "$(id -u)" -eq 0 ]; then
@@ -62,9 +29,6 @@ if [ "$(id -u)" -eq 0 ]; then
 fi
 # Prepend GNU bins so they take precedence over BSD bins
 for dir in $(find_gnu_packages gnubin); do
-  PATH="$(prepend_pathlist "$PATH" "$dir")"
-done
-for dir in $(find_homebrew_packages); do
   PATH="$(prepend_pathlist "$PATH" "$dir")"
 done
 export PATH

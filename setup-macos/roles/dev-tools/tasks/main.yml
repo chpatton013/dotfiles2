@@ -41,6 +41,27 @@
     - vim
     - zsh
 
+# Put the bins of keg-only (and formerly keg-only) formulae onto PATH by linking
+# them into /opt/homebrew/bin, which is already on PATH for both interactive
+# shells and the provisioning scripts. This replaces the hand-maintained
+# find_homebrew_packages list in config/files/shellrc/2-pathlist-macos.sh.
+# Only formulae that ship a wanted CLI and link cleanly (no lib/header shadowing)
+# are linked: notably NOT binutils (its GNU ar would shadow Apple's ar during
+# source builds) nor the keg-only libraries (ncurses/sqlite/... are keg-only
+# precisely to avoid global lib conflicts).
+- name: Link keg-only formulae onto PATH
+  command:
+    # --force is required to link keg-only formulae; verified these link only
+    # bin/ + man/ (no lib/header shadowing of the system or other formulae).
+    cmd: "brew link --force {{item}}"
+  register: brew_link
+  changed_when: "'Already linked' not in brew_link.stderr"
+  with_items:
+  - file-formula
+  - m4
+  - ruby
+  - unzip
+
 - name: Install dev tool homebrew cask packages
   homebrew_cask:
     name:
