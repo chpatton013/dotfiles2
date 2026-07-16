@@ -17,7 +17,15 @@
 [interactive]
   diffFilter = delta --color-only
 
+# Light/dark is not hardcoded here. The color-theme shell fragment exports
+# DELTA_FEATURES="theme-$COLOR_THEME_NAME", selecting one of the theme features
+# below so delta tracks the terminal's appearance dynamically.
 [delta]
-  light = true
   line-numbers = true
   side-by-side = false
+
+[delta "theme-dark"]
+  dark = true
+
+[delta "theme-light"]
+  light = true

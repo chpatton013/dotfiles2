@@ -11,6 +11,8 @@
   - color-codes
   - color-escapes
   - color-theme
+  - color-theme-detect
+  - color-theme-set
   - color-theme-test
 
 - name: Link Color Theme Shell RC files

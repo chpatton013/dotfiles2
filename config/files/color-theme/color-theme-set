@@ -1,0 +1,19 @@
+#!/bin/bash --norc
+# Write the current theme ("light" or "dark") to the observable state file that
+# the color-theme system reads. Used by the tmux mode-2031 hooks (which know the
+# new appearance directly and need not re-query) and anywhere else a known value
+# should be published without a terminal round-trip.
+set -euo pipefail
+
+name="${1:-}"
+case "$name" in
+  light | dark) ;;
+  *)
+    echo "usage: $(basename "$0") <light|dark>" >&2
+    exit 1
+    ;;
+esac
+
+dir="${XDG_STATE_HOME:-$HOME/.local/state}/color-theme"
+mkdir -p "$dir"
+printf '%s\n' "$name" >"$dir/name"

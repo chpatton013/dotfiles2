@@ -15,6 +15,7 @@
     "npm:@npm-ken/pi-bar",
     "npm:@zigai/pi-prompt-history",
     "npm:context-mode",
+    "npm:pi-auto-theme",
     "npm:pi-lens",
     "npm:pi-mcp-adapter",
     "npm:pi-memory-stone"

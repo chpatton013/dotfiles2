@@ -2,8 +2,14 @@
 set -euo pipefail
 
 function color_theme_name() {
-  # TODO: read this from an observable file
-  echo light
+  # Read the cached value written by `color-theme-detect` (which queries the
+  # terminal via OSC 11). Fall back to the last known value, then a default.
+  local state_file="${XDG_STATE_HOME:-$HOME/.local/state}/color-theme/name"
+  if [ -r "$state_file" ]; then
+    cat "$state_file"
+  else
+    echo "${COLOR_THEME_DEFAULT:-dark}"
+  fi
 }
 
 # Monotone palette (darkest to lightest)

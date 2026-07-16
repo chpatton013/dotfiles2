@@ -8,6 +8,7 @@
     - {role: bazel, tags: [bazel]}
     - {role: bin, tags: [bin]}
     - {role: cargo, tags: [cargo]}
+    - {role: color-theme, tags: [color-theme]}
     - {role: dircolors, tags: [dircolors]}
     - {role: flatpak, tags: [flatpak]}
     - {role: fzf, tags: [fzf]}

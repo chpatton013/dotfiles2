@@ -451,11 +451,6 @@ require("lazy").setup({
             "lukas-reineke/indent-blankline.nvim",  -- Add indent guides
             main = "ibl",
         },
-
-        {
-            "f-person/auto-dark-mode.nvim",
-            opts = {},
-        },
     },
     checker = { enabled = true, notify = false },
 })
