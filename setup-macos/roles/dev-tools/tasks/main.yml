@@ -13,6 +13,8 @@
     - clang-format
     - cmake
     - file-formula
+    - flock
+    - gh
     - git
     - git-lfs
     - golang
