@@ -1,0 +1,11 @@
+---
+
+# Anthropic's native installer: user-space, no Node, cross-platform (macOS +
+# Linux), self-updating. Installs the `claude` binary into ~/.local/bin
+# (= xdg_bin_home, already on PATH via shellrc). npm install was deprecated in
+# Jan 2026 in favor of this. `creates:` makes it install-once; the tool
+# self-updates thereafter.
+- name: Install Claude Code (native installer)
+  shell:
+    cmd: curl -fsSL https://claude.ai/install.sh | bash
+    creates: "{{xdg_bin_home}}/claude"

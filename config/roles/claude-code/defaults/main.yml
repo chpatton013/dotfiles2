@@ -1,0 +1,5 @@
+---
+
+# Claude Code manages its own data under ~/.local/share/claude; recorded here
+# for convention / reference. The native installer owns install + self-update.
+claude_code_data_dir: "{{xdg_data_home}}/claude"

@@ -7,6 +7,7 @@
     - {role: bazel, tags: [bazel]}
     - {role: bin, tags: [bin]}
     - {role: cargo, tags: [cargo]}
+    - {role: claude-code, tags: [claude-code]}
     - {role: color-theme, tags: [color-theme]}
     - {role: dircolors, tags: [dircolors]}
     - {role: flatpak, tags: [flatpak]}

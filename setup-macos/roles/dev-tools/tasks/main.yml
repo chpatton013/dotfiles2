@@ -44,7 +44,6 @@
 - name: Install dev tool homebrew cask packages
   homebrew_cask:
     name:
-    - claude-code
     - macfuse
     - vagrant
     - wezterm@nightly
