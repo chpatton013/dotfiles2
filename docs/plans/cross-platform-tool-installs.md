@@ -1,5 +1,8 @@
 # Cross-Platform Tool Installs: ollama, Claude Code, Pi Agent
 
+> **Status: implemented** (ollama, Claude Code, Pi Agent installs). Only the
+> vestigial `pi_node_dir` cleanup (tracked in `docs/followups.md`) remains.
+
 ## Context
 
 Three tools tied to the local-LLM / agent workflow are provisioned only on

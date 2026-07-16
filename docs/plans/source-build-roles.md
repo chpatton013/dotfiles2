@@ -1,5 +1,12 @@
 # Source-Build Roles: zsh from Source + Version Audit
 
+> **Status: partially implemented.** Part 1 (zsh source-build role) done
+> (`e8317b4`). Part 2: git bumped to 2.55.0 (`a403e35`); the
+> `/update-source-versions` skill + `# release-metadata:` convention added
+> (`577efc0`). **Remaining:** the neovim 0.11 → 0.12 bump, gated on interactive
+> validation (Darwin-gated build; brew nvim is the macOS driver, currently
+> 0.11.6).
+
 Covers two `docs/followups.md` items (Provisioning & setup): **Build zsh from
 source** and **Update tracked source-build tool versions**.
 
@@ -171,6 +178,18 @@ correct (e.g. ncurses/pcre for the new zsh build).
    zsh.sourceforge.io / github.com/zsh-users/zsh; tmux:
    github.com/tmux/tmux). Prefer the newest release on the tool's *current
    stable line*, and pin conservatively at patch level.
+
+I'd like to push the neovim version to stable upstream. I'm here to help
+validate interactively.
+
+Let's add to the scope of this task: build a skill to help update these source
+versions in the future. Include the distinction between minor patches that
+shouldn't require interactive review and major ones in cases where you don't
+have a fully-automated validation mechanism. The skill shouldn't encode the
+details about each specific application, but should instead look for that
+information when it executes. That means we should have some convention for
+where we record that information in the ansible roles. Maybe comments in the
+defaults file that specifies the version for each source build?
 
 ### Verification
 

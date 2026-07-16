@@ -1,5 +1,8 @@
 # Dynamic Color Theme Propagation
 
+> **Status: implemented** (Tier 1 pull + Tier 2 push via the wezterm fork).
+> Kept as reference for the still-open Terminal & theming followups.
+
 ## Context
 
 `config/files/git/gitconfig-fragments/ui.gitconfig` hardcodes `delta.light`,

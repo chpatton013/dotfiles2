@@ -1,5 +1,10 @@
 # Wezterm Fullscreen Resizing on Display Changes
 
+> **Status: fix implemented** in the wezterm fork (`wezterm_fork_version`).
+> Verified for in-place resolution changes; the external-display connect case
+> and the secondary-display `mainScreen` quirk remain, as does the related notch
+> item (see Terminal & theming followups).
+
 ## Context
 
 Our wezterm window starts fullscreen and can be toggled fullscreen with

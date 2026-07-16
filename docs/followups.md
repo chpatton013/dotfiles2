@@ -10,26 +10,37 @@ complexity estimate:
 
 Remove items when done (git history keeps the record).
 
-Implementation plans drafted (in `docs/plans/`, pending review) for these items:
+Implementation plans in `docs/plans/` for queued items (status noted; plans with
+nothing left are deleted — git history keeps them):
 
-- ~~`neovim-language-providers.md` — Neovim language provider integrations.~~ **(implemented — commit `8a88202`)**
-- `wezterm-fullscreen-display-changes.md` — wezterm fullscreen resize on display change.
-- `cross-platform-tool-installs.md` — ollama on Linux; Claude Code + Pi Agent installs.
-- `source-build-roles.md` — zsh from source; source-build version updates.
-- ~~`macos-setup-fixes.md` — Rosetta 2; keg-only `brew link`.~~ **(implemented — commit `a59a9d2`)**
-- `dev-hygiene-ci.md` — file validation + GitHub Actions CI.
+- `cross-platform-tool-installs.md` — Claude Code + Pi Agent + ollama installs.
+  Implemented; only the `pi_node_dir` cleanup below remains.
+- `source-build-roles.md` — zsh from source + source-build version updates.
+  Partially implemented; the neovim 0.12 bump is pending interactive validation.
+- `dynamic-color-theme-propagation.md` — terminal light/dark propagation.
+  Implemented (Tier 1 + Tier 2); kept as reference for the open Terminal items.
+- `wezterm-fullscreen-display-changes.md` — fullscreen resize on display change.
+  Core fix implemented; edge cases remain.
+- `dev-hygiene-ci.md` — file validation + GitHub Actions CI. Not started.
 
 ## Provisioning & setup
 
-- ~~Add install steps for Claude Code and Pi Agent on all supported hosts~~ —
-  **done** (commits `259a854`, `fca58f3`). Claude Code: new cross-platform
-  `config/roles/claude-code` using Anthropic's native installer, macOS brew cask
-  removed. Pi Agent: `config/roles/pi-agent` now `npm install -g
-  @earendil-works/pi-coding-agent` into the shared npm prefix (Option B; the
-  official pi.dev installer is just an interactive wrapper around the same npm
-  install). Both verified on macOS; Linux via the node/npm setup roles, untested
-  on hardware. See docs/plans/cross-platform-tool-installs.md. Vestigial cleanup
-  left: the unused `pi_node_dir` isolated-node scaffolding.
+- **Remove the vestigial `pi_node_dir` isolated-node scaffolding.** *(Complexity:
+  Low.)* Left over from the rolled-back Pi Agent "Option A" (isolated Node
+  runtime); Pi Agent now installs via npm global (Option B), so `pi_node_dir` is
+  unused. Remove it from `config/roles/pi-agent/{defaults,tasks,templates}` and
+  the `PI_NODE_PREFIX` export in `config/files/pi-agent/3-pi-agent.sh`. See
+  docs/plans/cross-platform-tool-installs.md.
+
+- **Combine the `zsh` and `zshrc` roles into one.** *(Complexity: Low–Medium.)*
+  The new `config/roles/zsh` (source build) and the existing `config/roles/zshrc`
+  (renders `~/.zshrc` + links fragments) are currently separate. Merging them is
+  fine as long as it stays a single role (no dependency cycle): union the deps
+  (`[shellrc, source-releases, xdg]`), fold the build + config tasks together,
+  update `config/config.playbook.yml`, and re-verify. NOTE: this reverses the
+  deliberate separation in docs/plans/source-build-roles.md Part 1 (kept apart to
+  avoid a zsh→zshrc cycle) — confirm the intended role name/shape before
+  refactoring.
 
 - **Write a bootstrap script (curl|bash) that provisions a bare machine and
   delegates to the right setup/config.** *(Complexity: High.)* Why: setup/config
@@ -37,7 +48,8 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   bootstrap here (the user started one on their personal Linux laptop but did
   not get far). Immediate pain: on the work Mac, "setup and config scripts both
   fail on mac because brew cellar isn't on path" (`README.md:89`) — closely
-  related to the **Handle keg-only Homebrew packages** item (same PATH problem).
+  related to the (now-resolved) keg-only PATH work; a bootstrap that shims
+  `/opt/homebrew/bin` onto PATH before delegating would subsume it.
   Desired shape, from the `README.md` TODO (lines 86, 89, 90):
   - `curl … | bash` fetches the minimal set of tools + this repo.
   - Installs the package manager + git, downloads the repository (and possibly
@@ -71,8 +83,9 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   - GUI casks currently live in `setup-macos/roles/user-tools/tasks/main.yml`;
     many of these names are also in the `README.md` TODO scratchpad (kubectl,
     octant, hub, graphviz, obsidian, virtualbox, signal, steam, etc.) — clean
-    those up when done. (The iTerm/Alacritty removal already touched the same
-    `user-tools` file — commit `557f416`.)
+    those up when done. The `README.md` "rosetta packages" group
+    (sensiblesidebuttons, steam, signal) belongs here too. (The iTerm/Alacritty
+    removal already touched the same `user-tools` file — commit `557f416`.)
 
 - **Decide a cross-platform strategy for scripting-language runtime version
   management** (the rbenv/pyenv problem), then reconcile the existing
@@ -101,54 +114,14 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   it can unify several disparate provisioning strategies behind one
   cross-platform manifest. Current strategies worth reviewing as candidates
   (roles under `config/roles/*/tasks/main.yml` that download/build/install
-  executables): source builds — `git`, `neovim`, `tmux`, `wezterm`;
+  executables): source builds — `git`, `neovim`, `tmux`, `wezterm`, `zsh`;
   release-tarball/binary downloads — `git` (git-sizer), `bazel`, `lua`, `vim`;
   language-package installs — `cargo` tools, `python` (uv tools). For each,
   weigh dotslash (fetch a pinned prebuilt binary) against the current approach —
   noting some are deliberately built from source for a specific version/patch
   (e.g. the `wezterm` fork for CSI 2031, see
-  docs/plans/dynamic-color-theme-propagation.md, and the pinned source builds in
-  the **Update tracked source-build tool versions** item), where dotslash would
-  not apply.
-
-- ~~**Handle keg-only Homebrew packages that need `brew link` on macOS.**~~ —
-  **done** (commit `a59a9d2`). `brew link --force` is now the sole
-  mechanism: `setup-macos/roles/dev-tools` links `file-formula`, `m4`, `ruby`,
-  `unzip` onto PATH, and `find_homebrew_packages` was dropped from
-  `config/files/shellrc/2-pathlist-macos.sh` (`find_gnu_packages` kept).
-  `binutils` and the keg-only libraries are deliberately not linked (source-build
-  ar/lib shadowing). See `docs/plans/macos-setup-fixes.md` Part 2 for the full
-  rationale. (`ruby` turned out to be non-keg-only on current Homebrew, so its
-  original PATH failure is already resolved upstream.)
-
-- ~~Install and start the ollama service cross-platform~~ — **done** (commit
-  `291d3e8`). Added `setup-ubuntu/roles/ollama` (official `install.sh` + systemd)
-  and `setup-archlinux/roles/ollama` (`pacman` package + systemd), wired into
-  each `dev-tools` meta; macOS stays on brew. ollama is the deliberate
-  per-OS-native exception to the cross-OS-consistency principle (its release
-  artifacts don't suit a uniform binary-drop — see
-  docs/plans/cross-platform-tool-installs.md §1). `setup-ubuntu` syntax-checks
-  clean; Linux untested on hardware.
-
-- **Build zsh from source.** *(Complexity: Low–Medium.)* Add a role that builds
-  zsh from source into the XDG prefix (`~/.local`), matching the git/neovim/tmux
-  pattern, so the shell version is not tied to the system/brew package.
-
-- ~~**Install Rosetta 2 during macOS setup.**~~ — **done** (commit
-  `a59a9d2`). Added an arm64-guarded, idempotent (skipped when the
-  `/Library/Apple/usr/share/rosetta/rosetta` marker exists) `become` task to
-  `setup-macos/roles/xcode/tasks/main.yml`. The `README.md` "rosetta packages"
-  section (sensiblesidebuttons, steam, signal) is package-install work tracked
-  separately under the **Install missing packages** item.
-
-- **Update tracked source-build tool versions.** *(Complexity: Low.)* Several
-  roles pin a version of a tool we build from source; audit them and bump to
-  current releases. Known as of 2026-07-15:
-  - `config/roles/tmux` — bumped to `3.6a` (done, for mode 2031 support).
-  - `config/roles/neovim` — `neovim_release_version` (currently `0.11.6`).
-  - `config/roles/git` — `git_release_version`.
-  - Also check the Linux setup roles under `setup-ubuntu/` and
-    `setup-archlinux/` for any pinned source builds.
+  docs/plans/dynamic-color-theme-propagation.md, and the pinned source builds
+  covered by docs/plans/source-build-roles.md), where dotslash would not apply.
 
 ## Neovim
 
@@ -183,9 +156,11 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   (`config/roles/neovim/tasks/main.yml`, `with_items: [init.lua]`) into
   `{{neovim_config_dir}}` and symlinks that dir to `~/.config/nvim`, so a split
   means updating the role to link the new files/dir (the classic "file exists
-  but isn't linked" gotcha — see AGENTS.md). Several other queued Neovim items
-  (completion-UX, AI-plugin gating, language providers) would touch this file,
-  so a split may make those easier — consider sequencing this first.
+  but isn't linked" gotcha — see AGENTS.md). Note the role now also renders a
+  `providers.lua` next to `init.lua`, so a split has a sibling to sit beside.
+  Several other queued Neovim items (completion-UX, AI-plugin gating) would
+  touch this file, so a split may make those easier — consider sequencing this
+  first.
 - **Iron out the Neovim AI-plugin setup (cursortab + minuet + avante), with
   per-project provider gating.** *(Complexity: High — may warrant its own
   `docs/plans/` doc.)* The three seem like they should synergize (cursortab =
@@ -205,8 +180,8 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
      running locally on-machine (e.g. ollama for lightweight tab completion via
      cursortab) are acceptable for either, since queries never leave the
      machine. Needs a per-project/per-directory provider-selection mechanism.
-  Related: the **Install and start the ollama service** item (local model
-  availability) and the Pi Agent local-LLM work
+  Related: local model availability (ollama, now installed cross-platform) and
+  the Pi Agent local-LLM work
   (docs/plans/improving-pi-agent-engineering-practices.md, AGENTS.md).
 
 - **Build a replacement for the remote-sshfs Neovim plugin.** *(Complexity: High
@@ -242,16 +217,6 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   cause of the `<Tab>` confusion: `cursortab` and cmp/LuaSnip both want `<Tab>`.
   (Recent churn here — see commit `b82442b` "nvim: cmp cleanup".)
 
-- ~~**Make Neovim's language provider integrations work reliably, regardless of
-  environment.**~~ — **done** (commit `8a88202`; rust-role unblock `90507c5`).
-  The neovim role renders `providers.lua` (dofile'd from `init.lua`) pinning
-  `g:python3_host_prog` to a dedicated uv venv with `pynvim`, and
-  `g:node_host_prog` / `g:ruby_host_prog` to the npm/gem host launchers under
-  our data dirs; perl is disabled. Along the way, `gem` now installs into
-  `gem_data_dir/bin` (was diverting to `~/.gem`) and python's `uv tool install`
-  is idempotent. Verified via `:checkhealth provider` — python3/node/ruby OK
-  with the pinned hosts, perl disabled.
-
 ## Terminal & theming
 
 - **Fix wezterm opening new windows in the light theme under a dark system
@@ -283,10 +248,11 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   (`config/files/wezterm/wezterm.lua:6`); the bug is that the notch inset seems
   applied per-focus/globally rather than per the window's actual screen.
   Investigate whether a wezterm setting or event handler can pin the inset to
-  the window's own display, else file upstream. Closely related to the **Fix
-  wezterm fullscreen re-sizing on display changes** item and its plan
-  (docs/plans/wezterm-fullscreen-display-changes.md) — same fullscreen/multi-
-  display area, likely fixed together.
+  the window's own display, else file upstream. Closely related to the
+  fullscreen resize fix (docs/plans/wezterm-fullscreen-display-changes.md) —
+  same fullscreen/multi-display area; the plan's `mainScreen` quirk (a
+  fullscreen window on a *secondary* display may target the wrong screen) is the
+  same class of bug and likely fixed together.
 
 - **Replace the hand-rolled tmux statusline and shell PS1 with a prettier,
   consistent system.** *(Complexity: Medium.)* Why: the current styling was built
@@ -311,20 +277,16 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
     (`config/files/wezterm/wezterm.lua`) with no nerd-font install in the setup
     roles, so a font install would be part of this.
 
-- ~~Fix wezterm fullscreen re-sizing on display changes~~ — **fixed in the
-  fork** (csi-2031 `b51f4655`; `wezterm_fork_version` bumped). A non-native
-  fullscreen frame is set only at entry and never updated, so it went stale on a
-  screen-geometry change. Fix observes
-  `NSApplicationDidChangeScreenParameters` and re-applies the current screen
-  frame immediately (focus-independent), plus a `windowDidChangeScreen`→`draw_rect`
-  backstop. See docs/plans/wezterm-fullscreen-display-changes.md for the full
-  investigation. Verified for the in-place resolution-change case; the
-  external-display connect/disconnect case should be covered but was not
-  verified on hardware. Remaining: uses `mainScreen` (a fullscreen window on a
-  *secondary* display may target the wrong screen) — pre-existing quirk; and the
-  related **notch spacing** item above is still open.
-
 ## Repo hygiene & tooling
+
+- **Add a status field to followup items + a ready/blocked convention; update
+  the `/inbox` and `/work` commands.** *(Complexity: Low–Medium.)* Beyond the
+  complexity tag, each item should carry a status so actionable work is
+  identifiable at a glance — e.g. a `Status: ready` vs `Status: blocked (on …)`
+  marker that briefly names the blocker for non-ready items. Then teach `/work`
+  to prefer `ready` items (and surface blockers) and `/inbox` to set an initial
+  status when filing. Touches `docs/followups.md` (re-annotate every item) and
+  `.agents/commands/{inbox,work}.md`.
 
 - **Investigate/fix multi-line paste into Claude Code inserting `j` for
   newlines.** *(Complexity: Medium — cross-stack, partly an external tool.)*
@@ -366,10 +328,10 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
   Ansible playbooks+roles), shell (46 `.sh`, 4 `.bash`, 6 `.zsh`), lua (nvim /
   wezterm config), json, gitconfig. Candidate tools: `yamllint` + `ansible-lint`
   for the playbooks, `shellcheck` for scripts, `stylua`/`luacheck` for lua,
-  `vim-vint` (already installed via `config/roles/python`). Pairs naturally with
-  the **Audit the project** item (CI would enforce whatever conventions that
-  audit settles on), and CI validating a fresh provision connects to the **Write
-  a bootstrap script** item.
+  `vim-vint` (already installed via `config/roles/python`). See
+  docs/plans/dev-hygiene-ci.md. Pairs naturally with the **Audit the project**
+  item (CI would enforce whatever conventions that audit settles on), and CI
+  validating a fresh provision connects to the **Write a bootstrap script** item.
 
 - **Audit the project for anti-patterns and simplification opportunities.**
   *(Complexity: Medium; open-ended.)* A broad, project-wide review of `config/`
@@ -387,9 +349,3 @@ Implementation plans drafted (in `docs/plans/`, pending review) for these items:
     `config/files/tmux/tmux-theme`.
   - **README drift:** the `README.md` TODO scratchpad is being migrated into
     this queue piecemeal; finish emptying it and trim the file.
-
-- ~~Remove all remnants of iTerm and Alacritty~~ — **done** (commit `557f416`):
-  dropped the Alacritty roles + dev-tools deps, the config playbook entry, the
-  macOS `iterm2` cask, and the tracked iTerm2 plist. (The README iTerm2 TODO
-  lines went earlier with the TODO-scratchpad migration.) Left for later: check
-  for stray user-space state like `~/.config/alacritty`.
