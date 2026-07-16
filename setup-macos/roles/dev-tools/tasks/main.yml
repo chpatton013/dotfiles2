@@ -25,6 +25,7 @@
     - lua
     - neovim
     - node
+    - ollama
     - openssh
     - python
     - qemu
@@ -41,8 +42,14 @@
 - name: Install dev tool homebrew cask packages
   homebrew_cask:
     name:
+    - claude-code
     - macfuse
     - vagrant
     - wezterm@nightly
     accept_external_apps: yes
     sudo_password: ansible_facts["become_pass"]
+
+- name: Start dev tool homebrew services
+  homebrew_services:
+    name: ollama
+    state: present
