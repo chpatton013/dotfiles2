@@ -35,6 +35,12 @@
     dest: "{{shellrc_config_dir}}/0-neovim.sh"
     mode: 0400
 
+- name: Render Neovim language-provider host programs
+  template:
+    src: providers.lua
+    dest: "{{neovim_config_dir}}/providers.lua"
+    mode: 0400
+
 - name: Link Neovim config files
   file:
     src: "{{dotfiles_src_dir}}/neovim/{{item}}"

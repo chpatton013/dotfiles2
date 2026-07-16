@@ -1,0 +1,6 @@
+---
+
+# Dedicated venv holding pynvim for Neovim's python3 provider, so nvim can point
+# g:python3_host_prog at an absolute interpreter that can import pynvim (no
+# dependence on the ambient shell env). Pinned to 3.12 to match pyright.
+python_neovim_venv_dir: "{{dotfiles_data_dir}}/python/neovim-venv"

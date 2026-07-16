@@ -3,6 +3,9 @@
 dependencies:
 - dotfiles
 - fzf
+- gem
+- npm
+- python
 - shellrc
 - solarized
 - source-releases

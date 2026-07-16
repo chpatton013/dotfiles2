@@ -9,7 +9,7 @@
 
 - name: Install dev-tools uvx packages
   command:
-    cmd: "uv tool install {{item}}"
+    cmd: "uv tool install --force {{item}}"
   with_items:
   - awscli
   - black
@@ -19,6 +19,16 @@
 
 - name: Install dev-tools uvx packages (frozen python)
   command:
-    cmd: "uv tool install --python {{item.python}} {{item.name}}"
+    cmd: "uv tool install --force --python {{item.python}} {{item.name}}"
   with_items:
   - {name: gdbgui, python: 3.11}
+
+- name: Create the pynvim venv (Neovim python3 provider)
+  command:
+    cmd: "uv venv --python 3.12 {{python_neovim_venv_dir}}"
+    creates: "{{python_neovim_venv_dir}}/bin/python"
+
+- name: Install pynvim into the provider venv
+  command:
+    cmd: "uv pip install --python {{python_neovim_venv_dir}}/bin/python pynvim"
+    creates: "{{python_neovim_venv_dir}}/lib/python3.12/site-packages/pynvim/__init__.py"

@@ -30,6 +30,11 @@ vim.opt.termguicolors = true
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 
+-- Language-provider host programs (python3/node/ruby) pinned to absolute paths
+-- by the neovim role, so provider discovery doesn't depend on the ambient PATH.
+-- pcall so a machine that hasn't re-applied the role still starts.
+pcall(dofile, vim.fn.stdpath("config") .. "/providers.lua")
+
 -- Plugin configuration
 --------------------------------------------------------------------------------
 

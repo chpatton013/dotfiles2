@@ -12,16 +12,20 @@
     dest: "{{shellrc_config_dir}}/0-gem.sh"
     mode: 0400
 
+# Install into gem_data_dir/bin (the dir this role puts on PATH). The ansible
+# gem module can't be used here: it defaults user_install to yes (diverting to
+# ~/.gem/ruby/<ver>), and even with user_install:no + install_dir it sees any
+# global ~/.gem copy via GEM_PATH and skips, leaving gem_data_dir/bin empty.
+# An explicit install with a per-item creates guard is idempotent and lands the
+# executables where the shellrc expects them regardless of ~/.gem state.
 - name: Install Gem dev-tools packages
-  gem:
-    user_install: yes
-    name: "{{item}}"
-  environment:
-    GEM_HOME: "{{gem_data_dir}}"
+  command:
+    cmd: "gem install --install-dir {{gem_data_dir}} --bindir {{gem_data_dir}}/bin --no-document {{item.name}}"
+    creates: "{{gem_data_dir}}/bin/{{item.bin}}"
   with_items:
-  - neovim
-  - rubocop
-  - sass
+  - {name: neovim, bin: neovim-ruby-host}
+  - {name: rubocop, bin: rubocop}
+  - {name: sass, bin: sass}
 
 - name: Link Gem Shell RC file
   file:
