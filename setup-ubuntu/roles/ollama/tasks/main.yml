@@ -1,0 +1,21 @@
+---
+
+- name: Install curl (required by the ollama installer)
+  apt:
+    name: curl
+    state: present
+  become: yes
+
+- name: Install ollama
+  shell:
+    cmd: curl -fsSL https://ollama.com/install.sh | sh
+    creates: /usr/local/bin/ollama
+  become: yes
+
+- name: Enable and start the ollama service
+  systemd:
+    name: ollama
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  become: yes

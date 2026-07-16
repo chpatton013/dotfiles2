@@ -7,6 +7,7 @@ dependencies:
 - lua
 - neovim
 - node
+- ollama
 - python
 - ruby
 - tmux
