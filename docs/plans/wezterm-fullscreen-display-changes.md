@@ -17,10 +17,104 @@ standing TODO for exactly this at `wezterm.lua:41`:
 re-fullscreen".
 
 This is upstream-wezterm config behavior, not specific to our CSI-2031 fork
-(see `docs/plans/dynamic-color-theme-propagation.md` for the fork context); the
-handler added here should work on either build.
+(see `docs/plans/dynamic-color-theme-propagation.md` for the fork context).
 
-## Approach
+## Findings & pivot to a source fix (2026-07-16)
+
+We prototyped the Lua `window-resized` handler below and instrumented it (file
+logging to `/tmp/wezterm-fs-debug.log`). What we learned on the real machine:
+
+- **Entering/exiting fullscreen fires `window-resized`** (two events each, ~1ms
+  apart; the second is a duplicate with `changed=false`). Pixel sizes are clean
+  (`3024x1964` fullscreen, `984x674` windowed); `prev_fs`/`size_changed` track
+  correctly; entry does not re-toggle (no flicker). So the Lua handler's logic
+  is sound.
+- **Changing the built-in display resolution while fullscreen fires *nothing*.**
+  No `window-resized`, and `get_dimensions()` stays `3024x1964` throughout —
+  Retina "scaled resolutions" change the logical scale, not the backing pixel
+  size, so there is no size delta for an event or for polling to react to.
+- **But the frame *is* wrong** in that case (user-confirmed: dead space /
+  clipping) — the borderless fullscreen frame goes stale even though pixels
+  didn't change. So this is a real bug with no Lua-visible signal.
+
+Root cause, from the fork source (`window/src/os/macos/window.rs`): wezterm sets
+its internal `screen_changed` flag only from `windowDidChangeScreen:`
+(`did_change_screen`, registered ~line 3275), which fires when a window moves to
+a **different monitor**. It does **not** hook an *in-place* resolution/backing
+change of the current display (no `windowDidChangeBackingProperties:` observer,
+no `NSApplicationDidChangeScreenParametersNotification` observer). When
+`screen_changed` is set, `draw_rect` calls `did_resize` → `WindowEvent::Resized`
+→ Lua `window-resized`, and wezterm re-lays-out. So the mechanism exists; it's
+just not triggered for in-place changes.
+
+Available Lua window events are only: `bell`, `update-status`,
+`window-config-reloaded`, `window-focus-changed`, `window-resized` (+
+`gui-startup`/`gui-attached`). None fires for an in-place resolution change, so
+this **cannot** be fixed in Lua config.
+
+**Decision:** fix it at the source in our `csi-2031` fork — hook the missing
+macOS screen-parameter/backing change and set `screen_changed`, so wezterm
+re-lays-out itself (which also makes `window-resized` fire, covering both the
+external-monitor and in-place cases). If that works, the Lua handler below
+becomes unnecessary and should be removed.
+
+### Plan: diagnostic build first (pessimistic)
+
+We are not certain which macOS hook fires for an in-place scaled-resolution
+change (`windowDidChangeBackingProperties:` may not fire if the backing scale
+factor is unchanged; `NSApplicationDidChangeScreenParametersNotification`
+reliably fires but needs an app-level observer). To avoid guessing wrong across
+slow rebuilds, **build #1 is instrumentation only**: add `log::` logging to
+`did_change_screen`, register + log `windowDidChangeBackingProperties:`, register
++ log an observer for `NSApplicationDidChangeScreenParametersNotification`, and
+log the `screen_changed` branch in `draw_rect` and in `did_resize`. Rebuild,
+reproduce (fullscreen, then change built-in resolution), and read the wezterm
+log to see exactly which callback(s) fire. Build #2 wires the confirmed hook to
+set `screen_changed` (the real fix) and drops the diagnostics.
+
+This diagnostic work is done against the local build tree
+(`~/.local/share/source-releases/wezterm-csi-2031`) and installed to
+`~/Applications` manually; only once the fix is confirmed do we commit it to the
+`csi-2031` fork branch and bump `wezterm_fork_version` in
+`config/roles/wezterm/defaults/main.yml` for a clean role-driven rebuild.
+
+## Resolution (2026-07-16): fixed in the fork
+
+Diagnostic build confirmed on the machine: `NSApplicationDidChangeScreenParameters`
+fires on every in-place resolution change (regardless of window focus);
+`windowDidChangeBackingProperties:` never fires (dead end); `windowDidChangeScreen:`
+fires only for monitor moves. Crucially, setting `screen_changed` alone did **not**
+fix the frame — `did_resize` recomputes content, not the window frame — so an
+explicit `setFrame` to the current screen is required. A first attempt that did
+the re-apply in `draw_rect` worked but only after the window was refocused
+(draw_rect waits for a paint); moving the re-apply into the notification handler
+made it focus-independent.
+
+**Fix** — fork `csi-2031`, commit `b51f4655`, `window/src/os/macos/window.rs`:
+- Register the window view as an observer of
+  `NSApplicationDidChangeScreenParametersNotification`.
+- In that handler, if the window is in simple (non-native) fullscreen,
+  immediately re-apply the current screen frame
+  (`setFrame(NSScreen::mainScreen().frame)`) and `setNeedsDisplay` — not
+  deferred to `draw_rect`, so an unfocused window doesn't keep a stale frame.
+- Also re-apply on the existing `windowDidChangeScreen:` → `draw_rect` path as a
+  backstop for monitor moves.
+
+Verified: in-place resolution change now corrects the fullscreen frame without
+needing to click the window. Dotfiles wired: `wezterm_fork_version` bumped to
+`b51f4655`; the Lua prototype below was removed from
+`config/files/wezterm/wezterm.lua`. To pick up the diagnostic-free build,
+`config/config.sh --tags wezterm` re-clones the new SHA and rebuilds (the
+locally-installed app already carries the fix).
+
+Known limitation / follow-ups: uses `mainScreen` to match wezterm's existing
+fullscreen-entry behavior, so a fullscreen window on a *secondary* display may
+target the wrong screen (pre-existing quirk, not worsened). The external-display
+connect/disconnect case should be covered (the notification + windowDidChangeScreen
+backstop both fire) but was **not** verified on hardware. Consider upstreaming
+the patch.
+
+## Approach (Lua prototype — superseded by the source fix above; removed from wezterm.lua)
 
 Wezterm exposes the pieces we need:
 
@@ -42,6 +136,14 @@ for the screen the window now lives on. To avoid a feedback loop (each
 per-window "already reconciling" flag and compare the window's current pixel
 dimensions against the active screen's dimensions (`wezterm.gui.screens()`),
 only re-fullscreening when they actually diverge.
+
+The whole toggle dance only exists to work around wezterm's *non-native*
+borderless fullscreen. **Disable it when `native_macos_fullscreen_mode` is
+true**: native macOS fullscreen puts the window in its own Space and macOS
+recomputes geometry across display changes on its own, so our re-fullscreen is
+unneeded there (and toggling would fight the OS). The handler reads
+`window:effective_config().native_macos_fullscreen_mode` and returns early when
+it is set.
 
 ## Steps (exact `wezterm.lua` changes)
 
@@ -68,6 +170,11 @@ only re-fullscreening when they actually diverge.
    end
 
    wezterm.on("window-resized", function(window, pane)
+       -- Native macOS fullscreen (Spaces) handles display changes itself, so
+       -- our re-fullscreen dance is unneeded (and would fight the OS). Bail.
+       if window:effective_config().native_macos_fullscreen_mode then
+           return
+       end
        local dims = window:get_dimensions()
        if not dims.is_full_screen then
            return
@@ -169,5 +276,10 @@ resolution. Manual procedure:
   gate on an actual screen-size mismatch (as sketched) rather than firing on
   every resize.
 - **Native vs. borderless fullscreen.** This targets the default borderless
-  mode we use. If `native_macos_fullscreen_mode` is ever enabled, macOS Spaces
-  own the geometry and this handler's toggle approach would need reevaluation.
+  mode we use. The handler explicitly disables itself when
+  `native_macos_fullscreen_mode` is enabled (macOS Spaces own the geometry and
+  handle display changes), via the early
+  `window:effective_config().native_macos_fullscreen_mode` check — so switching
+  to native mode is safe and simply turns this workaround off. Confirm
+  `effective_config()` exposes that field on the installed build during
+  implementation.

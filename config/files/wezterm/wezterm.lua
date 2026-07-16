@@ -38,6 +38,12 @@ wezterm.on("gui-startup", function()
     window:gui_window():toggle_fullscreen()
 end)
 
+-- Note: keeping a non-native fullscreen window filling its screen across
+-- display/resolution changes is handled in our wezterm fork (the csi-2031
+-- branch built by config/roles/wezterm), not here. macOS surfaces no Lua event
+-- for an in-place resolution change, so the fix lives in the app's
+-- NSApplicationDidChangeScreenParameters handler.
+
 config.keys = {
     -- Cmd+Enter to toggle fullscreen
     {key = "Enter", mods = "CMD", action = wezterm.action.ToggleFullScreen},
