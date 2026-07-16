@@ -1,22 +1,39 @@
 ---
 
-- block:
-  - name: Download and unpack Tmux release tarball
-    unarchive:
-      src: "{{tmux_release_url}}"
-      dest: "{{source_releases_data_dir}}"
-      remote_src: yes
+- name: Download and unpack Tmux release tarball
+  unarchive:
+    src: "{{tmux_release_url}}"
+    dest: "{{source_releases_data_dir}}"
+    remote_src: yes
 
-  - name: Configure, make, and install Tmux release (this will take a while)
-    shell:
-      chdir: "{{tmux_release_dir}}"
-      cmd: |
-        set -ex
-        CFLAGS="{{tmux_release_cflags}}" ./configure --prefix={{xdg_prefix_home}}
-        make
-        make install
-      creates: "{{xdg_bin_home}}/tmux"
-  when: ansible_facts['os_family'] != "Darwin"
+- name: Configure, make, and install Tmux release (this will take a while)
+  shell:
+    chdir: "{{tmux_release_dir}}"
+    executable: /bin/bash
+    cmd: |
+      set -ex
+      cflags="{{tmux_release_cflags}}"
+      ldflags=""
+      configure_flags=""
+      if [ "$(uname)" = Darwin ]; then
+        # Feed brew's libevent and ncurses paths directly so no pkg-config is
+        # required. tmux 3.6 also requires an explicit utf8proc choice on macOS;
+        # enable it for correct Unicode width handling, passing its paths via
+        # LIBUTF8PROC_* to likewise avoid pkg-config.
+        for dep in libevent ncurses; do
+          prefix="$(brew --prefix "$dep")"
+          cflags="$cflags -I$prefix/include"
+          ldflags="$ldflags -L$prefix/lib"
+        done
+        utf8proc_prefix="$(brew --prefix utf8proc)"
+        export LIBUTF8PROC_CFLAGS="-I$utf8proc_prefix/include"
+        export LIBUTF8PROC_LIBS="-L$utf8proc_prefix/lib -lutf8proc"
+        configure_flags="--enable-utf8proc"
+      fi
+      CFLAGS="$cflags" LDFLAGS="$ldflags" ./configure --prefix={{xdg_prefix_home}} $configure_flags
+      make
+      make install
+    creates: "{{xdg_bin_home}}/tmux"
 
 - name: Create Tmux directories
   file:

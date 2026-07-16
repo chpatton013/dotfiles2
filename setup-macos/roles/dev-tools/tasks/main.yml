@@ -34,6 +34,7 @@
     - sshfs
     - tmux
     - unzip
+    - utf8proc
     - vim
     - zsh
 
