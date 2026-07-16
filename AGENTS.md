@@ -110,6 +110,17 @@ never gets linked.
 
 - **Commit messages**: lowercase `area: summary`, e.g.
   `nvim: disable auto spellcheck`, `pi: updated models`.
+- **Git identity — never override it on the CLI.** Do not pass `git -c
+  user.name=…`/`-c user.email=…`, `git commit --author=…`, or set
+  `GIT_AUTHOR_*`/`GIT_COMMITTER_*`. The layered gitconfig already resolves the
+  correct identity per repo: `~/.gitconfig` includes
+  `identity-public.gitconfig` (personal) unconditionally, then
+  `identity-work.gitconfig` which overrides it where the work identity applies.
+  Just run `git commit` and let git pick. In particular, do **not** use the
+  email from session/environment context as a commit identity — it may be the
+  work address and will attach the wrong identity (e.g. work email on a personal
+  GitHub repo, or vice versa). If a commit ends up with the wrong identity,
+  that's the cause.
 - **YAML**: files start with `---` + blank line; Jinja without inner spaces
   (`{{item}}`, not `{{ item }}`); 2-space indent; `with_items` lists
   alphabetized.
