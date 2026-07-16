@@ -1,11 +1,11 @@
 # Source-Build Roles: zsh from Source + Version Audit
 
-> **Status: partially implemented.** Part 1 (zsh source-build role) done
-> (`e8317b4`). Part 2: git bumped to 2.55.0 (`a403e35`); the
-> `/update-source-versions` skill + `# release-metadata:` convention added
-> (`577efc0`). **Remaining:** the neovim 0.11 → 0.12 bump, gated on interactive
-> validation (Darwin-gated build; brew nvim is the macOS driver, currently
-> 0.11.6).
+> **Status: implemented.** Part 1 (zsh source-build role) done (`e8317b4`).
+> Part 2: git bumped to 2.55.0 (`a403e35`); neovim bumped to 0.12.4 (brew
+> upgraded + Linux pin) after interactive validation (checkhealth clean, no new
+> errors vs 0.11); the `/update-source-versions` skill + `# release-metadata:`
+> convention added (`577efc0`). Kept as reference for the **combine zsh/zshrc**
+> and **dotslash** followups that cite it.
 
 Covers two `docs/followups.md` items (Provisioning & setup): **Build zsh from
 source** and **Update tracked source-build tool versions**.

@@ -16,7 +16,7 @@ nothing left are deleted — git history keeps them):
 - `cross-platform-tool-installs.md` — Claude Code + Pi Agent + ollama installs.
   Implemented; only the `pi_node_dir` cleanup below remains.
 - `source-build-roles.md` — zsh from source + source-build version updates.
-  Partially implemented; the neovim 0.12 bump is pending interactive validation.
+  Implemented; kept as reference for the combine-zsh/zshrc + dotslash items.
 - `dynamic-color-theme-propagation.md` — terminal light/dark propagation.
   Implemented (Tier 1 + Tier 2); kept as reference for the open Terminal items.
 - `wezterm-fullscreen-display-changes.md` — fullscreen resize on display change.
@@ -161,6 +161,7 @@ nothing left are deleted — git history keeps them):
   Several other queued Neovim items (completion-UX, AI-plugin gating) would
   touch this file, so a split may make those easier — consider sequencing this
   first.
+
 - **Iron out the Neovim AI-plugin setup (cursortab + minuet + avante), with
   per-project provider gating.** *(Complexity: High — may warrant its own
   `docs/plans/` doc.)* The three seem like they should synergize (cursortab =
