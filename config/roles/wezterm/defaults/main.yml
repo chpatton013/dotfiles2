@@ -1,3 +1,14 @@
 ---
 
 wezterm_config_dir: "{{dotfiles_config_dir}}/wezterm"
+
+# Fork of wezterm carrying PR #7723 (DEC mode 2031 / CSI 2031 color-scheme
+# change reporting), pinned to a specific revision for reproducibility. See
+# docs/plans/dynamic-color-theme-propagation.md.
+wezterm_fork_repo: https://github.com/chpatton013/wezterm
+wezterm_fork_version: f33e689fb2f77f77516a4cc6c07a0e5e5e3f22dd
+wezterm_source_dir: "{{source_releases_data_dir}}/wezterm-csi-2031"
+# Installed side by side with the Homebrew cask (which lives in /Applications),
+# so a broken source build can never lock out the primary terminal. Switch to
+# this build manually once it is trusted.
+wezterm_app_dir: "{{'~/Applications/WezTerm.app' | expanduser}}"

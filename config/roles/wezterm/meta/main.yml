@@ -3,4 +3,5 @@
 dependencies:
 - dotfiles
 - shellrc
+- source-releases
 - xdg

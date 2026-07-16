@@ -29,3 +29,91 @@
     state: link
     follow: no
     force: yes
+
+# Build a wezterm that supports DEC mode 2031 (CSI 2031) color-scheme change
+# reporting from our fork of PR #7723. This is what lets the laptop's terminal
+# push light/dark switches down into tmux and remote sessions. Built from source
+# on every platform: no packaged wezterm carries the PR. macOS produces an .app
+# bundle (installed side by side with the Homebrew cask); Linux installs the
+# binaries and desktop assets into the XDG prefix.
+- name: Build WezTerm fork with CSI 2031 support
+  block:
+  - name: Clone WezTerm fork at pinned revision
+    git:
+      repo: "{{wezterm_fork_repo}}"
+      dest: "{{wezterm_source_dir}}"
+      version: "{{wezterm_fork_version}}"
+      force: yes
+
+  - name: Compile WezTerm release binaries (this will take a while)
+    shell:
+      chdir: "{{wezterm_source_dir}}"
+      executable: /bin/bash
+      cmd: |
+        set -euxo pipefail
+        if [ "$(uname)" = Darwin ]; then
+          # Force Apple's archiver. brew's binutils puts a GNU `ar` ahead on
+          # PATH, and GNU-format static archives (freetype, openssl, ...) fail
+          # to link with macOS ld ("archive member '/' not a mach-o file").
+          export AR=/usr/bin/ar RANLIB=/usr/bin/ranlib
+          export CMAKE_AR=/usr/bin/ar CMAKE_RANLIB=/usr/bin/ranlib
+          # Drop any archives a previous run built with the wrong `ar` so the
+          # vendored build scripts regenerate them (keeps compiled crate objects
+          # in target/release/deps, so this is far cheaper than `cargo clean`).
+          rm -rf target/release/build
+        fi
+        # get-deps only advises on missing packages (and would need root to
+        # install them); do not let it abort. On Linux the system build
+        # dependencies belong in the setup-* playbooks. cargo surfaces anything
+        # genuinely missing.
+        ./get-deps || true
+        cargo build --release \
+          --bin wezterm \
+          --bin wezterm-gui \
+          --bin wezterm-mux-server \
+          --bin strip-ansi-escapes
+      creates: "{{wezterm_source_dir}}/target/release/wezterm-gui"
+
+  - name: Package and install WezTerm.app (macOS)
+    when: ansible_facts['os_family'] == "Darwin"
+    shell:
+      chdir: "{{wezterm_source_dir}}"
+      executable: /bin/bash
+      cmd: |
+        set -euxo pipefail
+        # Assemble the bundle the way ci/deploy.sh does on darwin: start from
+        # the in-tree skeleton and drop our freshly built binaries in.
+        app="{{wezterm_app_dir}}"
+        rm -rf "$app"
+        mkdir -p "$(dirname "$app")"
+        cp -R assets/macos/WezTerm.app "$app"
+        rm -f "$app"/*.dylib
+        mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
+        for bin in wezterm wezterm-gui wezterm-mux-server strip-ansi-escapes; do
+          cp "target/release/$bin" "$app/Contents/MacOS/$bin"
+        done
+        cp -R assets/shell-integration/. "$app/Contents/Resources/"
+        cp -R assets/shell-completion "$app/Contents/Resources/"
+        tic -xe wezterm -o "$app/Contents/Resources/terminfo" \
+          termwiz/data/wezterm.terminfo
+      creates: "{{wezterm_app_dir}}/Contents/MacOS/wezterm-gui"
+
+  - name: Install WezTerm binaries and desktop assets (Linux)
+    when: ansible_facts['os_family'] != "Darwin"
+    shell:
+      chdir: "{{wezterm_source_dir}}"
+      executable: /bin/bash
+      cmd: |
+        set -euxo pipefail
+        for bin in wezterm wezterm-gui wezterm-mux-server strip-ansi-escapes; do
+          install -Dm755 "target/release/$bin" "{{xdg_bin_home}}/$bin"
+        done
+        tic -xe wezterm -o "{{xdg_data_home}}/terminfo" \
+          termwiz/data/wezterm.terminfo
+        install -Dm644 assets/wezterm.desktop \
+          "{{xdg_data_home}}/applications/org.wezfurlong.wezterm.desktop"
+        install -Dm644 assets/wezterm.appdata.xml \
+          "{{xdg_data_home}}/metainfo/org.wezfurlong.wezterm.appdata.xml"
+        install -Dm644 assets/icon/terminal.png \
+          "{{xdg_data_home}}/icons/hicolor/128x128/apps/org.wezfurlong.wezterm.png"
+      creates: "{{xdg_bin_home}}/wezterm-gui"
