@@ -33,8 +33,22 @@ nothing left are deleted — git history keeps them):
 
 ## Provisioning & setup
 
+- **Source-build roles don't rebuild when their pinned version changes.**
+  *(Complexity: Medium. Status: Ready.)* The `git`/`neovim`/`tmux`/`wezterm`/`zsh`
+  build tasks are guarded by `creates:` on the installed binary (e.g.
+  `{{xdg_bin_home}}/tmux`, wezterm's `target/release/wezterm-gui` + the app
+  bundle). Once a binary exists, bumping `*_release_version` /
+  `wezterm_fork_version` and re-applying the role is a **no-op** — it keeps the
+  old revision (surfaced during the wezterm `b390263e2` rebuild, which had to
+  have its guard targets removed by hand to actually recompile). Guard on a
+  revision/version marker instead (a stamp file recording the built version, or
+  compare `<bin> --version` to the pin) so a pin change forces a rebuild. This
+  undermines the `/update-source-versions` skill and
+  `docs/plans/source-build-roles.md`, which both assume re-applying the role
+  rebuilds. Touches `config/roles/{git,neovim,tmux,wezterm,zsh}/tasks/main.yml`.
+
 - **Remove the vestigial `pi_node_dir` isolated-node scaffolding.** *(Complexity:
-  Low. Status: Ready.)* Left over from the rolled-back Pi Agent "Option A"
+  Low. Status: Deferred by user until later.)* Left over from the rolled-back Pi Agent "Option A"
   (isolated Node runtime); Pi Agent now installs via npm global (Option B), so
   `pi_node_dir` is unused. Remove it from
   `config/roles/pi-agent/{defaults,tasks,templates}` and the `PI_NODE_PREFIX`
@@ -53,7 +67,7 @@ nothing left are deleted — git history keeps them):
   refactoring.
 
 - **Write a bootstrap script (curl|bash) that provisions a bare machine and
-  delegates to the right setup/config.** *(Complexity: High. Status: Ready.)*
+  delegates to the right setup/config.** *(Complexity: High. Status: Selected.)*
   Why: setup/config currently assume tools that a fresh machine lacks, and there
   is no committed bootstrap here (the user started one on their personal Linux
   laptop but did not get far). Immediate pain: on the work Mac, "setup and config
@@ -101,7 +115,7 @@ nothing left are deleted — git history keeps them):
 - **Decide a cross-platform strategy for scripting-language runtime version
   management** (the rbenv/pyenv problem), then reconcile the existing
   `config/roles/{go,lua,ruby,gem,npm,python,cargo}` roles with it. *(Complexity:
-  High. Status: Ready.)* Seed research:
+  High. Status: Selected.)* Seed research:
   - **Unified option**: `mise` (formerly rtx) — fast Rust tool managing many
     runtimes (node, python, ruby, lua, go, ...) via asdf-compatible plugins,
     per-project `mise.toml`/`.tool-versions`, cross-platform. `asdf` is the
@@ -136,25 +150,15 @@ nothing left are deleted — git history keeps them):
 
 ## Neovim
 
-- **Make the Neovim config degrade gracefully on a partial/failed bootstrap.**
-  *(Complexity: Medium. Status: Ready.)* When nvim's config has deployed but its
-  dependencies have not fully bootstrapped, the editor becomes hard to use: e.g.
-  the config is applied but the terminal color theme has not, leaving text very
-  hard to read; and other breakages surface as an error interrupt on *every
-  keypress*. Goal: detect missing dependencies
-  (colorscheme/plugins/providers/parsers) and fall back sanely — a readable
-  default colorscheme when `solarized` or the terminal theme is absent, and
-  guarding plugin/autocmd/keymap setup so a failure degrades instead of erroring
-  on every event. Starting points in `config/files/neovim/init.lua`: the
-  `vim.cmd.colorscheme("solarized")` call (solarized comes from the
-  `solarized`/`source-releases` deps, so it is absent until plugins install),
-  lazy.nvim bootstrap, and the treesitter/provider setup — audit which calls
-  assume a fully-provisioned state and wrap them (`pcall`, existence checks,
-  fallbacks). Hunt the "error on every keypress" cause (a repeatedly-firing
-  autocmd/CursorMoved/InsertCharPre callback, or a broken statusline/completion
-  component). Relates to the terminal-theme propagation work
-  (docs/plans/dynamic-color-theme-propagation.md) and the **Audit the Neovim
-  config composition** item (a split could isolate the fragile pieces).
+- **Fix IBL indent-guide characters landing in the clipboard on mouse-select in
+  nvim.** *(Complexity: Low–Medium. Status: Ready.)* Selecting text with the
+  mouse in nvim pulls indent-blankline (IBL) virtual-text indent characters into
+  the clipboard. Current hacky workaround: disable IBL during visual mode. IBL
+  glyphs are virtual text (not buffer content), so a terminal mouse-drag selects
+  the rendered glyphs; a cleaner fix likely routes selection through nvim's own
+  mouse (`mouse=a` + a buffer-text yank) or a tidier visual-mode IBL toggle.
+  Configured in `config/files/neovim/init.lua` (the `indent-blankline.nvim` /
+  `ibl` setup + `ibl_highlight_groups`).
 
 - **Audit the Neovim config composition; decide whether to split `init.lua`.**
   *(Complexity: Medium — investigation + a mechanical refactor. Status: Ready.)*
@@ -232,41 +236,6 @@ nothing left are deleted — git history keeps them):
 
 ## Terminal & theming
 
-- **Fix wezterm opening new windows in the light theme under a dark system
-  appearance.** *(Complexity: Medium. Status: Ready.)* New wezterm windows come
-  up in the light color scheme even though macOS system appearance is Dark;
-  toggling system appearance to Light and back to Dark corrects the affected
-  window to dark. Cause is almost certainly the appearance→scheme wiring in
-  `config/files/wezterm/wezterm.lua` (`get_appearance()` /
-  `scheme_for_appearance()` / the one-shot `config.color_scheme =
-  scheme_for_appearance(get_appearance())` at config-eval time, lines ~14-31):
-  the scheme is resolved once and the initial `get_appearance()` result is wrong
-  (or is the mux-server fallback path, which hard-returns `"Dark"` when
-  `wezterm.gui` is nil — worth checking which side is misreporting), while the
-  appearance-toggle triggers a config reload that then resolves correctly.
-  Likely fix: resolve the scheme dynamically on `window-config-reloaded` (and/or
-  guard the initial value) so each window picks the correct scheme at creation.
-  Part of the terminal-theme story — see
-  docs/plans/dynamic-color-theme-propagation.md (this is the wezterm-side
-  appearance detection that feeds it).
-
-- **Fix wezterm notch spacing wrongly applied to a fullscreen window on a
-  notchless external display.** *(Complexity: Medium — likely an upstream
-  wezterm/macOS quirk. Status: Ready.)* Repro (macOS, laptop lid open, connected
-  to an external display): with a fullscreen wezterm window on the external
-  (no-notch) display, moving focus to an app window on the built-in (notched)
-  display causes wezterm to add the notch inset to the fullscreen window on the
-  external display — where there is no notch — so it gets spurious top spacing.
-  Config already sets `config.macos_fullscreen_extend_behind_notch = false`
-  (`config/files/wezterm/wezterm.lua:6`); the bug is that the notch inset seems
-  applied per-focus/globally rather than per the window's actual screen.
-  Investigate whether a wezterm setting or event handler can pin the inset to
-  the window's own display, else file upstream. Closely related to the
-  fullscreen resize fix (docs/plans/wezterm-fullscreen-display-changes.md) —
-  same fullscreen/multi-display area; the plan's `mainScreen` quirk (a
-  fullscreen window on a *secondary* display may target the wrong screen) is the
-  same class of bug and likely fixed together.
-
 - **Replace the hand-rolled tmux statusline and shell PS1 with a prettier,
   consistent system.** *(Complexity: Medium. Status: Ready.)* Why: the current
   styling was built to avoid relying on patched fonts, which is no longer a
@@ -292,25 +261,8 @@ nothing left are deleted — git history keeps them):
 
 ## Repo hygiene & tooling
 
-- **Investigate/fix multi-line paste into Claude Code inserting `j` for
-  newlines.** *(Complexity: Medium — cross-stack, partly an external tool.
-  Status: Ready.)* When pasting multi-line text **into the Claude Code TUI**,
-  newlines come through as the letter `j` instead of line breaks. Observed this
-  session; the user believes it is Claude Code's fullscreen/paste handling under
-  tmux (it does **not** happen with our wezterm build generally — only when
-  pasting into Claude Code). Likely mechanism: a newline is `LF` = `Ctrl-J` =
-  `0x0A`, so something in the wezterm→tmux→Claude Code input chain is
-  mistranslating pasted newlines (bracketed-paste not propagated, or an
-  `extended-keys`/`csi-u` interaction). Starting points: tmux
-  `extended-keys`/`extended-keys-format csi-u` and paste handling in
-  `config/roles/tmux/templates/tmux.conf`, and wezterm paste settings (e.g.
-  `canonicalize_pasted_newlines`) in `config/files/wezterm/wezterm.lua`. Note:
-  the root cause may live in Claude Code itself (upstream, not this repo), in
-  which case the deliverable is a terminal/tmux-side mitigation or a bug report
-  rather than a repo fix.
-
 - **Re-evaluate Vagrant as the test harness (does not work on Apple Silicon).**
-  *(Complexity: Medium. Status: Ready.)* The IaC approach is nice, but the
+  *(Complexity: Medium. Status: Selected.)* The IaC approach is nice, but the
   harness relies on the **VirtualBox** provider (`Vagrantfile:10`), which the
   user has not gotten working on Apple Silicon. Harness pieces: `vagrant.sh`
   (wrapper keyed on `DOTFILES_PLATFORM`), `Vagrantfile` (virtualbox provider +
@@ -325,7 +277,7 @@ nothing left are deleted — git history keeps them):
   (`setup-ubuntu/roles/vagrant/meta/main.yml`).
 
 - **Add dev-hygiene tooling: file validation + GitHub Actions CI.**
-  *(Complexity: Medium. Status: Ready.)* Port the patterns from the user's
+  *(Complexity: Medium. Status: Selected.)* Port the patterns from the user's
   `chiiiirrus` repo (https://github.com/chpatton013/chiiiirrus/) — file
   validation (likely pre-commit hooks / formatters / linters) and a GitHub
   Actions CI workflow. None exist here yet (no `.github/`,
