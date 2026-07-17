@@ -2,16 +2,18 @@
 
 wezterm_config_dir: "{{dotfiles_config_dir}}/wezterm"
 
-# release-metadata:
-#   upstream: fork chpatton013/wezterm (carries PR #7723, CSI-2031); NOT a
-#     routine upstream release -- bump only when re-basing the fork.
-#   line: pinned fork SHA
-#   validation: interactive -- deliberate fork pin; do not auto-bump.
-# Fork of wezterm carrying PR #7723 (DEC mode 2031 / CSI 2031 color-scheme
-# change reporting), pinned to a specific revision for reproducibility. See
-# docs/plans/dynamic-color-theme-propagation.md.
+# Fork of wezterm carrying local macOS patches, pinned to a specific revision
+# for reproducibility:
+#   - PR #7723: DEC mode 2031 / CSI 2031 color-scheme change reporting
+#     (docs/plans/dynamic-color-theme-propagation.md).
+#   - re-apply non-native fullscreen frame on screen-parameter changes
+#     (docs/plans/wezterm-fullscreen-display-changes.md).
+#   - compute the fullscreen notch inset from the window's own screen, not
+#     focus-dependent NSScreen.mainScreen, so a fullscreen window on a
+#     notchless external display no longer gains a spurious top border when
+#     focus moves to the built-in notched display.
 wezterm_fork_repo: https://github.com/chpatton013/wezterm
-wezterm_fork_version: a7fa51105018e452f8193e5e7e227daf5a7c19bc
+wezterm_fork_version: b390263e2033b79f676b5b36326a46d59b142fe3
 wezterm_source_dir: "{{source_releases_data_dir}}/wezterm-csi-2031"
 # Installed side by side with the Homebrew cask (which lives in /Applications),
 # so a broken source build can never lock out the primary terminal. Switch to
