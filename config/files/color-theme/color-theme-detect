@@ -35,8 +35,13 @@ function query_osc11() {
   # Raw mode with echo off so the reply is not printed or line-buffered.
   stty raw -echo </dev/tty 2>/dev/null || return 1
   printf '\e]11;?\a' >/dev/tty
-  # Grab whatever arrives within the timeout; the reply is short.
-  IFS= read -r -d '' -t 1 response </dev/tty || true
+  # Read only up to the reply's BEL terminator, not until the timeout. The reply
+  # is `\e]11;rgb:.../.../...\a` (we queried with a BEL terminator, so the reply
+  # mirrors it). Using `read -d ''` here would drain the whole tty input queue
+  # for the full timeout, swallowing any characters the user typed ahead during
+  # the slow shell startup. Stopping at the terminator leaves later keystrokes
+  # in the buffer.
+  IFS= read -r -d $'\a' -t 1 response </dev/tty || true
   stty "$saved" </dev/tty 2>/dev/null
   printf '%s' "$response"
 }
