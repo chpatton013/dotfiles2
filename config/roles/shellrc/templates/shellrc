@@ -1,5 +1,11 @@
 function _basename_sort() {
-  xargs -I{} bash -c 'echo $(basename {}){}' |
+  # Read a newline-delimited list of file paths on stdin and sort it by
+  # basename, numerically (the "N-" load-order prefix). awk computes the
+  # basename ($NF under -F/) and prepends it to each line; sort orders by it;
+  # sed strips it back off. The previous implementation forked a bash + basename
+  # per path, which — over ~40 shellrc fragments — dominated interactive shell
+  # startup (~0.5s). A single awk process replaces those ~80 forks.
+  awk -F/ '{print $NF $0}' |
     sort --numeric-sort |
     sed -e 's#[^/]*\(/.*\)#\1#'
 }
