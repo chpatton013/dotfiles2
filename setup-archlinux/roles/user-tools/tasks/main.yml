@@ -11,6 +11,8 @@
     - tree
     - virtualbox
     - w3m
+    - wl-clipboard
+    - xclip
   become: yes
 
 - name: Install user tool AUR packages

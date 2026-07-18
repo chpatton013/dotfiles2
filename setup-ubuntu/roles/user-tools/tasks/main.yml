@@ -9,5 +9,6 @@
     - stow
     - tree
     - w3m
+    - wl-clipboard
     - xclip
   become: yes

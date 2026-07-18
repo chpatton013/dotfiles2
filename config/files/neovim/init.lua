@@ -803,7 +803,15 @@ if not pcall(vim.cmd.colorscheme, "solarized") then
 end
 
 local solarized_utils = safe_require("solarized.utils")
+
+-- Indent-guide highlight groups derived from the solarized palette. Successive
+-- indent levels cycle through the alternating pair (Odd/Even), so the guides
+-- render as alternating colored bands *in addition to* the vertical bar glyphs.
+-- Recomputed inside the HIGHLIGHT_SETUP hook so they track dark/light switches.
 local function ibl_highlight_groups()
+    if not solarized_utils then
+        return {}
+    end
     local palette = solarized_utils.get_colors()
     local c = {}
     if vim.o.background == "dark" then
@@ -824,15 +832,18 @@ local function ibl_highlight_groups()
     }
 end
 
--- Guard the indent-blankline setup: on a partial bootstrap ibl may be missing.
--- Skip it entirely rather than aborting the rest of init.lua.
-local ibl_hooks = safe_require("ibl.hooks")
 local ibl = safe_require("ibl")
+local ibl_hooks = safe_require("ibl.hooks")
 
--- The custom highlight groups derive from the solarized palette; only register
--- them when both ibl and solarized are available. Without them ibl still works
--- with its default highlights.
-if ibl_hooks and solarized_utils then
+-- Only reference the custom groups when the solarized palette is available.
+-- On a partial bootstrap (no colorscheme) fall back to IBL's built-in
+-- highlights instead of naming groups that were never created (IBL errors on
+-- unknown highlight groups) — the bar glyphs still render, just uncolored.
+local custom_highlights = solarized_utils ~= nil
+local indent_highlight = custom_highlights and { "CustomIblOdd", "CustomIblEven" } or nil
+local scope_highlight = custom_highlights and { "CustomIblScope" } or nil
+
+if ibl_hooks then
     -- create the highlight groups in the highlight setup hook, so they are reset
     -- every time the colorscheme changes
     ibl_hooks.register(
@@ -845,22 +856,22 @@ if ibl_hooks and solarized_utils then
     )
 end
 
--- Alternate highlight groups of normal and darker backgrounds.
--- Use a thinner vertical bar than default for indents in the inactive scope.
--- Use a thicker vertical bar than default for the indent in the active scope.
+-- Render BOTH the vertical bar glyphs and the alternating highlight groups: each
+-- indent level cycles through indent_highlight so the bars/bands alternate.
+-- Thinner bar for inactive indents, thicker bar for the active scope.
 if ibl then
     ibl.setup({
         whitespace = {
-            highlight = { "CustomIblOdd", "CustomIblEven" },
+            highlight = indent_highlight,
             remove_blankline_trail = false,
         },
         indent = {
-            highlight = { "CustomIblOdd", "CustomIblEven" },
+            highlight = indent_highlight,
             char = "▏", -- Left One Eighth Block
             smart_indent_cap = true,
         },
         scope = {
-            highlight = { "CustomIblScope" },
+            highlight = scope_highlight,
             char = "▎", -- Left One Quarter Block
             show_exact_scope = true,
         },
@@ -1033,18 +1044,41 @@ which_key.add({
 --------------------------------------------------------------------------------
 
 vim.opt.modeline = true         -- Check files for a modeline to apply config settings
-vim.opt.mouse = "a"             -- Mouse drives nvim visual selection (buffer text, not IBL virtual-text glyphs)
-vim.opt.clipboard = "unnamedplus"  -- yanks (incl. the mouse selection) reach the system clipboard
+vim.opt.mouse = "a"             -- Enable mouse: drag-select becomes nvim buffer-based visual
+                                -- mode, so yanks copy real text, not IBL virtual-text glyphs
+vim.opt.clipboard = "unnamedplus" -- Route yanks (incl. mouse selection) to the system clipboard
+
+-- On a headless/SSH host there is no X/Wayland clipboard tool (and no pbcopy),
+-- so route the system clipboard through OSC 52: the terminal emulator copies on
+-- our behalf over the wire. Only when connected over SSH, so local sessions keep
+-- using the native provider (pbcopy on macOS, xclip/xsel/wl-copy on Linux).
+if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
+    local osc52 = safe_require("vim.ui.clipboard.osc52")
+    if osc52 then
+        vim.g.clipboard = {
+            name = "OSC 52",
+            copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+            paste = { ["+"] = osc52.paste("+"), ["*"] = osc52.paste("*") },
+        }
+    end
+end
+
 vim.opt.joinspaces = false      -- Do not insert two spaces after a '.', '?', and '!'
 vim.opt.textwidth = 80          -- Automatically break lines at whitespace to get this width
 vim.opt.virtualedit = "block"   -- Allow the cursor to move to columns without text
 
--- Auto-copy a mouse drag-selection to the clipboard on release (mirrors the old
--- terminal select-to-copy). A plain click never enters visual mode, so this
--- only fires on a real drag. Part of the IBL-glyphs-in-clipboard fix (mouse=a).
-vim.keymap.set("x", "<LeftRelease>", '"+y', {
-    desc = "Copy mouse selection to the clipboard on release",
-})
+-- Mirror the terminal's select-to-copy: releasing a mouse drag yanks the visual
+-- selection to the system clipboard. Because the selection is nvim visual mode
+-- over buffer text, IBL's virtual-text indent glyphs are never captured. A plain
+-- click never enters visual mode, so this only fires on an actual drag-select.
+-- Map both release events: <LeftRelease> ends a charwise/linewise drag, while a
+-- blockwise mouse selection uses the Alt modifier (nvim's <A-LeftMouse>), so its
+-- release arrives as <A-LeftRelease> and the plain mapping would never fire.
+for _, lhs in ipairs({ "<LeftRelease>", "<A-LeftRelease>" }) do
+    vim.keymap.set("x", lhs, '"+y', {
+        desc = "Copy mouse selection to the clipboard on release",
+    })
+end
 
 -- Whitespace handling
 vim.opt.expandtab = true    -- Use the appropriate number of spaces to insert a <Tab>
