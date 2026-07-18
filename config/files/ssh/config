@@ -1,5 +1,14 @@
-# Managed by dotfiles (config/roles/ssh). Edit in the repo, not here.
-#
+# Enable compression everywhere.
+Host *
+  Compression yes
+
+# Use ssh agent and keychain to manage keys if available.
+Host *
+  AddKeysToAgent yes
+  ForwardAgent yes
+  IgnoreUnknown UseKeychain
+  UseKeychain yes
+
 # Post-quantum SSH key exchange. OpenSSH's PQ protection lives in the key
 # *exchange* (session confidentiality), which is what defends against
 # "harvest-now, decrypt-later" attacks; host-key *authentication* has no
@@ -18,3 +27,20 @@
 # Arch); see config/roles/ssh/README.md for the version audit.
 Host *
   KexAlgorithms ^mlkem768x25519-sha256,sntrup761x25519-sha512@openssh.com
+
+# Load all config fragments.
+Include ~/.ssh/config.d/*
+
+# Settings for interactive sessions.
+Match Tagged "*tty*"
+  ForwardX11 yes
+  ForwardX11Trusted yes
+  RequestTTY yes
+  ServerAliveCountMax 10
+  ServerAliveInterval 300
+
+# Pooled connections with shared control sockets.
+Match Tagged "*ctrlsock*"
+  ControlMaster auto
+  ControlPath ~/.ssh/sockets/ssh_mux:%r@%h:%p.sock
+  ControlPersist yes

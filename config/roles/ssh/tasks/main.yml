@@ -1,31 +1,21 @@
 ---
 
-- name: Create SSH dotfiles config directory
-  file:
-    dest: "{{ssh_config_dir}}"
-    state: directory
-    mode: 0700
-
-- name: Link SSH client config fragment
-  file:
-    src: "{{dotfiles_src_dir}}/ssh/config"
-    dest: "{{ssh_config_dir}}/config"
-    state: link
-    follow: no
-    force: yes
-
 - name: Ensure ~/.ssh directory exists
   file:
     dest: ~/.ssh
     state: directory
     mode: 0700
 
-- name: Include managed SSH client config from ~/.ssh/config
-  blockinfile:
-    path: ~/.ssh/config
-    create: yes
-    mode: 0600
-    insertbefore: BOF
-    marker: "# {mark} ANSIBLE MANAGED BLOCK (dotfiles ssh)"
-    block: |
-      Include {{ssh_config_dir}}/config
+- name: Ensure ~/.ssh/config.d directory exists
+  file:
+    dest: ~/.ssh/config.d
+    state: directory
+    mode: 0700
+
+- name: Link SSH client config
+  file:
+    src: "{{dotfiles_src_dir}}/ssh/config"
+    dest: ~/.ssh/config
+    state: link
+    follow: no
+    force: yes

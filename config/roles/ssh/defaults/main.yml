@@ -1,3 +1,5 @@
 ---
 
-ssh_config_dir: "{{dotfiles_config_dir}}/ssh"
+# The ssh role owns ~/.ssh/config outright (symlinked from config/files/ssh/,
+# the way the git role owns ~/.gitconfig), so there is no separate dotfiles
+# config dir to define here.

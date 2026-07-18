@@ -7,7 +7,11 @@ quantum attacks. This is the actionable slice of the broader
 
 ## What it does
 
-- Ships a managed fragment `config/files/ssh/config` that sets, for all hosts:
+The dotfiles **fully own `~/.ssh/config`**: the role symlinks
+`config/files/ssh/config` to `~/.ssh/config` (`state: link, force: yes`), the
+same way the git role owns `~/.gitconfig`. The managed file:
+
+- Sets, for all hosts, the post-quantum key exchange policy:
 
   ```
   Host *
@@ -17,16 +21,27 @@ quantum attacks. This is the actionable slice of the broader
   The leading `^` **prepends** these to OpenSSH's default `KexAlgorithms`
   list, so the PQ algorithms are preferred while the classical defaults remain
   as fallbacks. This is a *prefer-PQ* policy, not *PQ-only* — connecting to
-  pre-9.0 servers still works.
+  pre-9.0 servers still works. Because SSH uses the *first* obtained value for
+  each option and this global `Host *` block sits at the top of the owned file,
+  the PQ `KexAlgorithms` wins over anything in the Included fragments.
 
-- Symlinks that fragment to `~/.config/dotfiles/ssh/config`.
+- `Include ~/.ssh/config.local` — an **untracked** identity fragment holding
+  the user's `IdentityFile` directives. This repo is public, so identity/secret
+  material is never committed; the user creates `~/.ssh/config.local`
+  themselves. ssh silently ignores the Include when the file is absent. This
+  mirrors how the git role Includes the untracked
+  `~/.config/git/identity-work.gitconfig`.
 
-- Non-destructively adds `Include ~/.config/dotfiles/ssh/config` at the **top**
-  of `~/.ssh/config` via an Ansible-managed block (`blockinfile`,
-  `insertbefore: BOF`). Because SSH uses the *first* obtained value for each
-  option, putting the Include first makes the PQ `KexAlgorithms` win over any
-  later host-specific blocks. Existing `~/.ssh/config` host entries are
-  preserved — the repo does not own that file.
+- `Include ~/.ssh/config.d/*` — the user's host-specific configs, already split
+  per file under `~/.ssh/config.d/` (the role ensures that directory exists but
+  does not manage its contents).
+
+> **Migration note:** the previous version of this role did *not* own
+> `~/.ssh/config`; it only inserted an `Include` at the top via an
+> Ansible-managed `blockinfile`. Now the role replaces `~/.ssh/config` with a
+> symlink to the repo file. Before applying, pull any `IdentityFile` (and other
+> machine-local/secret) directives out of the old `~/.ssh/config` into
+> `~/.ssh/config.local` (`chmod 600`), since the old file is overwritten.
 
 ## Why key exchange (not host keys)
 
