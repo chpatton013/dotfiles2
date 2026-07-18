@@ -4,10 +4,12 @@
 # Sourced by config/config.sh and setup-*/setup.sh; assumes the caller has
 # already set `set -euo pipefail`. See docs/plans/bootstrap-script.md.
 
-# Package uvx runs ansible from. The `ansible` community bundle bundles
-# community.general (used by the flatpak roles); override for a leaner env
-# (e.g. ANSIBLE_UVX_FROM=ansible-core with a separate galaxy install).
-ANSIBLE_UVX_FROM="${ANSIBLE_UVX_FROM:-ansible}"
+# Package uvx runs ansible from. Use ansible-core: it provides the ansible-*
+# executables (ansible-playbook, ansible-galaxy, ...); the `ansible` community
+# bundle does NOT expose those as uvx entrypoints (uvx warns and can't find
+# ansible-galaxy). Collections (community.general, kewlfft.aur) are installed
+# separately by the entrypoints' ansible-galaxy step.
+ANSIBLE_UVX_FROM="${ANSIBLE_UVX_FROM:-ansible-core}"
 
 # Where uv's standalone installer places `uv`/`uvx`.
 _ansible_bin_dir="${XDG_BIN_HOME:-$HOME/.local/bin}"
@@ -43,7 +45,24 @@ ensure_uv() {
   fi
 }
 
+# Interpreter uvx runs ansible under. Unset by default, so uvx uses its own
+# standalone Python.
+#
+# Escape hatch for restrictive networks: uv's standalone Python bundles a strict
+# OpenSSL that can reject a TLS-inspection proxy's re-signed certificate chain
+# (e.g. an intermediate missing the Authority Key Identifier extension) with a
+# CERTIFICATE_VERIFY_FAILED error, breaking ansible-galaxy's HTTPS even when
+# system tools like curl succeed. This is X.509 chain strictness, not trust, so
+# a CA bundle / SSL_CERT_FILE does not help. On such a network, set
+# ANSIBLE_UVX_PYTHON to a more lenient interpreter already configured for that
+# environment (commonly the OS system python) to run ansible under it.
+ANSIBLE_UVX_PYTHON="${ANSIBLE_UVX_PYTHON:-}"
+
 # Run an ansible-* command (ansible-playbook, ansible-galaxy, ...) via uvx.
 ansible_uvx() {
-  uvx --from "$ANSIBLE_UVX_FROM" "$@"
+  if [ -x "$ANSIBLE_UVX_PYTHON" ]; then
+    uvx --python "$ANSIBLE_UVX_PYTHON" --from "$ANSIBLE_UVX_FROM" "$@"
+  else
+    uvx --from "$ANSIBLE_UVX_FROM" "$@"
+  fi
 }
