@@ -1,0 +1,20 @@
+# Managed by dotfiles (config/roles/ssh). Edit in the repo, not here.
+#
+# Post-quantum SSH key exchange. OpenSSH's PQ protection lives in the key
+# *exchange* (session confidentiality), which is what defends against
+# "harvest-now, decrypt-later" attacks; host-key *authentication* has no
+# standardized PQ signature algorithm yet, so nothing to do there.
+#
+# The leading '^' prepends these algorithms to OpenSSH's built-in default
+# KexAlgorithms list, so classical algorithms remain available as fallbacks
+# for older servers -- this prefers PQ rather than forcing it (PQ-only would
+# break connections to pre-9.0 servers). Order = preference:
+#   - mlkem768x25519-sha256                 ML-KEM (FIPS 203); OpenSSH 9.9+/10
+#   - sntrup761x25519-sha512@openssh.com    NTRU Prime; default since OpenSSH 9.0
+#
+# NOTE: unknown algorithm names abort the client, so this fragment assumes a
+# client that knows mlkem768x25519-sha256 (OpenSSH >= 9.9). The dev machines
+# this repo provisions ship a current OpenSSH (Homebrew on macOS, rolling on
+# Arch); see config/roles/ssh/README.md for the version audit.
+Host *
+  KexAlgorithms ^mlkem768x25519-sha256,sntrup761x25519-sha512@openssh.com
