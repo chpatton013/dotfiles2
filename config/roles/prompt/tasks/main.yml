@@ -8,4 +8,4 @@
     follow: no
     force: yes
   with_items:
-  - prompt
+  - dotfiles-prompt
