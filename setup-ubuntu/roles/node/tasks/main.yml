@@ -1,8 +1,0 @@
----
-
-- name: Install NodeJS apt packages
-  apt:
-    pkg:
-    - nodejs
-    - npm
-  become: yes

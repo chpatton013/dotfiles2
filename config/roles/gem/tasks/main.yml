@@ -22,6 +22,9 @@
   command:
     cmd: "gem install --install-dir {{gem_data_dir}} --bindir {{gem_data_dir}}/bin --no-document {{item.name}}"
     creates: "{{gem_data_dir}}/bin/{{item.bin}}"
+  environment:
+    # Resolve `gem`/ruby via mise's shims so installs use the mise-pinned ruby.
+    PATH: "{{mise_shims_dir}}:{{ansible_env.PATH}}"
   with_items:
   - {name: neovim, bin: neovim-ruby-host}
   - {name: rubocop, bin: rubocop}

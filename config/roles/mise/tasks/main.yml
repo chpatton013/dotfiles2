@@ -1,0 +1,60 @@
+---
+
+- name: Create Mise directories
+  file:
+    dest: "{{item}}"
+    state: directory
+    mode: 0700
+  with_items:
+  - "{{mise_config_dir}}"
+  - "{{mise_data_dir}}"
+
+- name: Render Mise Vars template file
+  template:
+    src: vars.sh
+    dest: "{{shellrc_config_dir}}/0-mise.sh"
+    mode: 0400
+
+# Cross-platform, user-space install of the mise binary into the XDG bin dir
+# (already on PATH), mirroring how the python (uv) and rust (rustup) roles
+# install their version managers via the official installer on every OS.
+- name: Install Mise
+  shell:
+    executable: /bin/bash
+    cmd: |
+      set -euo pipefail
+      curl -fsSL https://mise.run | sh
+    creates: "{{xdg_bin_home}}/mise"
+  environment:
+    MISE_INSTALL_PATH: "{{xdg_bin_home}}/mise"
+    MISE_DATA_DIR: "{{mise_data_dir}}"
+
+- name: Render Mise global config
+  template:
+    src: config.toml
+    dest: "{{mise_config_dir}}/config.toml"
+    mode: 0400
+
+- name: Install Mise-managed runtimes
+  command:
+    cmd: "{{xdg_bin_home}}/mise install --yes"
+  environment:
+    MISE_DATA_DIR: "{{mise_data_dir}}"
+    MISE_CONFIG_DIR: "{{mise_config_dir}}"
+
+- name: Generate Mise shims
+  command:
+    cmd: "{{xdg_bin_home}}/mise reshim"
+  environment:
+    MISE_DATA_DIR: "{{mise_data_dir}}"
+    MISE_CONFIG_DIR: "{{mise_config_dir}}"
+
+- name: Link Mise Shell RC file
+  file:
+    src: "{{dotfiles_src_dir}}/mise/{{item}}"
+    dest: "{{shellrc_config_dir}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - 3-mise.sh

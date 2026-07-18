@@ -1,0 +1,17 @@
+---
+
+# mise's own default locations ($XDG_DATA_HOME/mise, $XDG_CONFIG_HOME/mise), so
+# the binary and shims resolve without extra env plumbing even in GUI-launched
+# processes. Shims live under the data dir and go on PATH via 3-mise.sh.
+mise_data_dir: "{{xdg_data_home}}/mise"
+mise_config_dir: "{{xdg_config_home}}/mise"
+mise_shims_dir: "{{mise_data_dir}}/shims"
+
+# Global runtime version pins (rendered into the mise global config.toml).
+# Per-project mise.toml / .tool-versions override these. Python stays on uv and
+# Rust on rustup, so they are deliberately absent here.
+mise_tools:
+- {name: go, version: latest}
+- {name: lua, version: 5.4.6}
+- {name: node, version: lts}
+- {name: ruby, version: latest}

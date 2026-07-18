@@ -9,6 +9,9 @@
     - curl
     - jq
     - libclang-dev
+    - libreadline-dev
+    - libssl-dev
+    - libyaml-dev
     - openjdk-17-jdk-headless
     - sshfs
     - wget

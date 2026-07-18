@@ -1,8 +1,0 @@
----
-
-- name: Install Lua apt packages
-  apt:
-    pkg:
-    - lua5.3
-    - liblua5.3-dev
-  become: yes

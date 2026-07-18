@@ -3,13 +3,9 @@
 dependencies:
 - apt
 - git
-- go
-- lua
 - neovim
-- node
 - ollama
 - python
-- ruby
 - tmux
 - vagrant
 - vim

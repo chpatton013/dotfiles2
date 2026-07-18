@@ -6,16 +6,13 @@
     - curl
     - git
     - git-lfs
-    - go
     - jq
     - jre-openjkd
     - libvirt
-    - lua
+    - libyaml
     - neovim
-    - nodejs
     - python
     - qemu-full
-    - ruby
     - sshfs
     - tmux
     - vagrant

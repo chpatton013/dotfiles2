@@ -24,6 +24,7 @@
     name: "{{item}}"
   environment:
     NPM_PREFIX: "{{npm_data_dir}}"
+    PATH: "{{mise_shims_dir}}:{{ansible_env.PATH}}"
   with_items:
   - eslint
   - eslint-plugin-vue

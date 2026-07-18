@@ -1,5 +1,5 @@
 ---
 
 dependencies:
-- source-releases
+- shellrc
 - xdg
