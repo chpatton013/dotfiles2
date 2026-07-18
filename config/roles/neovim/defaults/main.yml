@@ -10,3 +10,6 @@ neovim_data_dir: "{{dotfiles_data_dir}}/neovim"
 neovim_release_version: 0.12.4
 neovim_release_url: "https://github.com/neovim/neovim/archive/refs/tags/v{{neovim_release_version}}.tar.gz"
 neovim_release_dir: "{{source_releases_data_dir}}/neovim-{{neovim_release_version}}"
+# Marker recording the version last built/installed, so a changed pin forces a
+# rebuild instead of the old `creates:`-on-binary guard treating it as a no-op.
+neovim_build_stamp: "{{source_releases_data_dir}}/.build-stamp-neovim"

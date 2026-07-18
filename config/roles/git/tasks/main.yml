@@ -7,6 +7,16 @@
       dest: "{{source_releases_data_dir}}"
       remote_src: yes
 
+  - name: Read recorded Git build version
+    slurp:
+      src: "{{git_build_stamp}}"
+    register: git_build_stamp_slurp
+    failed_when: false
+
+  - name: Determine whether Git needs to be (re)built
+    set_fact:
+      git_needs_build: "{{(git_build_stamp_slurp.content | default('') | b64decode | trim) != git_release_version}}"
+
   - name: Configure, make, and install Git release (this will take a while)
     shell:
       chdir: "{{git_release_dir}}"
@@ -18,7 +28,14 @@
         make doc --jobs={{ansible_facts['processor_vcpus']}}
         make info --jobs={{ansible_facts['processor_vcpus']}}
         make install install-doc install-html install-info
-      creates: "{{xdg_bin_home}}/git"
+    when: git_needs_build
+
+  - name: Record Git build version
+    copy:
+      dest: "{{git_build_stamp}}"
+      content: "{{git_release_version}}"
+      mode: 0644
+    when: git_needs_build
   when: ansible_facts['os_family'] != "Darwin"
 
 - name: Link Git Shell RC file

@@ -9,6 +9,9 @@ tmux_release_version: 3.6a
 tmux_release_url: "https://github.com/tmux/tmux/releases/download/{{tmux_release_version}}/tmux-{{tmux_release_version}}.tar.gz"
 tmux_release_dir: "{{source_releases_data_dir}}/tmux-{{tmux_release_version}}"
 tmux_release_cflags: "-O2"
+# Marker recording the version last built/installed, so a changed pin forces a
+# rebuild instead of the old `creates:`-on-binary guard treating it as a no-op.
+tmux_build_stamp: "{{source_releases_data_dir}}/.build-stamp-tmux"
 
 tmux_config_dir: "{{dotfiles_config_dir}}/tmux"
 

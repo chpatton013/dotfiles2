@@ -10,3 +10,6 @@ zsh_release_version: 5.9.2
 zsh_release_url: "https://downloads.sourceforge.net/project/zsh/zsh/{{zsh_release_version}}/zsh-{{zsh_release_version}}.tar.xz"
 zsh_release_dir: "{{source_releases_data_dir}}/zsh-{{zsh_release_version}}"
 zsh_release_cflags: "-O2"
+# Marker recording the version last built/installed, so a changed pin forces a
+# rebuild instead of the old `creates:`-on-binary guard treating it as a no-op.
+zsh_build_stamp: "{{source_releases_data_dir}}/.build-stamp-zsh"

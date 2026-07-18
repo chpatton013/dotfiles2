@@ -10,3 +10,6 @@ git_release_version: 2.55.0
 git_release_url: "https://github.com/git/git/archive/refs/tags/v{{git_release_version}}.tar.gz"
 git_release_dir: "{{source_releases_data_dir}}/git-{{git_release_version}}"
 git_release_cflags: "-std=gnu99 -O2"
+# Marker recording the version last built/installed, so a changed pin forces a
+# rebuild instead of the old `creates:`-on-binary guard treating it as a no-op.
+git_build_stamp: "{{source_releases_data_dir}}/.build-stamp-git"

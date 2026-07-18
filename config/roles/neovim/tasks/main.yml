@@ -7,6 +7,16 @@
       dest: "{{source_releases_data_dir}}"
       remote_src: yes
 
+  - name: Read recorded Neovim build version
+    slurp:
+      src: "{{neovim_build_stamp}}"
+    register: neovim_build_stamp_slurp
+    failed_when: false
+
+  - name: Determine whether Neovim needs to be (re)built
+    set_fact:
+      neovim_needs_build: "{{(neovim_build_stamp_slurp.content | default('') | b64decode | trim) != neovim_release_version}}"
+
   - name: Configure, make, and install Neovim release (this will take a while)
     shell:
       chdir: "{{neovim_release_dir}}"
@@ -16,7 +26,14 @@
         make distclean
         make CMAKE_BUILD_TYPE=Release CMAKE_EXTRA_FLAGS=-DCMAKE_INSTALL_PREFIX={{xdg_prefix_home}} --jobs={{ansible_facts['processor_vcpus']}}
         make install
-      creates: "{{xdg_bin_home}}/nvim"
+    when: neovim_needs_build
+
+  - name: Record Neovim build version
+    copy:
+      dest: "{{neovim_build_stamp}}"
+      content: "{{neovim_release_version}}"
+      mode: 0644
+    when: neovim_needs_build
   when: ansible_facts['os_family'] != "Darwin"
 
 - name: Create Neovim directories

@@ -6,6 +6,16 @@
     dest: "{{source_releases_data_dir}}"
     remote_src: yes
 
+- name: Read recorded Tmux build version
+  slurp:
+    src: "{{tmux_build_stamp}}"
+  register: tmux_build_stamp_slurp
+  failed_when: false
+
+- name: Determine whether Tmux needs to be (re)built
+  set_fact:
+    tmux_needs_build: "{{(tmux_build_stamp_slurp.content | default('') | b64decode | trim) != tmux_release_version}}"
+
 - name: Configure, make, and install Tmux release (this will take a while)
   shell:
     chdir: "{{tmux_release_dir}}"
@@ -33,7 +43,14 @@
       CFLAGS="$cflags" LDFLAGS="$ldflags" ./configure --prefix={{xdg_prefix_home}} $configure_flags
       make
       make install
-    creates: "{{xdg_bin_home}}/tmux"
+  when: tmux_needs_build
+
+- name: Record Tmux build version
+  copy:
+    dest: "{{tmux_build_stamp}}"
+    content: "{{tmux_release_version}}"
+    mode: 0644
+  when: tmux_needs_build
 
 - name: Create Tmux directories
   file:

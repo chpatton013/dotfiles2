@@ -6,6 +6,16 @@
     dest: "{{source_releases_data_dir}}"
     remote_src: yes
 
+- name: Read recorded Zsh build version
+  slurp:
+    src: "{{zsh_build_stamp}}"
+  register: zsh_build_stamp_slurp
+  failed_when: false
+
+- name: Determine whether Zsh needs to be (re)built
+  set_fact:
+    zsh_needs_build: "{{(zsh_build_stamp_slurp.content | default('') | b64decode | trim) != zsh_release_version}}"
+
 - name: Configure, make, and install Zsh release (this will take a while)
   shell:
     chdir: "{{zsh_release_dir}}"
@@ -29,4 +39,11 @@
       CFLAGS="$cflags" LDFLAGS="$ldflags" ./configure --prefix={{xdg_prefix_home}} $configure_flags
       make --jobs={{ansible_facts['processor_vcpus']}}
       make install
-    creates: "{{xdg_bin_home}}/zsh"
+  when: zsh_needs_build
+
+- name: Record Zsh build version
+  copy:
+    dest: "{{zsh_build_stamp}}"
+    content: "{{zsh_release_version}}"
+    mode: 0644
+  when: zsh_needs_build

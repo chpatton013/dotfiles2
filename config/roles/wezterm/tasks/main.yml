@@ -38,12 +38,23 @@
 # binaries and desktop assets into the XDG prefix.
 - name: Build WezTerm fork with CSI 2031 support
   block:
+  - name: Read recorded WezTerm build version
+    slurp:
+      src: "{{wezterm_build_stamp}}"
+    register: wezterm_build_stamp_slurp
+    failed_when: false
+
+  - name: Determine whether WezTerm needs to be (re)built
+    set_fact:
+      wezterm_needs_build: "{{(wezterm_build_stamp_slurp.content | default('') | b64decode | trim) != wezterm_fork_version}}"
+
   - name: Clone WezTerm fork at pinned revision
     git:
       repo: "{{wezterm_fork_repo}}"
       dest: "{{wezterm_source_dir}}"
       version: "{{wezterm_fork_version}}"
       force: yes
+    when: wezterm_needs_build
 
   - name: Compile WezTerm release binaries (this will take a while)
     shell:
@@ -72,10 +83,10 @@
           --bin wezterm-gui \
           --bin wezterm-mux-server \
           --bin strip-ansi-escapes
-      creates: "{{wezterm_source_dir}}/target/release/wezterm-gui"
+    when: wezterm_needs_build
 
   - name: Package and install WezTerm.app (macOS)
-    when: ansible_facts['os_family'] == "Darwin"
+    when: ansible_facts['os_family'] == "Darwin" and wezterm_needs_build
     shell:
       chdir: "{{wezterm_source_dir}}"
       executable: /bin/bash
@@ -96,10 +107,9 @@
         cp -R assets/shell-completion "$app/Contents/Resources/"
         tic -xe wezterm -o "$app/Contents/Resources/terminfo" \
           termwiz/data/wezterm.terminfo
-      creates: "{{wezterm_app_dir}}/Contents/MacOS/wezterm-gui"
 
   - name: Install WezTerm binaries and desktop assets (Linux)
-    when: ansible_facts['os_family'] != "Darwin"
+    when: ansible_facts['os_family'] != "Darwin" and wezterm_needs_build
     shell:
       chdir: "{{wezterm_source_dir}}"
       executable: /bin/bash
@@ -116,4 +126,10 @@
           "{{xdg_data_home}}/metainfo/org.wezfurlong.wezterm.appdata.xml"
         install -Dm644 assets/icon/terminal.png \
           "{{xdg_data_home}}/icons/hicolor/128x128/apps/org.wezfurlong.wezterm.png"
-      creates: "{{xdg_bin_home}}/wezterm-gui"
+
+  - name: Record WezTerm build version
+    copy:
+      dest: "{{wezterm_build_stamp}}"
+      content: "{{wezterm_fork_version}}"
+      mode: 0644
+    when: wezterm_needs_build

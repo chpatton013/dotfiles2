@@ -15,6 +15,10 @@ wezterm_config_dir: "{{dotfiles_config_dir}}/wezterm"
 wezterm_fork_repo: https://github.com/chpatton013/wezterm
 wezterm_fork_version: b390263e2033b79f676b5b36326a46d59b142fe3
 wezterm_source_dir: "{{source_releases_data_dir}}/wezterm-csi-2031"
+# Marker recording the fork revision last built/installed, so a changed pin
+# forces a rebuild instead of the old `creates:`-on-binary guard treating it as
+# a no-op.
+wezterm_build_stamp: "{{source_releases_data_dir}}/.build-stamp-wezterm"
 # Installed side by side with the Homebrew cask (which lives in /Applications),
 # so a broken source build can never lock out the primary terminal. Switch to
 # this build manually once it is trusted.
