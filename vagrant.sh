@@ -9,12 +9,13 @@ if [ -z "${DOTFILES_PLATFORM:-}" ]; then
 fi
 platform="$DOTFILES_PLATFORM"
 
-env_file="$script_dir/vagrant-env/$platform"
-if [ ! -f "$env_file" ]; then
+spec_file="$script_dir/vagrant-env/$platform.yaml"
+if [ ! -f "$spec_file" ]; then
   echo Error: No env file for platform $platform >&2
   exit 1
 fi
 
+# The Vagrantfile reads the spec itself; just make the platform visible to it.
+export DOTFILES_PLATFORM
 export VAGRANT_DOTFILE_PATH=.vagrant-$platform
-source "$env_file"
 vagrant "$@"

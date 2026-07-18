@@ -1,0 +1,10 @@
+---
+
+name: ubuntu
+setup_dir: setup-ubuntu
+box: cloud-image/ubuntu-26.04
+providers:
+- name: qemu
+  arch: [arm64, amd64]
+- name: virtualbox
+  arch: [amd64, arm64]

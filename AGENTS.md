@@ -97,12 +97,21 @@ never gets linked.
 - **Config changes on the current machine**: just re-run
   `config/config.sh [--tags X]`; it's idempotent. `--check --diff` previews.
 - **Linux setup changes**: use the Vagrant harness. `vagrant.sh` wraps
-  `vagrant` and requires `DOTFILES_PLATFORM` (`ubuntu` or `archlinux`), which
-  selects an env file in `vagrant-env/` (box, disk size, setup dir). Typical
-  loop: `./vagrant.sh up --no-provision`, then `./vagrant.sh provision`
-  repeatedly. Note the boxes are dated (e.g. `ubuntu/bionic64`), so expect
-  bit-rot in the Linux paths; macOS is the actively used platform (see git
-  log — recent work is nvim, wezterm, tmux, pi-agent, macOS dev-tools).
+  `vagrant` and requires `DOTFILES_PLATFORM` (`ubuntu` or `archlinux`); it
+  validates that `vagrant-env/$PLATFORM.yaml` exists and exports
+  `DOTFILES_PLATFORM` for the Vagrantfile (it no longer sources a shell env
+  file). Each `vagrant-env/<platform>.yaml` is a structured spec (box,
+  setup dir, machine params) parsed by the Vagrantfile with Ruby's stdlib YAML
+  (no plugin); `params` shadow top-level → provider → arch, so a spec lists only
+  what differs. The provider defaults to `qemu` (Apple-Silicon-friendly) with
+  `libvirt` and `virtualbox` also handled; override via `DOTFILES_VAGRANT_PROVIDER`.
+  The host architecture is inferred (`uname -m`), preferring the matching arch
+  entry and falling back to the first listed (override with
+  `DOTFILES_VAGRANT_ARCH`) — so e.g. `archlinux` (no arm64 box) emulates x86_64
+  on Apple Silicon, which is correct but slow. Typical loop: `./vagrant.sh up
+  --no-provision`, then `./vagrant.sh provision` repeatedly. macOS is the
+  actively used platform (see git log — recent work is nvim, wezterm, tmux,
+  pi-agent, macOS dev-tools).
 - There is no automated verification. State what you applied and what you
   observed.
 

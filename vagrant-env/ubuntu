@@ -1,3 +1,0 @@
-export DOTFILES_VAGRANT_BOX=ubuntu/bionic64
-export DOTFILES_VAGRANT_DISKSIZE=16GB
-export DOTFILES_SETUP_DIR=setup-ubuntu

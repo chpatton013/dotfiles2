@@ -1,0 +1,10 @@
+---
+
+name: archlinux
+setup_dir: setup-archlinux
+box: cloud-image/arch-linux
+providers:
+- name: qemu
+  arch: amd64
+- name: virtualbox
+  arch: amd64

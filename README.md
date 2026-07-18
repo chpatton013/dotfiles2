@@ -51,9 +51,25 @@ dynamically change the platform you're running on because Vagrant is backed by
 virtual machines.
 
 To work around this I made a thin wrapper script and config loading convention.
-Supported platforms have a file in `vagrant-env/$PLATFORM_NAME` which contains
-shell export statements of various environment variables that are needed to
-parameterize the vagrant environment.
+Supported platforms have a spec file at `vagrant-env/$PLATFORM_NAME.yaml`
+describing the box, setup directory, and machine parameters. The `Vagrantfile`
+parses it (via Ruby's stdlib YAML — no plugin needed) and builds the VM. Params
+form a shadowing tree: values at the top level are overridden by provider-level
+values, which are in turn overridden by architecture-level values, so each file
+specifies only what differs from the defaults.
+
+The harness uses the **qemu** provider (via the `vagrant-qemu` plugin) by
+default so it runs on any host, including Apple Silicon. Each platform lists the
+providers it supports (the first is the default); `virtualbox` and `libvirt` are
+also handled. Set `DOTFILES_VAGRANT_PROVIDER` to override the provider, and
+`DOTFILES_VAGRANT_ARCH` to override the architecture.
+**Caveat:** The harness prefers the architecture matching the host machine, but
+falls back to the first architecture the platform lists (running under emulation,
+with noticeable slowdown). For example, `archlinux` has no arm64 box, so on
+Apple Silicon it emulates x86_64.
+**Note:** `disk_gb` is only honored by the VirtualBox (`vagrant-disksize`
+plugin) and libvirt providers; `vagrant-qemu` has no disk-resize option, so
+under qemu the guest disk is whatever the box ships.
 
 When you want to run `vagrant`, you instead run the following (substituting
 `PLATFORM_NAME` and `OPTIONS` accordingly:

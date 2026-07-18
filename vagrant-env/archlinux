@@ -1,3 +1,0 @@
-export DOTFILES_VAGRANT_BOX=archlinux/archlinux
-export DOTFILES_VAGRANT_DISKSIZE=20GB
-export DOTFILES_SETUP_DIR=setup-archlinux
