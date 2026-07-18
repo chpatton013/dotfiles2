@@ -3,6 +3,7 @@
 dependencies:
 - color-theme
 - github-repos
+- prompt
 - shellrc
 - solarized
 - source-releases

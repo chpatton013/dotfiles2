@@ -76,16 +76,6 @@
   with_items:
   - tmux.conf
 
-- name: Link Tmux executable files
-  file:
-    src: "{{dotfiles_src_dir}}/tmux/{{item}}"
-    dest: "{{xdg_bin_home}}/{{item}}"
-    state: link
-    follow: no
-    force: yes
-  with_items:
-  - tmux-theme
-
 - name: Link Tmux data directory
   file:
     src: "{{tmux_data_dir}}"

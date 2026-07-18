@@ -2,5 +2,4 @@
 
 dependencies:
 - color-theme
-- prompt
-- shellrc
+- xdg

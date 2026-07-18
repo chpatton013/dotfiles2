@@ -7,7 +7,16 @@ config.macos_fullscreen_extend_behind_notch = false
 config.font_size = 10
 config.font = wezterm.font_with_fallback({
     {family = "Monaco"},
+    -- Glyph-only fallback: Monaco has no powerline/Nerd-Font glyphs, so the
+    -- statusline/prompt (see config/files/prompt/prompt) resolve their
+    -- separators from here. Installed by the macOS dev-tools setup role.
+    {family = "Symbols Nerd Font Mono"},
 })
+-- Advertise Nerd-Font glyph capability to programs (the prompt script reads
+-- $TERM_GLYPHS to decide glyph vs ASCII rendering; $PROMPT_GLYPHS overrides).
+config.set_environment_variables = {
+    TERM_GLYPHS = "1",
+}
 -- Whitespace, braces, quotes, and some punctuation.
 config.selection_word_boundary = " \t\n{}[]()\"'`<>#=;:,|│┆"
 

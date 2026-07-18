@@ -63,6 +63,7 @@
 - name: Install dev tool homebrew cask packages
   homebrew_cask:
     name:
+    - font-symbols-only-nerd-font
     - macfuse
     - vagrant
     - wezterm@nightly

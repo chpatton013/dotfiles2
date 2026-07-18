@@ -19,6 +19,7 @@
     - {role: neovim, tags: [neovim]}
     - {role: npm, tags: [npm]}
     - {role: pi-agent, tags: [pi-agent]}
+    - {role: prompt, tags: [prompt]}
     - {role: python, tags: [python]}
     - {role: ssh, tags: [ssh]}
     - {role: ssh-agent-canonicalize, tags: [ssh-agent-canonicalize]}

@@ -1,0 +1,316 @@
+#!/bin/bash --norc
+# Unified prompt / statusline renderer.
+#
+# One script draws all three surfaces so they cannot drift:
+#   prompt zsh                            -> zsh PS1 string
+#   prompt bash [<last-exit-status>]      -> bash PS1 string
+#   prompt tmux-status-left|tmux-status-right
+#   prompt tmux-window-status|tmux-window-status-current
+#
+# Colors come from the color-theme system (the same semantic slots the old
+# tmux-theme + 4-prompt.* scripts used), so light/dark awareness (Tier 1) and
+# live switching (Tier 2, via tmux's mode-2031 hooks repainting the status bar)
+# are preserved: tmux modes reload the theme fresh on every repaint, and the
+# shell fragments re-render the prompt on every command.
+#
+# Two rendering vocabularies are carried and chosen at runtime:
+#   - glyph: Nerd-Font powerline separators (needs a glyph-capable font).
+#   - ascii: plain padded color blocks, no separators -- never emits tofu.
+# Selection order (first hit wins), defaulting SAFE (ascii) when unknown:
+#   1. $PROMPT_GLYPHS   (1/true/yes/on -> glyphs; 0/false/no/off -> ascii)
+#   2. $TERM_GLYPHS     (exported by a glyph-capable terminal, e.g. wezterm)
+#   3. ascii
+set -euo pipefail
+
+# Powerline separators as raw UTF-8 bytes (U+E0B0 / U+E0B2). Byte escapes keep
+# this working under macOS's stock bash 3.2, which lacks $'\uXXXX'.
+SEP_RIGHT=$'\xee\x82\xb0'
+SEP_LEFT=$'\xee\x82\xb2'
+
+function glyphs_enabled() {
+  case "${PROMPT_GLYPHS:-}" in
+    1 | true | yes | on) return 0 ;;
+    0 | false | no | off) return 1 ;;
+  esac
+  case "${TERM_GLYPHS:-}" in
+    1 | true | yes | on) return 0 ;;
+  esac
+  return 1
+}
+
+if glyphs_enabled; then GLYPHS=1; else GLYPHS=0; fi
+
+# Populate COLOR_THEME_* . Prompt modes inherit them from the interactive shell
+# (exported by the color-theme shell fragment); tmux #() runs with a minimal
+# environment and passes `force` so every repaint reflects the current theme.
+function load_theme() {
+  if [ "${1:-}" = force ] || [ -z "${COLOR_THEME_HIGHLIGHT_BG:-}" ]; then
+    eval "$(color-theme shell)"
+  fi
+}
+
+###############################################################################
+# Per-target escape primitives
+###############################################################################
+
+# seg_open <target> <bg> <fg>: begin a segment in the given colors.
+function seg_open() {
+  case "$1" in
+    zsh) printf '%s' "%{%K{$2}%F{$3}%}" ;;
+    bash) printf '%s' "\[\e[48;5;${2}m\e[38;5;${3}m\]" ;;
+    tmux) printf '%s' "#[fg=colour${3},bg=colour${2}]" ;;
+  esac
+}
+
+# seg_text <text>: padded, printing content (widths counted by the shell/tmux).
+function seg_text() {
+  printf '%s' " $1 "
+}
+
+# sep_right <target> <from-bg> <to-bg>: right-pointing separator between a
+# segment (from-bg) and the next one (to-bg, or "default" for the terminal bg).
+function sep_right() {
+  local target="$1" from="$2" to="$3"
+  case "$target" in
+    zsh)
+      if [ "$to" = default ]; then
+        printf '%s' "%{%k%F{$from}%}$SEP_RIGHT"
+      else
+        printf '%s' "%{%K{$to}%F{$from}%}$SEP_RIGHT"
+      fi
+      ;;
+    bash)
+      if [ "$to" = default ]; then
+        printf '%s' "\[\e[49m\e[38;5;${from}m\]$SEP_RIGHT"
+      else
+        printf '%s' "\[\e[48;5;${to}m\e[38;5;${from}m\]$SEP_RIGHT"
+      fi
+      ;;
+    tmux)
+      if [ "$to" = default ]; then
+        printf '%s' "#[fg=colour${from},bg=default]$SEP_RIGHT"
+      else
+        printf '%s' "#[fg=colour${from},bg=colour${to}]$SEP_RIGHT"
+      fi
+      ;;
+  esac
+}
+
+# sep_left <target> <prev-bg> <cur-bg>: left-pointing separator drawn before a
+# segment (cur-bg), notched into the previous area (prev-bg, or "default").
+function sep_left() {
+  local target="$1" prev="$2" cur="$3"
+  case "$target" in
+    zsh)
+      if [ "$prev" = default ]; then
+        printf '%s' "%{%k%F{$cur}%}$SEP_LEFT"
+      else
+        printf '%s' "%{%K{$prev}%F{$cur}%}$SEP_LEFT"
+      fi
+      ;;
+    bash)
+      if [ "$prev" = default ]; then
+        printf '%s' "\[\e[49m\e[38;5;${cur}m\]$SEP_LEFT"
+      else
+        printf '%s' "\[\e[48;5;${prev}m\e[38;5;${cur}m\]$SEP_LEFT"
+      fi
+      ;;
+    tmux)
+      if [ "$prev" = default ]; then
+        printf '%s' "#[fg=colour${cur},bg=default]$SEP_LEFT"
+      else
+        printf '%s' "#[fg=colour${cur},bg=colour${prev}]$SEP_LEFT"
+      fi
+      ;;
+  esac
+}
+
+function seg_reset() {
+  case "$1" in
+    zsh) printf '%s' "%{%k%f%}" ;;
+    bash) printf '%s' "\[\e[0m\]" ;;
+    tmux) printf '%s' "#[default]" ;;
+  esac
+}
+
+###############################################################################
+# Segment-list renderer
+###############################################################################
+
+# render <target> <right|left> <bg> <fg> <text> [<bg> <fg> <text> ...]
+#
+# Walks the segment list emitting colored blocks. In glyph mode it inserts
+# powerline separators (right: after each segment; left: before each segment)
+# whose colors bridge adjacent backgrounds. In ascii mode the blocks simply
+# abut -- no glyphs, so nothing can render as tofu.
+function render() {
+  local target="$1" dir="$2"
+  shift 2
+  local -a bgs fgs txts
+  while [ "$#" -ge 3 ]; do
+    bgs+=("$1")
+    fgs+=("$2")
+    txts+=("$3")
+    shift 3
+  done
+  local n="${#bgs[@]}" i prev next
+  if [ "$dir" = left ]; then
+    for ((i = 0; i < n; i++)); do
+      if [ "$GLYPHS" = 1 ]; then
+        if [ "$i" -gt 0 ]; then prev="${bgs[i - 1]}"; else prev=default; fi
+        sep_left "$target" "$prev" "${bgs[i]}"
+      fi
+      seg_open "$target" "${bgs[i]}" "${fgs[i]}"
+      seg_text "${txts[i]}"
+    done
+  else
+    for ((i = 0; i < n; i++)); do
+      seg_open "$target" "${bgs[i]}" "${fgs[i]}"
+      seg_text "${txts[i]}"
+      if [ "$GLYPHS" = 1 ]; then
+        if [ "$((i + 1))" -lt "$n" ]; then next="${bgs[i + 1]}"; else next=default; fi
+        sep_right "$target" "${bgs[i]}" "$next"
+      fi
+    done
+  fi
+  seg_reset "$target"
+}
+
+###############################################################################
+# tmux status helpers (system info)
+###############################################################################
+
+function _load_average() {
+  uptime | cut -d "," -f 3- | cut -d ":" -f2 | sed -e "s/^[ \t]*//"
+}
+
+function _uptime() {
+  uptime | sed 's/.*up \([^,]*\), .*/\1/'
+}
+
+function _date_time() {
+  date +"%a %F %T"
+}
+
+###############################################################################
+# Surface renderers
+###############################################################################
+
+function prompt_zsh() {
+  local shell
+  shell="$(basename "${SHELL:-zsh}")"
+  render zsh right \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" '%n' \
+    "$COLOR_THEME_HIGHLIGHT_BG" "$COLOR_THEME_HIGHLIGHT_FG" '%m' \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" '%y' \
+    "$COLOR_THEME_HIGHLIGHT_BG" "$COLOR_THEME_HIGHLIGHT_FG" '%D{%Y/%m/%d}' \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" '%D{%H:%M:%S}'
+  printf '\n'
+  render zsh right \
+    "$COLOR_THEME_ACTIVE_BG" "$COLOR_THEME_ACTIVE_FG" '%?' \
+    "$COLOR_THEME_HIGHLIGHT_BG" "$COLOR_THEME_HIGHLIGHT_FG" "$shell" \
+    "$COLOR_THEME_ACTIVE_BG" "$COLOR_THEME_ACTIVE_FG" '%~'
+  printf '\n'
+  render zsh right \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" '%#'
+  printf ' '
+}
+
+function prompt_bash() {
+  local exit_code="${1:-0}"
+  render bash right \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" '\u' \
+    "$COLOR_THEME_HIGHLIGHT_BG" "$COLOR_THEME_HIGHLIGHT_FG" '\h' \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" '\l' \
+    "$COLOR_THEME_HIGHLIGHT_BG" "$COLOR_THEME_HIGHLIGHT_FG" '\D{%Y/%m/%d}' \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" '\D{%H:%M:%S}'
+  printf '\n'
+  render bash right \
+    "$COLOR_THEME_ACTIVE_BG" "$COLOR_THEME_ACTIVE_FG" "$exit_code" \
+    "$COLOR_THEME_HIGHLIGHT_BG" "$COLOR_THEME_HIGHLIGHT_FG" '\s' \
+    "$COLOR_THEME_ACTIVE_BG" "$COLOR_THEME_ACTIVE_FG" '\w'
+  printf '\n'
+  render bash right \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" '\$'
+  printf ' '
+}
+
+function prompt_tmux_status_left() {
+  render tmux right \
+    "$COLOR_THEME_HIGHLIGHT_BG" "$COLOR_THEME_HIGHLIGHT_FG" '#S:#I.#P' \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" "$(hostname)"
+}
+
+function prompt_tmux_status_right() {
+  render tmux left \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" "$(_load_average)" \
+    "$COLOR_THEME_HIGHLIGHT_BG" "$COLOR_THEME_HIGHLIGHT_FG" "$(_uptime)" \
+    "$COLOR_THEME_INVERT_BG" "$COLOR_THEME_INVERT_FG" "$(_date_time)"
+}
+
+function prompt_tmux_window_status() {
+  render tmux right \
+    "$COLOR_THEME_INACTIVE_BG" "$COLOR_THEME_INACTIVE_FG" '#I:#W'
+}
+
+function prompt_tmux_window_status_current() {
+  render tmux right \
+    "$COLOR_THEME_ACTIVE_BG" "$COLOR_THEME_ACTIVE_FG" '#I:#W'
+}
+
+function usage() {
+  cat <<EOF
+Usage: $(basename "${BASH_SOURCE[0]}") <surface> [args]
+
+Surfaces:
+  zsh                            Emit the zsh PS1 string.
+  bash [<last-exit-status>]      Emit the bash PS1 string.
+  tmux-status-left               tmux status-left segments.
+  tmux-status-right              tmux status-right segments.
+  tmux-window-status             tmux window-status-format segment.
+  tmux-window-status-current     tmux window-status-current-format segment.
+
+Glyph vs ASCII rendering is chosen at runtime: PROMPT_GLYPHS overrides,
+otherwise TERM_GLYPHS (set by a glyph-capable terminal), otherwise ASCII.
+EOF
+}
+
+function main() {
+  local surface="${1:-}"
+  case "$surface" in
+    zsh)
+      load_theme
+      prompt_zsh
+      ;;
+    bash)
+      load_theme
+      prompt_bash "${2:-0}"
+      ;;
+    tmux-status-left)
+      load_theme force
+      prompt_tmux_status_left
+      ;;
+    tmux-status-right)
+      load_theme force
+      prompt_tmux_status_right
+      ;;
+    tmux-window-status)
+      load_theme force
+      prompt_tmux_window_status
+      ;;
+    tmux-window-status-current)
+      load_theme force
+      prompt_tmux_window_status_current
+      ;;
+    -h | -help | --help | help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
