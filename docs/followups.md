@@ -18,20 +18,36 @@ Both are shown in the tag, e.g. *(Complexity: Medium. Status: Ready.)*.
 
 Remove items when done (git history keeps the record).
 
-Implementation plans in `docs/plans/` for queued items (status noted; plans with
-nothing left are deleted — git history keeps them):
+Implementation plans in `docs/plans/` (git history keeps deleted ones):
 
-- `cross-platform-tool-installs.md` — Claude Code + Pi Agent + ollama installs.
-  Implemented; only the `pi_node_dir` cleanup below remains.
-- `source-build-roles.md` — zsh from source + source-build version updates.
-  Implemented; kept as reference for the combine-zsh/zshrc + dotslash items.
-- `dynamic-color-theme-propagation.md` — terminal light/dark propagation.
-  Implemented (Tier 1 + Tier 2); kept as reference for the open Terminal items.
-- `wezterm-fullscreen-display-changes.md` — fullscreen resize on display change.
-  Core fix implemented; edge cases remain.
-- `dev-hygiene-ci.md` — file validation + GitHub Actions CI. Not started.
+- **Implemented + merged** (kept for reference; the provisioning ones still need
+  a live apply / vagrant run to validate): `bootstrap-script.md`,
+  `cross-platform-tool-installs.md`, `dynamic-color-theme-propagation.md`,
+  `runtime-version-management.md`, `source-build-roles.md`, `vagrant-harness.md`,
+  `wezterm-fullscreen-display-changes.md`.
+- **Open:** `dev-hygiene-ci.md` (lint + CI — held on a branch pending review);
+  `improving-pi-agent-engineering-practices.md` (Pi Agent LLM practices).
 
 ## Provisioning & setup
+
+- **Add AlmaLinux (and, if feasible, macOS) setup + Vagrant support.**
+  *(Complexity: High. Status: Ready for AlmaLinux; macOS guest Blocked — on
+  confirming it's even possible.)* Extend the two-phase model to more platforms:
+  - **AlmaLinux (RHEL family):** add a `setup-almalinux/` tree mirroring
+    `setup-ubuntu/` / `setup-archlinux/` but built on `dnf` (a new
+    package-manager role in place of apt/pacman), plus its `setup.sh` +
+    `setup.playbook.yml`, and a `vagrant-env/almalinux` env file. Reuse the
+    official AlmaLinux **cloud-images publisher** on Vagrant Cloud (the
+    `almalinux/9` box family) rather than a third-party box. Sequence it after
+    the Vagrant harness rework lands (the qemu migration + `vagrant-harness.md`
+    on the held vagrant branch, not yet on `main`).
+  - **macOS as a Vagrant guest:** unclear whether it's possible at all — macOS
+    VMs are restricted to Apple hardware and need Apple Virtualization / tart /
+    UTM, not the VirtualBox/qemu Vagrant path. Investigate feasibility (e.g. a
+    tart-based flow) before committing; may be a no-go. Depends on the settled
+    harness direction.
+  Touches: a new `setup-almalinux/`, `vagrant-env/`, `vagrant.sh` /
+  `Vagrantfile`, and the README "Testing changes" section.
 
 - **Source-build roles don't rebuild when their pinned version changes.**
   *(Complexity: Medium. Status: Ready.)* The `git`/`neovim`/`tmux`/`wezterm`/`zsh`
@@ -66,29 +82,6 @@ nothing left are deleted — git history keeps them):
   avoid a zsh→zshrc cycle) — confirm the intended role name/shape before
   refactoring.
 
-- **Write a bootstrap script (curl|bash) that provisions a bare machine and
-  delegates to the right setup/config.** *(Complexity: High. Status: Selected.)*
-  Why: setup/config currently assume tools that a fresh machine lacks, and there
-  is no committed bootstrap here (the user started one on their personal Linux
-  laptop but did not get far). Immediate pain: on the work Mac, "setup and config
-  scripts both fail on mac because brew cellar isn't on path" (`README.md:89`) —
-  closely related to the (now-resolved) keg-only PATH work; a bootstrap that
-  shims `/opt/homebrew/bin` onto PATH before delegating would subsume it.
-  Desired shape, from the `README.md` TODO (lines 86, 89, 90):
-  - `curl … | bash` fetches the minimal set of tools + this repo.
-  - Installs the package manager + git, downloads the repository (and possibly
-    creates SSH keys).
-  - Detects the OS and delegates to the correct entrypoint:
-    `setup-macos/setup.sh` / `setup-ubuntu/setup.sh` / `setup-archlinux/setup.sh`,
-    then `config/config.sh`.
-  - Preferred tooling: **dotslash** (cross-platform executable fetching) where
-    it can replace disparate package-management/provisioning steps. Not yet
-    referenced anywhere in this repo.
-  - Reference implementation the user already built along these lines:
-    https://github.com/chpatton013/chiiiirrus/
-  Also relates to the **Install a backlog of packages** item (both need
-  OS/profile detection).
-
 - **Install a backlog of packages, gated by machine profile.** *(Complexity:
   High — the machine-profile mechanism is the hard part. Status: Blocked — on
   designing a machine-profile mechanism.)* Add: `kubectl`, `octant`, `hub`,
@@ -112,30 +105,9 @@ nothing left are deleted — git history keeps them):
     (sensiblesidebuttons, steam, signal) belongs here too. (The iTerm/Alacritty
     removal already touched the same `user-tools` file — commit `557f416`.)
 
-- **Decide a cross-platform strategy for scripting-language runtime version
-  management** (the rbenv/pyenv problem), then reconcile the existing
-  `config/roles/{go,lua,ruby,gem,npm,python,cargo}` roles with it. *(Complexity:
-  High. Status: Selected.)* Seed research:
-  - **Unified option**: `mise` (formerly rtx) — fast Rust tool managing many
-    runtimes (node, python, ruby, lua, go, ...) via asdf-compatible plugins,
-    per-project `mise.toml`/`.tool-versions`, cross-platform. `asdf` is the
-    older, shell-based analog. Leaning toward consolidating on `mise`.
-  - **Python**: already on `uv`, which manages Python versions + tools + venvs
-    and effectively supersedes pyenv/pipx for our use. Keep uv; do not add
-    pyenv. Open question: let uv own Python even if mise owns everything else,
-    or use mise's uv-backed python.
-  - **Node/JS/TS**: candidates `fnm` or `volta` (both Rust, cross-platform,
-    per-project pinning) or just `mise`.
-  - **Lua**: `mise` can manage lua/luajit; `hererocks` installs lua+luarocks
-    into a dir. Note: neovim and wezterm each embed their own LuaJIT and run
-    their config with it, so a managed system lua is only needed for ad-hoc
-    scripting / luarocks, not for those configs to work.
-  - **Ruby**: `mise` (or the existing rbenv-style approach) instead of a
-    dedicated build.
-
 - **Evaluate dotslash for more of this repo's executables (beyond bootstrap).**
   *(Complexity: Medium. Status: Ready.)* We already plan to use dotslash for
-  bootstrapping (see the **Write a bootstrap script** item); investigate where
+  bootstrapping (the now-merged `bootstrap.sh`); investigate where
   else it fits, since it can unify several disparate provisioning strategies
   behind one cross-platform manifest. Current strategies worth reviewing as
   candidates (roles under `config/roles/*/tasks/main.yml` that
@@ -261,20 +233,16 @@ nothing left are deleted — git history keeps them):
 
 ## Repo hygiene & tooling
 
-- **Re-evaluate Vagrant as the test harness (does not work on Apple Silicon).**
-  *(Complexity: Medium. Status: Selected.)* The IaC approach is nice, but the
-  harness relies on the **VirtualBox** provider (`Vagrantfile:10`), which the
-  user has not gotten working on Apple Silicon. Harness pieces: `vagrant.sh`
-  (wrapper keyed on `DOTFILES_PLATFORM`), `Vagrantfile` (virtualbox provider +
-  `vagrant-disksize` plugin), `vagrant-env/archlinux` (box `archlinux/archlinux`)
-  and `vagrant-env/ubuntu` (box `ubuntu/bionic64` — also quite dated), the README
-  "Testing changes" section, plus `config/roles/vagrant` and
-  `setup-ubuntu/roles/vagrant`. Decide whether to keep Vagrant with an
-  Apple-Silicon-friendly provider (qemu/`vagrant-qemu`, UTM) or switch harness
-  entirely (Lima/colima, Tart, containers). Same root cause as the VirtualBox
-  concern in the **Install a backlog of packages** item (VMs failing/hanging on
-  macOS). Note VirtualBox is wired as a Vagrant dependency on Linux
-  (`setup-ubuntu/roles/vagrant/meta/main.yml`).
+- **Delete all remnants of Karabiner.** *(Complexity: Low. Status: Ready.)*
+  Remove the leftover Karabiner-Elements config: the tracked
+  `config/files/karabiner/karabiner.json` (and its `config/files/karabiner/`
+  dir). Nothing links it — there is no `config/roles/karabiner`, no
+  `config.playbook.yml` entry, and no setup cask (a repo-wide grep finds no
+  other `karabiner` references), so it is an orphaned config file; just delete
+  it. Also drop the Karabiner mentions in `docs/plans/dev-hygiene-ci.md` (cited
+  as a JSON/JSONC lint-target example, ~lines 36 and 306). Mirror the earlier
+  iTerm/Alacritty removal (commit `557f416`); also check for stray user-space
+  state (`~/.config/karabiner`).
 
 - **Add dev-hygiene tooling: file validation + GitHub Actions CI.**
   *(Complexity: Medium. Status: Selected.)* Port the patterns from the user's
@@ -288,8 +256,8 @@ nothing left are deleted — git history keeps them):
   for scripts, `stylua`/`luacheck` for lua, `vim-vint` (already installed via
   `config/roles/python`). See docs/plans/dev-hygiene-ci.md. Pairs naturally with
   the **Audit the project** item (CI would enforce whatever conventions that
-  audit settles on), and CI validating a fresh provision connects to the **Write
-  a bootstrap script** item.
+  audit settles on), and CI validating a fresh provision connects to the merged
+  `bootstrap.sh`.
 
 - **Audit the project for anti-patterns and simplification opportunities.**
   *(Complexity: Medium; open-ended. Status: Ready.)* A broad, project-wide
@@ -307,3 +275,29 @@ nothing left are deleted — git history keeps them):
     `config/files/tmux/tmux-theme`.
   - **README drift:** the `README.md` TODO scratchpad is being migrated into
     this queue piecemeal; finish emptying it and trim the file.
+
+## Security
+
+- **Audit and configure quantum-safe (post-quantum) encryption across the tools
+  this repo manages.** *(Complexity: Medium. Status: Ready.)* Goal: protect
+  confidentiality against "harvest-now, decrypt-later" quantum attacks wherever
+  practical. Surfaces, most-actionable first:
+  - **SSH (the clear win).** OpenSSH's PQ protection is in the key *exchange*
+    (session confidentiality), not host-key auth (no standardized PQ signatures
+    yet). Prefer a PQ `KexAlgorithms` in the ssh *client* config —
+    `mlkem768x25519-sha256` (OpenSSH 9.9+/10) and
+    `sntrup761x25519-sha512@openssh.com` (default since 9.0). The repo does
+    **not** manage `~/.ssh/config` today (only
+    `config/roles/ssh-agent-canonicalize`, an agent helper), so this likely
+    needs a new ssh-config role/fragment. Also confirm the OpenSSH version from
+    `setup-*/roles/dev-tools` (+ `setup-ubuntu/roles/ssl`) is new enough for
+    these KEX.
+  - **Symmetric / at-rest** (FileVault, LUKS, AES-256): already
+    quantum-resistant (Grover only halves the effective key length); no action
+    beyond preferring 256-bit.
+  - **GPG / OpenPGP:** no standardized PQ algorithms in GnuPG yet, and the repo
+    manages no gpg config — nothing actionable now; revisit when PQC lands.
+  - **TLS clients** (curl/browsers, e.g. X25519MLKEM768): emerging but
+    library/app-driven, not dotfiles config; note but likely out of scope.
+  Deliverable: a short findings note + the concrete SSH `KexAlgorithms` change,
+  gated on the installed OpenSSH supporting it.
