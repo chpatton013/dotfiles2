@@ -30,6 +30,21 @@ Implementation plans in `docs/plans/` (git history keeps deleted ones):
 
 ## Provisioning & setup
 
+- **Design an auto-bootstrapping executable-distribution system; build two
+  plans (separate repo vs. in this repo).** *(Complexity: High. Status: Ready.)*
+  Consolidate auto-bootstrapping executable runners (dotslash, uv, bun — per the
+  user's `chiiiirrus` repo) plus the file-validator suite + pre-commit hook,
+  behind a manifest and a renderer script that emits each tool's executable from
+  a per-bootstrap-method template. It could also host the helpers for building
+  the wezterm fork and anything else the user wants to build + publish releases
+  for; a consuming repo could just download+extract a release tarball onto PATH.
+  Overlaps `docs/plans/dotslash-executables.md` (the bin/ consolidation) and the
+  dev-hygiene validators/pre-commit. **Deliverable: two plans** — (a) as a
+  **separate repository** this dotfiles repo distributes to the machine (write it
+  so a fresh Claude agent with NO context of this repo/session could build it),
+  and (b) as a **new part of this dotfiles repo**, possibly with a repo reorg.
+  See github.com/chpatton013/chiiiirrus.
+
 - **Add AlmaLinux (and, if feasible, macOS) setup + Vagrant support.**
   *(Complexity: High. Status: Ready for AlmaLinux; macOS guest Blocked — on
   confirming it's even possible.)* Extend the two-phase model to more platforms:
@@ -48,20 +63,6 @@ Implementation plans in `docs/plans/` (git history keeps deleted ones):
     harness direction.
   Touches: a new `setup-almalinux/`, `vagrant-env/`, `vagrant.sh` /
   `Vagrantfile`, and the README "Testing changes" section.
-
-- **Source-build roles don't rebuild when their pinned version changes.**
-  *(Complexity: Medium. Status: Ready.)* The `git`/`neovim`/`tmux`/`wezterm`/`zsh`
-  build tasks are guarded by `creates:` on the installed binary (e.g.
-  `{{xdg_bin_home}}/tmux`, wezterm's `target/release/wezterm-gui` + the app
-  bundle). Once a binary exists, bumping `*_release_version` /
-  `wezterm_fork_version` and re-applying the role is a **no-op** — it keeps the
-  old revision (surfaced during the wezterm `b390263e2` rebuild, which had to
-  have its guard targets removed by hand to actually recompile). Guard on a
-  revision/version marker instead (a stamp file recording the built version, or
-  compare `<bin> --version` to the pin) so a pin change forces a rebuild. This
-  undermines the `/update-source-versions` skill and
-  `docs/plans/source-build-roles.md`, which both assume re-applying the role
-  rebuilds. Touches `config/roles/{git,neovim,tmux,wezterm,zsh}/tasks/main.yml`.
 
 - **Remove the vestigial `pi_node_dir` isolated-node scaffolding.** *(Complexity:
   Low. Status: Deferred by user until later.)* Left over from the rolled-back Pi Agent "Option A"
@@ -208,6 +209,34 @@ Implementation plans in `docs/plans/` (git history keeps deleted ones):
 
 ## Terminal & theming
 
+- **Fix wezterm fullscreen sizing after disconnecting a lid-closed external
+  display.** *(Complexity: Medium. Status: Ready.)* Repro: laptop connected to an
+  external display with the **lid closed**; disconnect the display, open the lid,
+  log back in → fullscreen terminal windows don't fit the screen. Unclear whether
+  they failed to resize at all, or resized before the notch inset kicked in.
+  Another fullscreen/display-change edge case beyond the merged fixes — relates
+  to `docs/plans/wezterm-fullscreen-display-changes.md` and the fork's
+  screen-parameter/notch handling (`wezterm_fork_version`; the
+  `NSApplicationDidChangeScreenParameters` reapply + own-screen inset logic).
+  Needs the hardware repro; likely another fork-side fix.
+
+- **Investigate typed-ahead characters being consumed during shell startup.**
+  *(Complexity: Medium. Status: Ready.)* Regression: because shellrc takes a
+  while before printing PS1, the user types ahead; those characters **used to
+  buffer** and appear once the prompt rendered, but now they are **consumed and
+  lost**. Find what changed / what eats the input during startup (suspect a
+  recently-added fragment reading stdin — e.g. the new `mise` activation/shims
+  `config/files/mise/3-mise.sh`, zsh completion/module init, or a plugin) and
+  whether the buffering behavior can be restored. Pairs with the shellrc-speed
+  item below.
+
+- **Profile and speed up shell startup (shellrc).** *(Complexity: Medium.
+  Status: Ready.)* Interactive startup is slow enough that PS1 is noticeably
+  delayed. Profile zsh/bash startup (`zsh -xv`, `zprof`, per-fragment timing over
+  `~/.config/dotfiles/shellrc/*`) and cut the cost (lazy-load slow bits, cache
+  computed PATH lists, defer completion/module init). Related to the typed-ahead
+  item above (a slow startup widens the type-ahead window).
+
 - **Replace the hand-rolled tmux statusline and shell PS1 with a prettier,
   consistent system.** *(Complexity: Medium. Status: Ready.)* Why: the current
   styling was built to avoid relying on patched fonts, which is no longer a
@@ -232,17 +261,6 @@ Implementation plans in `docs/plans/` (git history keeps deleted ones):
     roles, so a font install would be part of this.
 
 ## Repo hygiene & tooling
-
-- **Delete all remnants of Karabiner.** *(Complexity: Low. Status: Ready.)*
-  Remove the leftover Karabiner-Elements config: the tracked
-  `config/files/karabiner/karabiner.json` (and its `config/files/karabiner/`
-  dir). Nothing links it — there is no `config/roles/karabiner`, no
-  `config.playbook.yml` entry, and no setup cask (a repo-wide grep finds no
-  other `karabiner` references), so it is an orphaned config file; just delete
-  it. Also drop the Karabiner mentions in `docs/plans/dev-hygiene-ci.md` (cited
-  as a JSON/JSONC lint-target example, ~lines 36 and 306). Mirror the earlier
-  iTerm/Alacritty removal (commit `557f416`); also check for stray user-space
-  state (`~/.config/karabiner`).
 
 - **Add dev-hygiene tooling: file validation + GitHub Actions CI.**
   *(Complexity: Medium. Status: Selected.)* Port the patterns from the user's
@@ -278,26 +296,13 @@ Implementation plans in `docs/plans/` (git history keeps deleted ones):
 
 ## Security
 
-- **Audit and configure quantum-safe (post-quantum) encryption across the tools
-  this repo manages.** *(Complexity: Medium. Status: Ready.)* Goal: protect
-  confidentiality against "harvest-now, decrypt-later" quantum attacks wherever
-  practical. Surfaces, most-actionable first:
-  - **SSH (the clear win).** OpenSSH's PQ protection is in the key *exchange*
-    (session confidentiality), not host-key auth (no standardized PQ signatures
-    yet). Prefer a PQ `KexAlgorithms` in the ssh *client* config —
-    `mlkem768x25519-sha256` (OpenSSH 9.9+/10) and
-    `sntrup761x25519-sha512@openssh.com` (default since 9.0). The repo does
-    **not** manage `~/.ssh/config` today (only
-    `config/roles/ssh-agent-canonicalize`, an agent helper), so this likely
-    needs a new ssh-config role/fragment. Also confirm the OpenSSH version from
-    `setup-*/roles/dev-tools` (+ `setup-ubuntu/roles/ssl`) is new enough for
-    these KEX.
-  - **Symmetric / at-rest** (FileVault, LUKS, AES-256): already
-    quantum-resistant (Grover only halves the effective key length); no action
-    beyond preferring 256-bit.
-  - **GPG / OpenPGP:** no standardized PQ algorithms in GnuPG yet, and the repo
-    manages no gpg config — nothing actionable now; revisit when PQC lands.
-  - **TLS clients** (curl/browsers, e.g. X25519MLKEM768): emerging but
-    library/app-driven, not dotfiles config; note but likely out of scope.
-  Deliverable: a short findings note + the concrete SSH `KexAlgorithms` change,
-  gated on the installed OpenSSH supporting it.
+- **Have the dotfiles fully own `~/.ssh/config` (not just Include a fragment).**
+  *(Complexity: Low–Medium. Status: Ready.)* The merged `config/roles/ssh`
+  (commit `c14f2a0`) inserts an `Include` at the top of `~/.ssh/config` because
+  the repo didn't manage that file. The user prefers to own it outright: their
+  host-specific configs are already split under `~/.ssh/config.d`, so the only
+  prerequisite is pulling the `IdentityFile` directives into a separate,
+  **untracked** fragment. Then the role can render/symlink `~/.ssh/config` (PQ
+  KexAlgorithms + `Include ~/.ssh/config.d/*`), the way the git role owns
+  `~/.gitconfig`. Refactor `config/roles/ssh` to that shape.
+
