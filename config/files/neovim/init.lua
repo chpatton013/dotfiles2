@@ -1033,10 +1033,18 @@ which_key.add({
 --------------------------------------------------------------------------------
 
 vim.opt.modeline = true         -- Check files for a modeline to apply config settings
-vim.opt.mouse = ""              -- Disable mouse input
+vim.opt.mouse = "a"             -- Mouse drives nvim visual selection (buffer text, not IBL virtual-text glyphs)
+vim.opt.clipboard = "unnamedplus"  -- yanks (incl. the mouse selection) reach the system clipboard
 vim.opt.joinspaces = false      -- Do not insert two spaces after a '.', '?', and '!'
 vim.opt.textwidth = 80          -- Automatically break lines at whitespace to get this width
 vim.opt.virtualedit = "block"   -- Allow the cursor to move to columns without text
+
+-- Auto-copy a mouse drag-selection to the clipboard on release (mirrors the old
+-- terminal select-to-copy). A plain click never enters visual mode, so this
+-- only fires on a real drag. Part of the IBL-glyphs-in-clipboard fix (mouse=a).
+vim.keymap.set("x", "<LeftRelease>", '"+y', {
+    desc = "Copy mouse selection to the clipboard on release",
+})
 
 -- Whitespace handling
 vim.opt.expandtab = true    -- Use the appropriate number of spaces to insert a <Tab>
