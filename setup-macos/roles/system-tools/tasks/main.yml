@@ -1,7 +1,7 @@
 ---
 
 - name: Install system tool homebrew packages
-  homebrew:
+  community.general.homebrew:
     name:
     - binutils
     - coreutils

@@ -1,13 +1,13 @@
 ---
 
 - name: Update homebrew
-  homebrew:
+  community.general.homebrew:
     update_homebrew: yes
 
 - name: Upgrade all homebrew packages
-  homebrew:
+  community.general.homebrew:
     upgrade_all: yes
 
 - name: Upgrade all homebrew cask packages
-  homebrew_cask:
+  community.general.homebrew_cask:
     upgrade_all: yes

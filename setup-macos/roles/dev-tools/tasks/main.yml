@@ -1,14 +1,14 @@
 ---
 
 - name: Tap homebrew repositories
-  homebrew_tap:
+  community.general.homebrew_tap:
     name: "{{item}}"
     state: present
   with_items:
   - hashicorp/tap
 
 - name: Install dev tool homebrew packages
-  homebrew:
+  community.general.homebrew:
     name:
     - clang-format
     - cmake
@@ -61,7 +61,7 @@
   - unzip
 
 - name: Install dev tool homebrew cask packages
-  homebrew_cask:
+  community.general.homebrew_cask:
     name:
     - font-symbols-only-nerd-font
     - macfuse
@@ -71,6 +71,6 @@
     sudo_password: ansible_facts["become_pass"]
 
 - name: Start dev tool homebrew services
-  homebrew_services:
+  community.general.homebrew_services:
     name: ollama
     state: present

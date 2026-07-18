@@ -1,14 +1,14 @@
 ---
 
 - name: Install user tool homebrew packages
-  homebrew:
+  community.general.homebrew:
     name:
     - docker-compose
     - tree
     - w3m
 
 - name: Install user tool homebrew cask packages
-  homebrew_cask:
+  community.general.homebrew_cask:
     name:
     - alfred
     - caffeine
