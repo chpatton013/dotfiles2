@@ -1,0 +1,65 @@
+#!/usr/bin/env dotslash
+
+// DotSlash manifest for `git`.
+//
+// The goal (see docs/plans/bootstrap-script.md) is that curl/wget is the only
+// hard bootstrap dependency and every other tool -- including git, used to clone
+// this repo -- comes through dotslash. bootstrap.sh's ensure_git prefers this
+// manifest; until it is populated it falls back to a system git, then to an
+// OS-native install, so a bare box still works today.
+//
+// NOTE: unlike uv, git is not published as a clean single prebuilt binary for
+// every platform, so populating this needs a chosen source per platform, e.g.:
+//   - macOS: a relocatable git (Homebrew bottle contents, or git-scm builds).
+//   - Linux: a static git build (e.g. the git-static / portable-git releases).
+// Fill "url" + "size" + "digest" from a source you trust; the presence of real
+// values (no REPLACE_ME/REPLACE_VERSION markers) flips this from scaffold to
+// populated. Keep "path" pointing at the git binary inside each archive.
+//
+// Reference: https://dotslash-cli.com/docs/
+
+{
+  "name": "git",
+  "platforms": {
+    "macos-aarch64": {
+      "size": 0,
+      "hash": "blake3",
+      "digest": "REPLACE_ME",
+      "format": "tar.gz",
+      "path": "REPLACE_VERSION/bin/git",
+      "providers": [
+        { "url": "REPLACE_VERSION" }
+      ]
+    },
+    "macos-x86_64": {
+      "size": 0,
+      "hash": "blake3",
+      "digest": "REPLACE_ME",
+      "format": "tar.gz",
+      "path": "REPLACE_VERSION/bin/git",
+      "providers": [
+        { "url": "REPLACE_VERSION" }
+      ]
+    },
+    "linux-aarch64": {
+      "size": 0,
+      "hash": "blake3",
+      "digest": "REPLACE_ME",
+      "format": "tar.gz",
+      "path": "REPLACE_VERSION/bin/git",
+      "providers": [
+        { "url": "REPLACE_VERSION" }
+      ]
+    },
+    "linux-x86_64": {
+      "size": 0,
+      "hash": "blake3",
+      "digest": "REPLACE_ME",
+      "format": "tar.gz",
+      "path": "REPLACE_VERSION/bin/git",
+      "providers": [
+        { "url": "REPLACE_VERSION" }
+      ]
+    }
+  }
+}

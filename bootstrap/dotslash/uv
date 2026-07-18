@@ -1,0 +1,66 @@
+#!/usr/bin/env dotslash
+
+// DotSlash manifest for `uv` (the astral.sh Python package/runtime manager).
+//
+// bootstrap.sh pins uv through this manifest so a provision fetches a known,
+// hash-verified prebuilt binary for the current platform. Until the fields
+// below are filled with real values (see instructions), bootstrap.sh treats
+// this file as an unpopulated scaffold and falls back to uv's official
+// installer -- so the bootstrap still works today.
+//
+// To populate (on a trusted machine, from a source you trust):
+//   1. Pick a uv version and find its GitHub release assets:
+//        https://github.com/astral-sh/uv/releases
+//   2. For each platform below, set "url" to the asset, and fill "size" +
+//      "hash"/"digest" from the published checksums (or dotslash's own
+//      `dotslash create` tooling). The presence of a size + hash is what
+//      flips this manifest from "scaffold" to "populated".
+//   3. Keep the "path" matching the binary inside each archive.
+//
+// Reference: https://dotslash-cli.com/docs/
+
+{
+  "name": "uv",
+  "platforms": {
+    "macos-aarch64": {
+      "size": 0,
+      "hash": "blake3",
+      "digest": "REPLACE_ME",
+      "format": "tar.gz",
+      "path": "uv-aarch64-apple-darwin/uv",
+      "providers": [
+        { "url": "https://github.com/astral-sh/uv/releases/download/REPLACE_VERSION/uv-aarch64-apple-darwin.tar.gz" }
+      ]
+    },
+    "macos-x86_64": {
+      "size": 0,
+      "hash": "blake3",
+      "digest": "REPLACE_ME",
+      "format": "tar.gz",
+      "path": "uv-x86_64-apple-darwin/uv",
+      "providers": [
+        { "url": "https://github.com/astral-sh/uv/releases/download/REPLACE_VERSION/uv-x86_64-apple-darwin.tar.gz" }
+      ]
+    },
+    "linux-aarch64": {
+      "size": 0,
+      "hash": "blake3",
+      "digest": "REPLACE_ME",
+      "format": "tar.gz",
+      "path": "uv-aarch64-unknown-linux-gnu/uv",
+      "providers": [
+        { "url": "https://github.com/astral-sh/uv/releases/download/REPLACE_VERSION/uv-aarch64-unknown-linux-gnu.tar.gz" }
+      ]
+    },
+    "linux-x86_64": {
+      "size": 0,
+      "hash": "blake3",
+      "digest": "REPLACE_ME",
+      "format": "tar.gz",
+      "path": "uv-x86_64-unknown-linux-gnu/uv",
+      "providers": [
+        { "url": "https://github.com/astral-sh/uv/releases/download/REPLACE_VERSION/uv-x86_64-unknown-linux-gnu.tar.gz" }
+      ]
+    }
+  }
+}

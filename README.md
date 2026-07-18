@@ -26,6 +26,21 @@ the effect immediately.
 
 ## Usage
 
+The fastest path on a bare machine is the bootstrap script, which acquires the
+minimal tools (git + uv-backed ansible), clones this repo, shims the Homebrew
+bin dir onto `PATH` (macOS), then runs the right platform setup and the config:
+
+```
+curl -fsSL https://raw.githubusercontent.com/chpatton013/dotfiles2/main/bootstrap.sh | bash
+```
+
+It is idempotent, so re-running is safe. `./bootstrap.sh --help` documents the
+options (`--ssh`, `--dry-run`, `--setup-only`/`--config-only`, and `--` to
+forward args to the underlying scripts). See `docs/plans/bootstrap-script.md`
+for the design.
+
+Or do it by hand:
+
 1. Find the `setup-*` directory for your platform and run the contained
    `setup.sh` script. This will install all dependencies for the setup tools and
    then apply the platform-specific setup playbook.
