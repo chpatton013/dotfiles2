@@ -7,8 +7,13 @@ setopt AUTO_PUSHD
 # Enable auto-correction for unrecognized commands.
 setopt CORRECT
 
-# Use Bash- and Ksh-style array indices (0-based).
-setopt KSH_ARRAYS
+# NOTE: do NOT `setopt KSH_ARRAYS` here. It is globally incompatible with zsh's
+# completion system: with KSH_ARRAYS a bare `$fpath` expands to only its first
+# element, so the completer's internal `fpath=($fpath ...)` reassignments
+# collapse fpath to a single entry and drop the (source-built) zsh's real
+# function dir. The result is Tab producing
+#   _main_complete: function definition file not found
+# Keep arrays at zsh's native 1-based semantics so completion works.
 
 # Allow piping to multiple outputs.
 setopt MULTIOS
