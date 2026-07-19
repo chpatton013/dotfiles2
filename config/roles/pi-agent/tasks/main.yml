@@ -30,8 +30,11 @@
 
 # AGENTS.md is Pi's global project-instructions file (read from ~/.pi/agent/);
 # the skills/ directory holds on-demand SKILL.md procedures (read from
-# ~/.pi/agent/skills/). Both encode the "engineering practices" discipline —
-# see docs/plans/improving-pi-agent-engineering-practices.md.
+# ~/.pi/agent/skills/). PER_RUN.md / PER_TURN.md are read by the pi-per extension
+# and re-injected at the end of context (per user request / every turn) to steer
+# a low-param model toward loading those skills at the right time. All encode the
+# "engineering practices" discipline — see
+# docs/plans/improving-pi-agent-engineering-practices.md.
 - name: Link Pi Agent config files (XDG)
   file:
     src: "{{dotfiles_src_dir}}/pi-agent/{{item}}"
@@ -42,6 +45,8 @@
   with_items:
   - AGENTS.md
   - models.json
+  - PER_RUN.md
+  - PER_TURN.md
   - settings.json
   - skills
 
@@ -55,6 +60,8 @@
   with_items:
   - AGENTS.md
   - models.json
+  - PER_RUN.md
+  - PER_TURN.md
   - settings.json
   - skills
 
