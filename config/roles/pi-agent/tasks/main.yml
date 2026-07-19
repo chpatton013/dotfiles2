@@ -28,6 +28,10 @@
     dest: "{{shellrc_config_dir}}/0-pi-agent.sh"
     mode: 0400
 
+# AGENTS.md is Pi's global project-instructions file (read from ~/.pi/agent/);
+# the skills/ directory holds on-demand SKILL.md procedures (read from
+# ~/.pi/agent/skills/). Both encode the "engineering practices" discipline —
+# see docs/plans/improving-pi-agent-engineering-practices.md.
 - name: Link Pi Agent config files (XDG)
   file:
     src: "{{dotfiles_src_dir}}/pi-agent/{{item}}"
@@ -36,8 +40,10 @@
     follow: no
     force: yes
   with_items:
-  - settings.json
+  - AGENTS.md
   - models.json
+  - settings.json
+  - skills
 
 - name: Link Pi Agent config files (~/.pi/agent/)
   file:
@@ -47,8 +53,10 @@
     follow: no
     force: yes
   with_items:
-  - settings.json
+  - AGENTS.md
   - models.json
+  - settings.json
+  - skills
 
 - name: Link Pi Node Shell RC file
   file:
