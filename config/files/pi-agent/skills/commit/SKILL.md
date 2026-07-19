@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Use when creating a git commit. Covers how to stage, split work into logical commits, write a lowercase "area: summary" message, respect the machine's layered git identity, and avoid committing secrets. Load it before running git commit.
+description: "Use when creating a git commit. Covers how to stage, split work into logical commits, write a lowercase \"area: summary\" message, respect the machine's layered git identity, and avoid committing secrets. Load it before running git commit."
 ---
 
 # Make a good commit
