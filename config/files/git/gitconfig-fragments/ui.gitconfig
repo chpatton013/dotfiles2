@@ -12,14 +12,18 @@
   conflictstyle = diff3
 
 [core]
-  pager = delta
+  pager = git-delta-themed
 
 [interactive]
-  diffFilter = delta --color-only
+  diffFilter = git-delta-themed --color-only
 
-# Light/dark is not hardcoded here. The color-theme shell fragment exports
-# DELTA_FEATURES="theme-$COLOR_THEME_NAME", selecting one of the theme features
-# below so delta tracks the terminal's appearance dynamically.
+# Light/dark is not hardcoded here. git-delta-themed re-reads the color-theme
+# state file on EVERY invocation (rather than relying on the shell's exported
+# DELTA_FEATURES, which is only fresh in the shell that set it) and exports
+# DELTA_FEATURES="theme-<name>" before exec-ing the real delta, selecting one of
+# the theme features below. This keeps delta correct even when it's launched
+# from nvim, lazygit, or any other process started before the last light/dark
+# switch.
 [delta]
   line-numbers = true
   side-by-side = false

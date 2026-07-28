@@ -37,6 +37,18 @@ local function scheme_for_appearance(appearance)
     end
 end
 
+local function color_theme_name_for_appearance(appearance)
+    if appearance:find("Dark") then
+        return "dark"
+    else
+        return "light"
+    end
+end
+
+-- Absolute path: wezterm's own process env doesn't source shellrc, so
+-- ~/.local/bin isn't guaranteed to be on PATH here the way it is in a shell.
+local color_theme_set_bin = wezterm.home_dir .. "/.local/bin/color-theme-set"
+
 -- Initial value only. This is resolved once at config-eval time, and the GUI's
 -- get_appearance() can be stale/wrong at that moment (a new window would then
 -- come up in the wrong scheme until an appearance toggle forced a reload). The
@@ -49,12 +61,24 @@ config.color_scheme = scheme_for_appearance(get_appearance())
 -- Fires on window creation and on every config reload (including the reload
 -- macOS triggers when system appearance changes), so each window always picks
 -- the correct light/dark scheme at creation instead of inheriting a stale one.
+--
+-- Also publishes a live appearance change to the color-theme state file
+-- (~/.local/state/color-theme/name, via color-theme-set) so everything else
+-- that reads it -- the shell prompt, delta (via git-delta-themed), and nvim's
+-- FocusGained re-detect -- picks up the switch even outside tmux. Inside tmux,
+-- its own mode-2031 client-*-theme hooks already do this; gated on an actual
+-- scheme change so a config reload for an unrelated reason doesn't re-publish.
 wezterm.on("window-config-reloaded", function(window, _pane)
     local overrides = window:get_config_overrides() or {}
-    local scheme = scheme_for_appearance(window:get_appearance())
+    local appearance = window:get_appearance()
+    local scheme = scheme_for_appearance(appearance)
     if overrides.color_scheme ~= scheme then
         overrides.color_scheme = scheme
         window:set_config_overrides(overrides)
+        wezterm.background_child_process({
+            color_theme_set_bin,
+            color_theme_name_for_appearance(appearance),
+        })
     end
 end)
 

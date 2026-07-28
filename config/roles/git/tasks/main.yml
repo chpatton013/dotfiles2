@@ -82,6 +82,7 @@
     follow: no
     force: yes
   with_items:
+  - git-delta-themed
   - git-push-retry
   - repobin
 

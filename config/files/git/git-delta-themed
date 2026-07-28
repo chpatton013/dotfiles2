@@ -1,0 +1,17 @@
+#!/bin/bash --norc
+set -euo pipefail
+
+# Wraps `delta` so its light/dark theme is resolved FRESH on every invocation
+# from the color-theme state file, rather than inherited from the shell env
+# (DELTA_FEATURES) that started this process. The shell's DELTA_FEATURES is
+# only correct in the interactive shell that set it -- it goes stale for delta
+# invoked from nvim, lazygit, or any other long-lived parent process that was
+# started before the last light/dark switch. Reading the state file directly
+# means every invocation, from anywhere, reflects the current theme.
+name="dark"
+if command -v color-theme >/dev/null 2>&1; then
+  name="$(command color-theme name 2>/dev/null || echo dark)"
+fi
+
+export DELTA_FEATURES="theme-${name}"
+exec delta "$@"

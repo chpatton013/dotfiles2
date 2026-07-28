@@ -793,6 +793,31 @@ vim.keymap.set("n", "<leader>tx", ToggleFoldEnable, { noremap = true })
 -- Color theme
 --------------------------------------------------------------------------------
 
+-- Light/dark source of truth: the color-theme state file, the same one the
+-- shell prompt, tmux statusline, and git-delta-themed all read. Reading it
+-- directly (rather than trusting nvim's own OSC 11 startup query) avoids
+-- disagreeing with the rest of the system if that query races or is slow
+-- under a multiplexer, and -- unlike the OSC 11 query -- gives us something we
+-- can cheaply re-read later to pick up a LIVE switch.
+local function read_color_theme_state()
+    local state_home = os.getenv("XDG_STATE_HOME") or (os.getenv("HOME") .. "/.local/state")
+    local ok, f = pcall(io.open, state_home .. "/color-theme/name", "r")
+    if not ok or not f then
+        return nil
+    end
+    local name = f:read("l")
+    f:close()
+    if name == "dark" or name == "light" then
+        return name
+    end
+    return nil
+end
+
+local initial_theme = read_color_theme_state()
+if initial_theme then
+    vim.opt.background = initial_theme
+end
+
 -- Fall back to a readable built-in colorscheme if solarized failed to install
 -- (partial bootstrap) so text stays legible instead of unreadable. habamax is
 -- a truecolor-friendly builtin; default is the last-resort fallback.
@@ -801,6 +826,25 @@ if not pcall(vim.cmd.colorscheme, "solarized") then
         pcall(vim.cmd.colorscheme, "default")
     end
 end
+vim.opt.winborder = "rounded"
+
+-- Re-read the state file when nvim regains focus (tmux's focus-events + the
+-- vim-tmux-focus-events plugin forward terminal focus in/out through tmux) so
+-- a light/dark switch that happened while nvim was unfocused is picked up
+-- without a manual `:set background=`. Re-running :colorscheme (not just
+-- flipping the option) forces a full repaint, which is also what re-fires the
+-- IBL HIGHLIGHT_SETUP hook below to recompute its palette-derived groups.
+vim.api.nvim_create_augroup("dotfiles_color_theme_sync", { clear = true })
+vim.api.nvim_create_autocmd("FocusGained", {
+    group = "dotfiles_color_theme_sync",
+    callback = function()
+        local theme = read_color_theme_state()
+        if theme and theme ~= vim.o.background and vim.g.colors_name then
+            vim.opt.background = theme
+            pcall(vim.cmd.colorscheme, vim.g.colors_name)
+        end
+    end,
+})
 
 local solarized_utils = safe_require("solarized.utils")
 
