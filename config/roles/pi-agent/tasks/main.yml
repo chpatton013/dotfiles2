@@ -28,14 +28,35 @@
     dest: "{{shellrc_config_dir}}/0-pi-agent.sh"
     mode: 0400
 
-# AGENTS.md is Pi's global project-instructions file (read from ~/.pi/agent/);
-# the skills/ directory holds on-demand SKILL.md procedures (read from
-# ~/.pi/agent/skills/). PER_RUN.md / PER_TURN.md are read by the pi-per extension
-# and re-injected at the end of context (per user request / every turn) to steer
-# a low-param model toward loading those skills at the right time. All encode the
-# "engineering practices" discipline — see
-# docs/plans/improving-pi-agent-engineering-practices.md.
-- name: Link Pi Agent config files (XDG)
+# AGENTS.md and skills/ are shared across coding harnesses (see
+# docs/plans/cross-harness-ai-tooling.md) and live in config/files/agent-craft/,
+# not here — the claude-code role links the same source. PER_RUN.md / PER_TURN.md
+# are read by the pi-per extension and re-injected at the end of context (per
+# user request / every turn) to steer a low-param model toward loading those
+# skills at the right time; these stay Pi-specific since pi-per is Pi-only.
+- name: Link shared AI-tooling config files (XDG)
+  file:
+    src: "{{dotfiles_src_dir}}/agent-craft/{{item}}"
+    dest: "{{pi_config_dir}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - AGENTS.md
+  - skills
+
+- name: Link shared AI-tooling config files (~/.pi/agent/)
+  file:
+    src: "{{dotfiles_src_dir}}/agent-craft/{{item}}"
+    dest: "{{'~/.pi/agent' | expanduser}}/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  with_items:
+  - AGENTS.md
+  - skills
+
+- name: Link Pi-specific config files (XDG)
   file:
     src: "{{dotfiles_src_dir}}/pi-agent/{{item}}"
     dest: "{{pi_config_dir}}/{{item}}"
@@ -43,14 +64,12 @@
     follow: no
     force: yes
   with_items:
-  - AGENTS.md
   - models.json
   - PER_RUN.md
   - PER_TURN.md
   - settings.json
-  - skills
 
-- name: Link Pi Agent config files (~/.pi/agent/)
+- name: Link Pi-specific config files (~/.pi/agent/)
   file:
     src: "{{dotfiles_src_dir}}/pi-agent/{{item}}"
     dest: "{{'~/.pi/agent' | expanduser}}/{{item}}"
@@ -58,12 +77,10 @@
     follow: no
     force: yes
   with_items:
-  - AGENTS.md
   - models.json
   - PER_RUN.md
   - PER_TURN.md
   - settings.json
-  - skills
 
 - name: Link Pi Node Shell RC file
   file:

@@ -9,3 +9,28 @@
   shell:
     cmd: curl -fsSL https://claude.ai/install.sh | bash
     creates: "{{xdg_bin_home}}/claude"
+
+- name: Create Claude Code config directory
+  file:
+    dest: "{{claude_config_dir}}"
+    state: directory
+    mode: 0700
+
+# CLAUDE.md and skills/ are shared across coding harnesses (see
+# docs/plans/cross-harness-ai-tooling.md) and live in config/files/agent-craft/,
+# the same source the pi-agent role links. agents/ (Claude Code subagents) is
+# NOT shared with Pi here: its tools/model frontmatter uses a vocabulary
+# incompatible with pi-subagents' (different tool names, different field
+# casing — confirmed by inspecting both formats), so a shared agents/ directory
+# would silently misbehave on the Pi side. Claude-only for now.
+- name: Link shared AI-tooling config files
+  file:
+    src: "{{dotfiles_src_dir}}/agent-craft/{{item.src}}"
+    dest: "{{claude_config_dir}}/{{item.dest}}"
+    state: link
+    follow: no
+    force: yes
+  loop:
+  - {src: AGENTS.md, dest: CLAUDE.md}
+  - {src: skills, dest: skills}
+  - {src: agents, dest: agents}

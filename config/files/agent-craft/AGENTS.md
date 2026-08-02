@@ -1,4 +1,4 @@
-# Engineering practices (global Pi Agent instructions)
+# Engineering practices (global instructions)
 
 These are my baseline working habits. They apply in every project unless that
 project ships its own `AGENTS.md` that says otherwise (a project-level file wins
@@ -53,6 +53,29 @@ Load the `commit` skill before you commit.
 Load the `software-design` skill when making a nontrivial design/architecture
 or refactoring decision, and the `execute-plan` skill when working through a
 multi-step plan or feature.
+
+### Comments & documentation
+
+Apply these whenever you write or edit comments, docstrings, or documentation.
+You still change code freely; these shape only how you write *about* it.
+
+- **Timeless.** The artifact keeps no memory of its own history or this
+  conversation. Drop "was X, now Y", "used to", "as requested", "for now",
+  session dates, and change narration. State the current fact. History goes in
+  the commit message, not the code.
+- **Why, not what.** Comment the non-obvious reason: a constraint, a gotcha, a
+  tradeoff, an issue link. Do not restate what the code already shows.
+- **Prefer a name over a comment.** If a comment explains what something is,
+  rename it. Keep the comment only when the reason cannot live in the code.
+- **Plain, active, one name per thing.** Active voice with a named actor. Short
+  sentences. No marketing adjectives (seamless, robust, cutting-edge). Match the
+  file's existing comment density.
+- **Docs lead with the point** and keep status and plans out of the artifact
+  (those go in a commit or an issue). Link canonical sources instead of copying
+  facts that will drift.
+
+Full playbook: the `documentarian` skill. Style detail: `ste-writing`. Prose
+de-slopping: `humanizer`.
 
 ## Follow-up management
 
