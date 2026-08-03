@@ -34,6 +34,10 @@
 # are read by the pi-per extension and re-injected at the end of context (per
 # user request / every turn) to steer a low-param model toward loading those
 # skills at the right time; these stay Pi-specific since pi-per is Pi-only.
+# agents/ (pi-subagents custom agent types) also stays Pi-specific: its
+# frontmatter vocabulary (tools/model/isolation fields) is incompatible with
+# Claude Code's own subagent format, the same reason agent-craft/agents/ is
+# claude-code-only rather than shared.
 - name: Link shared AI-tooling config files (XDG)
   file:
     src: "{{dotfiles_src_dir}}/agent-craft/{{item}}"
@@ -64,6 +68,7 @@
     follow: no
     force: yes
   with_items:
+  - agents
   - models.json
   - PER_RUN.md
   - PER_TURN.md
@@ -77,6 +82,7 @@
     follow: no
     force: yes
   with_items:
+  - agents
   - models.json
   - PER_RUN.md
   - PER_TURN.md
