@@ -749,6 +749,15 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- Toggle various invertible settings on/off
 --------------------------------------------------------------------------------
 
+-- Toggle mouse enabled / disabled.
+local function ToggleMouse()
+    if vim.opt.mouse:get() then
+        vim.opt.mouse = ""
+    else
+        vim.opt.mouse = "a"
+    end
+end
+
 -- Toggle line numbers and relative line numbers consistently.
 vim.b.persist_relativenumber = vim.opt.relativenumber:get()
 -- Hide number and relativenumber together, but only show relativenumber if
@@ -785,6 +794,7 @@ end
 vim.keymap.set("n", "<leader>tC", ":ToggleNeoColumn<CR>", { noremap = true })
 vim.keymap.set("n", "<leader>tR", ":set cursorline!<CR>", { noremap = true })
 vim.keymap.set("n", "<leader>th", ":set hlsearch!<CR>", { noremap = true })
+vim.keymap.set("n", "<leader>tm", ToggleMouse, { noremap = true })
 vim.keymap.set("n", "<leader>tn", ToggleLineNumbers, { noremap = true })
 vim.keymap.set("n", "<leader>tr", ToggleRelativeLineNumbers, { noremap = true })
 vim.keymap.set("n", "<leader>tw", ":set wrap!<CR>", { noremap = true })
