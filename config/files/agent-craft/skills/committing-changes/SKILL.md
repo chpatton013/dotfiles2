@@ -1,6 +1,6 @@
 ---
-name: commit
-description: "Use when creating a git commit. Covers how to stage, split work into logical commits, write a lowercase \"area: summary\" message, respect the machine's layered git identity, and avoid committing secrets. Load it before running git commit."
+name: committing-changes
+description: Use when creating a git commit. Load it before running git commit.
 ---
 
 # Make a good commit
@@ -39,3 +39,6 @@ description: "Use when creating a git commit. Covers how to stage, split work in
   `master`) and about to make nontrivial changes, create a branch first.
 - Do not `git push`, force-push, amend already-pushed commits, or open a PR
   unless I explicitly ask.
+- Committing a change is not the same as finishing a branch — once every task
+  on a feature branch is committed and verified, see `finish-branch` for the
+  merge/PR/keep decision.

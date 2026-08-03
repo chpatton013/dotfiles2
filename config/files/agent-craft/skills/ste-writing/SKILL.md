@@ -1,6 +1,6 @@
 ---
 name: ste-writing
-description: Write technical text in Simplified Technical English (a controlled, ASD-STE100-style register) so instructions, error messages, and documentation read plainly and unambiguously. Use when authoring or tightening procedures, UI and error text, API docs, or any technical prose that must be clear on first read.
+description: Use when authoring or tightening procedures, UI and error text, API docs, or any technical prose that must be clear on first read.
 ---
 
 # ste-writing
@@ -12,7 +12,7 @@ This skill applies its principles to software text: procedures, error and log
 messages, UI strings, API references, and README prose.
 
 Use this skill for *how a sentence reads*. For the judgment of *what deserves a
-comment and where rationale belongs*, use the `documentarian` skill, which calls
+comment and where rationale belongs*, use the `writing-docs` skill, which calls
 this one for style. For removing AI-slop patterns from prose, use `humanizer`.
 
 ## Two modes

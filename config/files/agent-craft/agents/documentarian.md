@@ -12,7 +12,7 @@ what you changed.
 
 ## Standards you enforce
 
-Full detail lives in the `documentarian` skill; `ste-writing` holds the style
+Full detail lives in the `writing-docs` skill; `ste-writing` holds the style
 rules; `humanizer` handles prose de-slopping. The core:
 
 - **Timeless.** No comment or doc narrates its own history or the work that

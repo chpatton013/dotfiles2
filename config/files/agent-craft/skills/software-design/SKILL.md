@@ -1,6 +1,6 @@
 ---
 name: software-design
-description: Load when making a nontrivial design or architecture decision, writing a new module/interface, or refactoring — for intuition on how to keep code simple, decoupled, and maintainable. Distills SOLID, DRY, KISS, YAGNI, the Law of Demeter, least astonishment, the Unix philosophy, fail-fast/robustness, and the realities of long-lived systems (Conway's / Lehman's laws, big ball of mud).
+description: Load when making a nontrivial design or architecture decision, writing a new module/interface, or refactoring.
 ---
 
 # Software design intuition
@@ -92,7 +92,7 @@ Design decisions age. These describe the forces you're actually fighting:
   over with a working simple system and grow it. Practical takeaway: don't
   build the grand design up front; get the smallest end-to-end thing working,
   then evolve it. (This is the design-level root of the incremental theme; the
-  `execute-plan` skill turns it into a working loop.)
+  `writing-code` skill turns it into a working loop.)
 - **Big ball of mud.** The most common architecture is *no* architecture —
   structure erodes one expedient shortcut at a time. Resist it by keeping
   boundaries explicit, deleting dead code, and paying down complexity as you go

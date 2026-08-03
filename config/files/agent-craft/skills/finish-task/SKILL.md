@@ -1,14 +1,19 @@
 ---
 name: finish-task
-description: Use before declaring a coding task complete. A definition-of-done checklist that verifies the change (build/typecheck/tests), updates documentation, self-reviews the diff, records follow-ups, and offers to commit. Load it whenever you are about to say a task is done, ready, or finished.
+description: Use before declaring a coding task complete — whenever you are about to say a task is done, ready, or finished.
 ---
 
 # Finish a task properly
 
 Run this before you tell me a task is complete. Skipping a step is fine only if
-you say which and why.
+you say which and why. This is for "this task is verified" — for "the whole
+branch is done, now what happens to it," see `finish-branch` instead.
 
 ## 1. Verify it actually works
+
+**Evidence before claims.** "Done" is a statement about what you observed, not
+what you expect. If you haven't run it, you don't know it works — say that,
+don't imply otherwise.
 
 - Identify how this project builds and tests (look for `Makefile`, `justfile`,
   `package.json` scripts, `pyproject.toml`, `cargo`, `go test`, CI config, or a
@@ -19,6 +24,12 @@ you say which and why.
   endpoint, call the function) and report what you observed.
 - If you genuinely cannot verify it, say so plainly. Never imply tests passed
   when you did not run them.
+- Ban these phrases unless you have the evidence to back them at the moment
+  you write them: "should work now," "this probably passes," "I'm confident
+  this fixes it." Each one is a claim standing in for a test you didn't run —
+  run the test, then state the result instead.
+- For anything nontrivial, verification includes review, not just your own
+  read of the diff — see `code-review` for dispatching one.
 
 ## 2. Update documentation
 
@@ -41,8 +52,8 @@ you say which and why.
 
 ## 5. Offer to commit
 
-- If the change is coherent and verified, load the `commit` skill and propose a
-  commit (don't push or open a PR unless asked).
+- If the change is coherent and verified, load the `committing-changes` skill
+  and propose a commit (don't push or open a PR unless asked).
 
 ## 6. Report
 

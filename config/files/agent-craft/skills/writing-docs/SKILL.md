@@ -1,6 +1,6 @@
 ---
-name: documentarian
-description: Write and review code comments, docstrings, READMEs, and technical docs so they read as timeless, explain why over what, and follow Simplified Technical English. Use when authoring or cleaning up comments and documentation, or reviewing a diff for comment and doc quality.
+name: writing-docs
+description: Use when authoring or cleaning up comments and documentation, or reviewing a diff for comment and doc quality.
 ---
 
 # Documentarian
