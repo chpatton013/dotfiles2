@@ -18,11 +18,7 @@
 
 # CLAUDE.md and skills/ are shared across coding harnesses (see
 # docs/plans/cross-harness-ai-tooling.md) and live in config/files/agent-craft/,
-# the same source the pi-agent role links. agents/ (Claude Code subagents) is
-# NOT shared with Pi here: its tools/model frontmatter uses a vocabulary
-# incompatible with pi-subagents' (different tool names, different field
-# casing — confirmed by inspecting both formats), so a shared agents/ directory
-# would silently misbehave on the Pi side. Claude-only for now.
+# the same source the pi-agent role links.
 - name: Link shared AI-tooling config files
   file:
     src: "{{dotfiles_src_dir}}/agent-craft/{{item.src}}"
@@ -33,4 +29,3 @@
   loop:
   - {src: AGENTS.md, dest: CLAUDE.md}
   - {src: skills, dest: skills}
-  - {src: agents, dest: agents}

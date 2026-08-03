@@ -3,7 +3,7 @@ name: writing-docs
 description: Use when authoring or cleaning up comments and documentation, or reviewing a diff for comment and doc quality.
 ---
 
-# Documentarian
+# Writing docs
 
 Standards for code comments and technical documentation. The goal: a reader who
 has never seen the change history or the conversation that produced the code
