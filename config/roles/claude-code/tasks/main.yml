@@ -28,4 +28,5 @@
     force: yes
   loop:
   - {src: AGENTS.md, dest: CLAUDE.md}
+  - {src: commands, dest: commands}
   - {src: skills, dest: skills}

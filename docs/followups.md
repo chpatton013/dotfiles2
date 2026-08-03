@@ -22,7 +22,11 @@ Implementation plans in `docs/plans/` (git history keeps deleted ones — plans 
 removed once their work merges):
 
 - **Open:** `dev-hygiene-ci.md` (lint + CI — held on a branch pending review);
-  `improving-pi-agent-engineering-practices.md` (Pi Agent LLM practices).
+  `improving-pi-agent-engineering-practices.md` (Pi Agent LLM practices);
+  `cross-harness-ai-tooling.md` (Tier 1–2 — AGENTS.md + skills + commands, all
+  confirmed portable and merged);
+  `superpowers-skill-comparison.md` + `superpowers-migration.md` (vendor
+  superpowers' gap-filling skills into agent-craft — plan ready, not started).
 
 The provisioning + terminal work merged this session (bootstrap, runtime
 management, source builds, vagrant harness, color-theme propagation, wezterm

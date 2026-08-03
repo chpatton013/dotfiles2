@@ -97,9 +97,13 @@ harnesses fall back to permissive defaults (inherit tools, inherit model) when
 those fields are absent. Anything needing tool restrictions or a pinned model
 must be hand-authored per harness, not shared.
 
-Slash commands (Claude Code's `commands/`) and Pi's prompt-templates mechanism
-remain genuinely unverified — investigate before assuming portability, same
-caution as agents before this check.
+**Tier 2 also covers commands.** Slash commands (Claude Code's `commands/`)
+and Pi's prompt-template mechanism (`--prompt-template`, project-local
+`.pi/commands/`) turned out to be the same file-format concept: a personal
+project template (`~/projects/toolshed-tmpl`) symlinks `.claude/commands` and
+`.pi/commands` to the identical `.agents/commands/` directory and both
+harnesses load it correctly. Confirmed compatible the same way skills were —
+whole-directory-symlinkable, no per-harness translation needed.
 
 ## Proposed layout in this repo
 
@@ -167,10 +171,6 @@ Add `- {role: claude-code, tags: [claude-code]}` to `config.playbook.yml`
 
 ## Open questions (need your input or a quick investigation before building)
 
-- **Commands / prompt templates** — Claude Code's `commands/` slash-commands
-  vs. Pi's `prompt-templates.md` mechanism: shape unconfirmed. Decide whether
-  this is worth reuse-engineering now or left for later (lower value than
-  Tiers 1–2 since neither harness has many built yet).
 - **`AGENTS.md` global vs. project-level per other harness** — the standard
   guarantees *project-root* `AGENTS.md` discovery broadly; a **global**
   (home-directory) `AGENTS.md` outside a project is confirmed for Claude Code
