@@ -9,6 +9,8 @@ lazy-lock.json
 # Vagrant cache directory
 .vagrant
 .vagrant-*
+# Claude Code / pi-subagents isolation:worktree working checkouts
+.agents/worktrees/
 # Vagrant log files
 *-console.log
 # Mac Finder files
