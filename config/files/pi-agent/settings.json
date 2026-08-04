@@ -1,8 +1,8 @@
 {
   "lastChangelogVersion": "0.80.2",
-  "theme": "dark",
+  "theme": "light",
   "defaultProvider": "vLLM",
-  "defaultModel": "AxionML/Qwen3.5-122B-A10B-NVFP4",
+  "defaultModel": "glm47-flash",
   "defaultProjectTrust": "always",
   "packages": [
     "git:github.com/chpatton013/pi-per",
