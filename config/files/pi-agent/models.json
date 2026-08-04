@@ -1,7 +1,7 @@
 {
   "providers": {
     "vLLM": {
-      "baseUrl": "http://localhost:9090/v1",
+      "baseUrl": "http://10.255.0.51:9090/v1",
       "api": "openai-completions",
       "apiKey": "EMPTY",
       "models": [
