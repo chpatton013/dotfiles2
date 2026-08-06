@@ -55,6 +55,20 @@
           "reasoning": false
         },
         {
+          "id": "nemotron3-nano-30b-moe",
+          "name": "Nemotron-3 Nano 30B-A3B (NVFP4)",
+          "input": ["text"],
+          "compat": { "supportsDeveloperRole": false },
+          "reasoning": true
+        },
+        {
+          "id": "ornith-35b",
+          "name": "Ornith 1.0 35B (FP8)",
+          "input": ["text"],
+          "compat": { "supportsDeveloperRole": false },
+          "reasoning": true
+        },
+        {
           "id": "minimax27",
           "name": "MiniMax M2.7 (NVFP4, TP=2)",
           "input": ["text"],
