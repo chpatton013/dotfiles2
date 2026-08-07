@@ -69,6 +69,13 @@
           "reasoning": true
         },
         {
+          "id": "nemotron3-super-120b-moe",
+          "name": "Nemotron-3 Super 120B-A12B (NVFP4)",
+          "input": ["text"],
+          "compat": { "supportsDeveloperRole": false },
+          "reasoning": true
+        },
+        {
           "id": "minimax27",
           "name": "MiniMax M2.7 (NVFP4, TP=2)",
           "input": ["text"],
