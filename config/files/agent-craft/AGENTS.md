@@ -6,6 +6,23 @@ over this one). Keep them cheap to carry: follow the principles below, and only
 load the named skill for the full step-by-step procedure when you are actually
 about to do that thing.
 
+## Interaction conventions
+
+- **`@@` markers.** A `@@` anywhere in a plan doc, comment, or note means:
+  read this, it needs your attention or action. Once you've addressed it,
+  remove the marker — don't leave it as a stale flag once resolved.
+- **Default to a subagent.** For any non-trivial task, dispatch a subagent
+  rather than doing the work directly in the primary session — even a single,
+  non-multi-step task. This keeps the primary session responsive while the
+  work runs. Reserve direct execution for genuinely quick/trivial actions (a
+  one-line lookup, a single file read). Load `subagent-driven-development` for
+  the mechanics of dispatching, tracking, and reviewing.
+- **Be brief and plain.** Default to short, direct responses. Cut hedges,
+  filler, and empty intensifiers ("genuine," "honest," "really") — state the
+  fact rather than assuring the reader of its sincerity. Avoid rule-of-three
+  padding and other AI-writing tells; `humanizer`'s catalog covers the
+  specifics if you need the full list.
+
 ## Skill loading is mandatory, not advisory
 
 If a named skill applies to what you're about to do, load it and follow it —
