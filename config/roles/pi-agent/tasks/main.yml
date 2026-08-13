@@ -28,7 +28,7 @@
     dest: "{{shellrc_config_dir}}/0-pi-agent.sh"
     mode: 0400
 
-# AGENTS.md, commands/, and skills/ are shared across coding harnesses (see
+# AGENTS.md and skills/ are shared across coding harnesses (see
 # docs/plans/cross-harness-ai-tooling.md) and live in config/files/agent-craft/,
 # not here — the claude-code role links the same source. PER_RUN.md / PER_TURN.md
 # are read by the pi-per extension and re-injected at the end of context (per
@@ -47,7 +47,6 @@
     force: yes
   with_items:
   - AGENTS.md
-  - commands
   - skills
 
 - name: Link shared AI-tooling config files (~/.pi/agent/)
@@ -59,7 +58,6 @@
     force: yes
   with_items:
   - AGENTS.md
-  - commands
   - skills
 
 - name: Link Pi-specific config files (XDG)
