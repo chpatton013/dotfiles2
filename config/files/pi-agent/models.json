@@ -90,6 +90,13 @@
           "reasoning": true
         },
         {
+          "id": "nemotron35-lightning-30b-moe",
+          "name": "Nemotron-3.5 Lightning 30B-A3B (NVFP4)",
+          "input": ["text"],
+          "compat": { "supportsDeveloperRole": false },
+          "reasoning": true
+        },
+        {
           "id": "qwen35-122b-moe",
           "name": "Qwen3.5 122B-A10B (NVFP4, TP=2)",
           "input": ["text"],
