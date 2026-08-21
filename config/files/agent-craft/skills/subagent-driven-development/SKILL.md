@@ -16,8 +16,12 @@ provides the mechanics; this is how to use it well.
   execute it without re-deriving the whole plan (the specific files, the
   specific done-criteria, links to any design note). A subagent that has to
   guess at scope will guess wrong in both directions.
-- Prefer `isolation: worktree` for anything that touches files, so parallel or
-  sequential subagents don't collide on the same working tree.
+- Dispatch subagents in a backgrounded, non-blocking mode so as to remain
+  responsive to prompts from the user. Never await subagent results in a
+  blocking manner; instead use periodic monitoring checks to be able to respond
+  to either agent completion or subsequent user prompts.
+- Prefer separate worktree isolation for multiple subagents that touch files, so
+  parallel or sequential subagents don't collide on the same working tree.
 
 ## Mandatory review gates
 

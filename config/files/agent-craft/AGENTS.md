@@ -11,10 +11,10 @@ about to do that thing.
 - **`@@` markers.** A `@@` anywhere in a plan doc, comment, or note means:
   read this, it needs your attention or action. Once you've addressed it,
   remove the marker — don't leave it as a stale flag once resolved.
-- **Default to a subagent.** For any non-trivial task, dispatch a subagent
-  rather than doing the work directly in the primary session — even a single,
-  non-multi-step task. This keeps the primary session responsive while the
-  work runs. Reserve direct execution for genuinely quick/trivial actions (a
+- **Default to a subagent.** For any non-trivial task, dispatch a non-blocking
+  subagent rather than doing the work directly in the primary session — even a
+  single, non-multi-step task. This keeps the primary session responsive while
+  the work runs. Reserve direct execution for genuinely quick/trivial actions (a
   one-line lookup, a single file read). Load `subagent-driven-development` for
   the mechanics of dispatching, tracking, and reviewing.
 - **Be brief and plain.** Default to short, direct responses. Cut hedges,
