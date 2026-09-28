@@ -97,3 +97,4 @@
     force: yes
   with_items:
   - 3-pi-agent.sh
+  - 3-remote-pi.sh

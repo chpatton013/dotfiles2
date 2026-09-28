@@ -1,5 +1,6 @@
 ---
 
 dependencies:
+- agent-craft
 - shellrc
 - xdg

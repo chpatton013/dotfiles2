@@ -11,7 +11,29 @@
     state: directory
     mode: 0700
 
-- name: Link shared AI-tooling config files
+- name: Inspect legacy Codex skills directory
+  stat:
+    path: "{{codex_config_dir}}/skills"
+    follow: no
+  register: codex_skills_dir
+
+- name: Remove legacy Codex skills symlink
+  file:
+    dest: "{{codex_config_dir}}/skills"
+    state: absent
+  when:
+  - codex_skills_dir.stat.islnk | default(false)
+  - >-
+    codex_skills_dir.stat.lnk_target | default('') ==
+    dotfiles_src_dir + "/agent-craft/skills"
+
+- name: Create Codex skills directory
+  file:
+    dest: "{{codex_config_dir}}/skills"
+    state: directory
+    mode: 0700
+
+- name: Link shared AI-tooling config file
   file:
     src: "{{dotfiles_src_dir}}/agent-craft/{{item}}"
     dest: "{{codex_config_dir}}/{{item}}"
@@ -20,4 +42,12 @@
     force: yes
   loop:
   - AGENTS.md
-  - skills
+
+- name: Link shared AI-tooling skills
+  file:
+    src: "{{dotfiles_src_dir}}/agent-craft/skills/{{item}}"
+    dest: "{{codex_config_dir}}/skills/{{item}}"
+    state: link
+    follow: no
+    force: yes
+  loop: "{{agent_craft_skills}}"

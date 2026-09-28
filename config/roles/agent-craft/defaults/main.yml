@@ -1,0 +1,18 @@
+---
+
+agent_craft_skills:
+- brainstorming
+- code-review
+- committing-changes
+- executing-plans
+- finish-branch
+- finish-task
+- humanizer
+- software-design
+- ste-writing
+- subagent-driven-development
+- systematic-debugging
+- writing-code
+- writing-docs
+- writing-plans
+- writing-skills
