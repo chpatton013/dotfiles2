@@ -1,0 +1,12 @@
+---
+
+oomd_protected_services:
+- unit: ssh.service
+- unit: systemd-logind.service
+  score_adjust: -900
+- unit: systemd-networkd.service
+  score_adjust: -900
+- unit: NetworkManager.service
+  score_adjust: -900
+- unit: tailscaled.service
+  score_adjust: -900

@@ -1,0 +1,11 @@
+---
+
+- name: Reload systemd system daemon
+  systemd:
+    daemon_reload: yes
+  become: yes
+
+- name: Reload systemd user daemon
+  systemd:
+    daemon_reload: yes
+    scope: user

@@ -1,5 +1,5 @@
 ---
 
 dependencies:
-- apt
-- ssl
+- {role: apt, tags: [apt]}
+- {role: ssl, tags: [ssl]}

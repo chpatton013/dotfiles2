@@ -3,6 +3,6 @@
 - hosts: 127.0.0.1
   connection: local
   roles:
-  - dev-tools
-  - system-tools
-  - user-tools
+  - {role: dev-tools, tags: [dev-tools]}
+  - {role: system-tools, tags: [system-tools]}
+  - {role: user-tools, tags: [user-tools]}

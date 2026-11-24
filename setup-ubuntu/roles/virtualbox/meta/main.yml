@@ -1,4 +1,4 @@
 ---
 
 dependencies:
-- kernel
+- {role: kernel, tags: [kernel]}

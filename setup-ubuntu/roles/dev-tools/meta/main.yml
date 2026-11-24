@@ -1,12 +1,12 @@
 ---
 
 dependencies:
-- apt
-- git
-- neovim
-- ollama
-- python
-- tmux
-- vagrant
-- vim
-- zsh
+- {role: apt, tags: [apt]}
+- {role: git, tags: [git]}
+- {role: neovim, tags: [neovim]}
+- {role: ollama, tags: [ollama]}
+- {role: python, tags: [python]}
+- {role: tmux, tags: [tmux]}
+- {role: vagrant, tags: [vagrant]}
+- {role: vim, tags: [vim]}
+- {role: zsh, tags: [zsh]}

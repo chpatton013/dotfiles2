@@ -1,8 +1,8 @@
 ---
 
 dependencies:
-- docker
-- libvirt
-- lxc
-- qemu
-- virtualbox
+- {role: docker, tags: [docker]}
+- {role: libvirt, tags: [libvirt]}
+- {role: lxc, tags: [lxc]}
+- {role: qemu, tags: [qemu]}
+- {role: virtualbox, tags: [virtualbox]}

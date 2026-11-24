@@ -1,0 +1,55 @@
+---
+
+- name: Create systemd user@.service drop-in directory
+  file:
+    dest: /etc/systemd/system/user@.service.d
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: Disable systemd-oomd memory pressure kills for user sessions
+  copy:
+    dest: /etc/systemd/system/user@.service.d/no-oomd.conf
+    content: |
+      [Service]
+      ManagedOOMMemoryPressure=auto
+    mode: 0644
+  become: yes
+  notify: Reload systemd system daemon
+
+- name: Create systemd tmux-spawn scope drop-in directory
+  file:
+    dest: ~/.config/systemd/user/tmux-spawn-.scope.d
+    state: directory
+    mode: 0755
+
+- name: Keep tmux pane scopes alive when a child process is OOM killed
+  copy:
+    dest: ~/.config/systemd/user/tmux-spawn-.scope.d/oom.conf
+    content: |
+      [Scope]
+      OOMPolicy=continue
+    mode: 0644
+  notify: Reload systemd user daemon
+
+- name: Create systemd drop-in directories for OOM-protected services
+  file:
+    dest: "/etc/systemd/system/{{item.unit}}.d"
+    state: directory
+    mode: 0755
+  become: yes
+  loop: "{{oomd_protected_services}}"
+
+- name: Protect remote-access services from OOM kills
+  copy:
+    dest: "/etc/systemd/system/{{item.unit}}.d/oom-protect.conf"
+    content: |
+      [Service]
+      ManagedOOMPreference=omit
+      {% if item.score_adjust is defined %}
+      OOMScoreAdjust={{item.score_adjust}}
+      {% endif %}
+    mode: 0644
+  become: yes
+  loop: "{{oomd_protected_services}}"
+  notify: Reload systemd system daemon

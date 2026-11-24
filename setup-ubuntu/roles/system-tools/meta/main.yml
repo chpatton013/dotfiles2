@@ -1,5 +1,6 @@
 ---
 
 dependencies:
-- apt
-- kernel
+- {role: apt, tags: [apt]}
+- {role: kernel, tags: [kernel]}
+- {role: oomd, tags: [oomd]}

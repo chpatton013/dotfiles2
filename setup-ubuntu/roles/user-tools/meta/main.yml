@@ -1,10 +1,10 @@
 ---
 
 dependencies:
-- apt
-- albert
-- docker
-- flatpak
-- podman
-- snap
-- virtualbox
+- {role: apt, tags: [apt]}
+- {role: albert, tags: [albert]}
+- {role: docker, tags: [docker]}
+- {role: flatpak, tags: [flatpak]}
+- {role: podman, tags: [podman]}
+- {role: snap, tags: [snap]}
+- {role: virtualbox, tags: [virtualbox]}
