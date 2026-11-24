@@ -17,16 +17,14 @@ Host *
 # The leading '^' prepends these algorithms to OpenSSH's built-in default
 # KexAlgorithms list, so classical algorithms remain available as fallbacks
 # for older servers -- this prefers PQ rather than forcing it (PQ-only would
-# break connections to pre-9.0 servers). Order = preference:
-#   - mlkem768x25519-sha256                 ML-KEM (FIPS 203); OpenSSH 9.9+/10
-#   - sntrup761x25519-sha512@openssh.com    NTRU Prime; default since OpenSSH 9.0
+# break connections to pre-9.0 servers).
 #
-# NOTE: unknown algorithm names abort the client, so this fragment assumes a
-# client that knows mlkem768x25519-sha256 (OpenSSH >= 9.9). The dev machines
-# this repo provisions ship a current OpenSSH (Homebrew on macOS, rolling on
-# Arch); see config/roles/ssh/README.md for the version audit.
+# Only sntrup761x25519-sha512@openssh.com (OpenSSH 9.0+) is listed. Unknown
+# algorithm names abort the client, and Ubuntu 24.04 ships OpenSSH 9.6, which
+# lacks mlkem768x25519-sha256 (9.9+). Clients that do support mlkem768 still
+# keep it in their default list, directly after the prepended sntrup761.
 Host *
-  KexAlgorithms ^mlkem768x25519-sha256,sntrup761x25519-sha512@openssh.com
+  KexAlgorithms ^sntrup761x25519-sha512@openssh.com
 
 # Load all config fragments.
 Include ~/.ssh/config.d/*

@@ -15,7 +15,7 @@ same way the git role owns `~/.gitconfig`. The managed file:
 
   ```
   Host *
-    KexAlgorithms ^mlkem768x25519-sha256,sntrup761x25519-sha512@openssh.com
+    KexAlgorithms ^sntrup761x25519-sha512@openssh.com
   ```
 
   The leading `^` **prepends** these to OpenSSH's default `KexAlgorithms`
@@ -51,31 +51,28 @@ Host-key *authentication* has **no standardized PQ signature algorithm** yet,
 so there is nothing to configure there — and authentication isn't vulnerable
 to harvest-now-decrypt-later anyway (it's verified live).
 
-Algorithms, in preference order:
+Post-quantum algorithms, in the order the config produces:
 
 | Algorithm | Basis | Availability |
 |---|---|---|
-| `mlkem768x25519-sha256` | ML-KEM (FIPS 203) hybrid | OpenSSH 9.9+ / 10.x |
-| `sntrup761x25519-sha512@openssh.com` | NTRU Prime hybrid | default since OpenSSH 9.0 |
+| `sntrup761x25519-sha512@openssh.com` | NTRU Prime hybrid | prepended; default since OpenSSH 9.0 |
+| `mlkem768x25519-sha256` | ML-KEM (FIPS 203) hybrid | client default only; OpenSSH 9.9+ / 10.x |
 
 ## OpenSSH version requirement / audit
 
-`mlkem768x25519-sha256` requires **OpenSSH >= 9.9**. Unknown algorithm names
-abort the client, so the fragment assumes a client that new. Status of the
-OpenSSH the setup roles provide:
+Unknown algorithm names abort the client, so the config lists only
+`sntrup761x25519-sha512@openssh.com`, which needs **OpenSSH >= 9.0**.
+`mlkem768x25519-sha256` is left out because Ubuntu 24.04 ships OpenSSH 9.6.
+OpenSSH 9.9+ clients still offer it from their default list, ranked after the
+prepended `sntrup761`. Status of the OpenSSH the setup roles provide:
 
-- **macOS** (`setup-macos/roles/dev-tools`): installs `openssh` via Homebrew →
-  current (10.x). OK — supports both KEX. The dev machine used to author this
-  reports `OpenSSH_10.2p1`.
+- **macOS** (`setup-macos/roles/dev-tools`): installs `openssh` via Homebrew,
+  which is current (10.x). OK.
 - **Arch** (`setup-archlinux/roles/dev-tools`): no explicit `openssh` package;
   the rolling base system provides a current OpenSSH. OK.
-- **Ubuntu** (`setup-ubuntu/roles/ssl`): installs `openssh-client` via apt. On
-  the dated `ubuntu/bionic64` Vagrant box (OpenSSH 7.6) this is **too old** —
-  it knows neither KEX and would abort. Even Ubuntu 24.04 (OpenSSH 9.6) has
-  `sntrup761` but **not** `mlkem768` (< 9.9). This only affects the Vagrant
-  test path (bit-rotted per AGENTS.md), not a real machine. **Needs a box
-  bump** to an OpenSSH 9.9+ release before this fragment is valid there; until
-  then it will break ssh inside that VM.
+- **Ubuntu** (`setup-ubuntu/roles/ssl`): installs `openssh-client` via apt.
+  Ubuntu 24.04 (OpenSSH 9.6) is OK. The `ubuntu/bionic64` Vagrant box
+  (OpenSSH 7.6) knows neither PQ algorithm and aborts until the box is bumped.
 
 ## Audit of the other quantum-safe surfaces (no action taken)
 
