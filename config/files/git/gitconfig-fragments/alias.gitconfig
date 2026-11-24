@@ -7,6 +7,8 @@
   cmp = compare --url
   co = checkout
   cp = cherry-pick
+  cpa = cherry-pick --abort
+  cpc = cherry-pick --continue
   df = diff --patience --find-renames
   dc = diff --patience --find-renames --cached
   ft = fetch
