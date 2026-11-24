@@ -1109,10 +1109,20 @@ vim.opt.clipboard = "unnamedplus" -- Route yanks (incl. mouse selection) to the 
 if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
     local osc52 = safe_require("vim.ui.clipboard.osc52")
     if osc52 then
+        -- OSC 52 clipboard reads require a terminal response. Many SSH
+        -- terminals support writes but never answer the read query, which
+        -- makes normal `p` wait for the OSC 52 timeout. Use Neovim's local
+        -- unnamed register for paste while retaining OSC 52 for copy.
+        -- Return the register type with the text so Neovim preserves linewise
+        -- and blockwise pastes instead of treating them as characterwise.
+        local function paste_from_unnamed()
+            return { vim.fn.getreg('"', 1, true), vim.fn.getregtype('"') }
+        end
+
         vim.g.clipboard = {
-            name = "OSC 52",
+            name = "OSC 52 (copy only)",
             copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
-            paste = { ["+"] = osc52.paste("+"), ["*"] = osc52.paste("*") },
+            paste = { ["+"] = paste_from_unnamed, ["*"] = paste_from_unnamed },
         }
     end
 end
