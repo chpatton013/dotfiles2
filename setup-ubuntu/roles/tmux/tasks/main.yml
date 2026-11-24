@@ -9,6 +9,7 @@
 - name: Install tmux build dependencies apt packages
   apt:
     pkg:
+    - bison
     - libncurses5-dev
     - libncursesw5-dev
     - libevent-dev
