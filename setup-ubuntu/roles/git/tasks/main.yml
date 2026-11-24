@@ -10,7 +10,6 @@
 - name: Install git build dependencies apt packages
   apt:
     pkg:
-    - asciidoc
     - dh-autoreconf
     - docbook2x
     - gettext

@@ -25,9 +25,11 @@
         make configure
         CFLAGS="{{git_release_cflags}}" ./configure --prefix={{xdg_prefix_home}}
         make all --jobs={{ansible_facts['processor_vcpus']}}
-        make doc --jobs={{ansible_facts['processor_vcpus']}}
-        make info --jobs={{ansible_facts['processor_vcpus']}}
-        make install install-doc install-html install-info
+        uv run --no-project --with-requirements {{role_path}}/files/build-requirements.txt -- sh -ec '
+          make doc --jobs={{ansible_facts['processor_vcpus']}}
+          make info --jobs={{ansible_facts['processor_vcpus']}}
+          make install install-doc install-html install-info
+        '
     when: git_needs_build
 
   - name: Record Git build version
