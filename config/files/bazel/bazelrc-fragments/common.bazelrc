@@ -1,14 +1,14 @@
 # Keep the bazel server alive for 24 hours.
 startup --max_idle_secs=86400
 
+# Ensure bazel will not trigger OOM killer.
+startup --shutdown_on_low_sys_mem
+
 # Always show color output, even without a TTY.
 common --color=yes
 
 # Include timestamps for all status messages.
 common --show_timestamps
-
-# Show calculated RC options
-common --announce_rc
 
 # Clean asynchronously with a daemon process.
 clean --async
@@ -17,8 +17,12 @@ clean --async
 # Write only manifests when possible.
 build --nobuild_runfile_links
 
-# Keep intermediate C++ compiler outputs, like .s and .ii files.
-build --save_temps
+# Keep intermediate C++ compiler outputs, like .s and .ii files; and print
+# abundant debug information.
+build:debug --save_temps
+build:debug --subcommands
+build:debug --experimental_ui_max_stdouterr_bytes=-1
+common:debug --announce_rc
 
 # Show stdout and stderr output only from failing test targets.
 test --test_output=errors --test_summary=terse
